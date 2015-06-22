@@ -1,13 +1,13 @@
-function LL = mnl_ll(beta_0)
+function LL = simp_ll_test4(beta_0)
 global I IV choice_dv J K Respondent_mat
 
-D = 100;                                        % number of draws
+D = 100;
 
-bb = beta_0(2*J-1:2*(J-1+K));
-b = reshape(bb,2,K)';                            % K*2
-
-mu = b(:,1);
-se = b(:,2);
+% bb = beta_0(2*J-1:2*(J-1+K));
+% b = reshape(bb,2,K)';                            % K*2
+% 
+% mu = b(:,1);
+% se = b(:,2);
 
 bc = beta_0(1:2*J-2);
 c = reshape(bc,2,J-1)';                      % (J-1)*2
@@ -33,7 +33,7 @@ for i = 1:I
         end
     end
     trun_randn = reshape(trun_randn,K+J-1,D);
-    idraws = repmat(mu,1,D) + trun_randn(1:K,:).*repmat(exp(se),1,D);         % K*D        nVar*nDraws
+    % idraws = repmat(mu,1,D) + trun_randn(1:K,:).*repmat(exp(se),1,D);         % K*D        nVar*nDraws
     cdraws = repmat(c_mu,1,D)+trun_randn(K+1:K+J-1,:).*repmat(exp(c_se),1,D);     %(J-1)*D
 %     idraws = repmat(mu,1,D) + randn(K,D).*repmat(exp(se),1,D);        % K*D        nVar*nDraws
 %     cdraws = repmat(c_mu,1,D) + randn(J-1,D).*repmat(exp(c_se),1,D);     %(J-1)*D
@@ -45,8 +45,8 @@ for i = 1:I
     % p_seq = ones(1,D);
     sum_pt = zeros(1,D);
     for t = 1:iTime
-        expU_t = exp(squeeze(iIV(t,:,:))*idraws + const);            % J*D
-        % expU_t = exp(util(X, bs))
+        % expU_t = exp(squeeze(iIV(t,:,:))*idraws + const);            % J*D
+        expU_t = exp(const);
         p_chosen_t = expU_t(ichoices(t,:)==1,:)./sum(expU_t,1);
         sum_pt = sum_pt + log(p_chosen_t);
         % p_seq = p_seq.*p_chosen_t;

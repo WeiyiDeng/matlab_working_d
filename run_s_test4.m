@@ -7,13 +7,19 @@ rng(0);
 J = 5
 I = 200
 T = 50
-K = 2
+K = 0
 % unobs0 = ones(1,J).*2;
 % unobs1 = ones(1,J);
+
 unobs0 = [1 2 3 4 5]
 unobs1 = [0.5 1.5 1 2 1]
+% unobs0 = [1 2 3 4]
+% unobs1 = [0.5 1.5 1 2]
+
+% unobs0 = 3
+% unobs1 = 2
 const_alt = zeros(I*T,J);
-for j = 1:J
+for j = 1:J                  %  CHANGED !
     mu_j = unobs0(j) + randn(I,1).*unobs1(j);
     const_alt(:,j) = reshape(repmat(mu_j,1,T)',I*T,1);
 end
@@ -33,7 +39,8 @@ for k = 1:K
 end
 
 rep_beta_alt = permute(repmat(beta_alt,[1,1,J]),[1 3 2]);
-exp_utility = exp(const_alt + sum(features.*rep_beta_alt,3));          % IT*J      w!!!!!
+% exp_utility = exp(const_alt + sum(features.*rep_beta_alt,3));          % IT*J      w!!!!!
+exp_utility = exp(const_alt);
 prob = exp_utility./repmat(sum(exp_utility,2),1,J);               % IT*J
 prob=cumsum(prob')';
 draw_for_choice=rand(I*T,1);
@@ -56,11 +63,11 @@ b0 = zeros(1,2*(J-1+K))
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter')
 options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter', 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 
-[beta_0, fval,exitflag,output,grad,hessian] = fminunc(@simp_ll_test2,b0,options);
+[beta_0, fval,exitflag,output,grad,hessian] = fminunc(@simp_ll_test4,b0,options);
 
 se = sqrt(diag(inv(hessian)))
 
 betas = reshape(beta_0,2,[])';
-betas(:,2) = exp(betas(:,2)) 
+betas(:,2) = exp(betas(:,2))
 
 toc
