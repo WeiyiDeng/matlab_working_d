@@ -2,35 +2,36 @@ clc
 clear
 global I IV choice_dv J K Respondent_mat
 
-rng(0);
+% rng(0);
 
-J = 2
-I = 500
-T = 20
+J = 5
+I = 200
+T = 50
 K = 0
 % unobs0 = ones(1,J).*2;
 % unobs1 = ones(1,J);
-% unobs0 = [1 2 3 4 5]
-% unobs1 = [0.5 1.5 1 2 1]
-mean = 1
-% mean = -5:1:5;
-var = 2
-% var = 0:0.5:2
 
-check_betas = zeros(length(mean),2);
-% check_betas = zeros(length(var),2);
-for c = 1:length(var)
-% for c = 1:length(mean)
-    % unobs0 = mean(c);
-    unobs0 = mean
-    % unobs1 = var
-    unobs1 = var(c);
+seed2 = 1;
+
+unobs0 = [1 2 3 4 0]
+unobs1 = [2 1.5 1 3 0]
+% unobs0 = [1 2 3 4]
+% unobs1 = [0.5 1.5 1 2]
+
 % unobs0 = 3
 % unobs1 = 2
+
 const_alt = zeros(I*T,J);
-for j = 1:J-1                %  CHANGED !
+for j = 1:J                  %  CHANGED !
+    rng(seed2);
     mu_j = unobs0(j) + randn(I,1).*unobs1(j);
+%     threshold = 4;
+%     constrain_randn = randn(2*I,1);          % over sample by 1 time
+%     constrain_randn(abs(constrain_randn)>threshold) = [];
+%     constrain_randn = constrain_randn(1:I,1);
+%     mu_j = unobs0(j) + constrain_randn.*unobs1(j);
     const_alt(:,j) = reshape(repmat(mu_j,1,T)',I*T,1);
+    seed2 = seed2+1;
 end
 
 features = randn(I*T,J,K);
@@ -72,26 +73,11 @@ b0 = zeros(1,2*(J-1+K))
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter')
 options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter', 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 
-[beta_0, fval,exitflag,output,grad,hessian] = fminunc(@simp_ll_test3,b0,options);
+[beta_0, fval,exitflag,output,grad,hessian] = fminunc(@simp_ll_test4,b0,options);
 
 se = sqrt(diag(inv(hessian)))
 
-% betas = reshape(beta_0,2,[])';
-% betas(:,2) = exp(betas(:,2)) 
-
-check_betas(c,:) = beta_0
-end
-
-check_betas(:,2) = exp(check_betas(:,2))
- 
-% scatter(mean,check_betas(:,1))
-% hold on
-% plot(mean,check_betas(:,1))
-% hold off
-
-scatter(var,check_betas(:,2))
-hold on
-plot(var,check_betas(:,2))
-hold off
+betas = reshape(beta_0,2,[])';
+betas(:,2) = exp(betas(:,2))
 
 toc
