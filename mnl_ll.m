@@ -21,20 +21,26 @@ threshold = 4;
 
 for i = 1:I
     rng(seed);
-    trun_randn = randn(1,(K+J-1)*D);            % w: Still? User objective function returned NaN; trying a new point
-    if sum(abs(trun_randn)>threshold)>=1
-        trun_randn(abs(trun_randn)>threshold) = [];
-    end
-    while length(trun_randn)<(K+J-1)*D
-        seed = seed +1;
-        trun_randn = [trun_randn randn(1,(K+J-1)*D-length(trun_randn))];
-        if sum(abs(trun_randn)>threshold)>=1
-            trun_randn(abs(trun_randn)>threshold) = [];
-        end
-    end
-    trun_randn = reshape(trun_randn,K+J-1,D);
-    idraws = repmat(mu,1,D) + trun_randn(1:K,:).*repmat(exp(se),1,D);         % K*D        nVar*nDraws
-    cdraws = repmat(c_mu,1,D)+trun_randn(K+1:K+J-1,:).*repmat(exp(c_se),1,D);     %(J-1)*D
+%     trun_randn = randn(1,(K+J-1)*D);            % w: Still? User objective function returned NaN; trying a new point
+%     if sum(abs(trun_randn)>threshold)>=1
+%         trun_randn(abs(trun_randn)>threshold) = [];
+%     end
+%     while length(trun_randn)<(K+J-1)*D
+%         seed = seed +1;
+%         trun_randn = [trun_randn randn(1,(K+J-1)*D-length(trun_randn))];
+%         if sum(abs(trun_randn)>threshold)>=1
+%             trun_randn(abs(trun_randn)>threshold) = [];
+%         end
+%     end
+%     trun_randn = reshape(trun_randn,K+J-1,D);
+%     idraws = repmat(mu,1,D) + trun_randn(1:K,:).*repmat(exp(se),1,D);         % K*D        nVar*nDraws
+%     cdraws = repmat(c_mu,1,D)+trun_randn(K+1:K+J-1,:).*repmat(exp(c_se),1,D);     %(J-1)*D
+    constrain_randn = randn(1,(K+J-1)*D*2);          % over sample by 1 time
+    constrain_randn(abs(constrain_randn)>threshold) = [];
+    constrain_randn = constrain_randn(1,1:(K+J-1)*D);
+    constrain_randn = reshape(constrain_randn,K+J-1,D);
+    idraws = repmat(mu,1,D) + constrain_randn(1:K,:).*repmat(exp(se),1,D);         % K*D        nVar*nDraws
+    cdraws = repmat(c_mu,1,D)+constrain_randn(K+1:K+J-1,:).*repmat(exp(c_se),1,D);     %(J-1)*D
 %     idraws = repmat(mu,1,D) + randn(K,D).*repmat(exp(se),1,D);        % K*D        nVar*nDraws
 %     cdraws = repmat(c_mu,1,D) + randn(J-1,D).*repmat(exp(c_se),1,D);     %(J-1)*D
     const = [cdraws;zeros(1,D)];                                 % J*D     last alternative as base line       
