@@ -21,7 +21,7 @@ for j = 1:J
     seed = seed +1;
 end
 
-% features = randn(I*T,J,K);
+% features = randn(I*T,J,K);              % w: ??????????????????????
 % features=features-mean(mean(mean(features)));
 % iv = features;
 features = repmat(1:J,[I*T,1,K]);
