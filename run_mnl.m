@@ -1,4 +1,4 @@
-function [betas, se] = run_mnl(data, Xlocation, ylocation, Ilocation, b0)
+function [betas, se, real_bs] = run_mnl(data, Xlocation, ylocation, Ilocation, b0)
 global I IV choice_dv J N K Respondent_mat
 
 if any(data) == 1
@@ -13,12 +13,13 @@ if any(data) == 1
     end
     Respondent_mat = data(:,Ilocation);
     choice_dv = data(:,ylocation);
+    real_bs = [];
 else
     if isempty(ylocation) == 1
         [N, J, K] = size(data);
         T = Xlocation;
         I = N/T;
-        [iv, dv, respond] = simu(J,I,T,K);
+        [iv, dv, respond, real_bs] = simu(J,I,T,K);
         IV = iv;
         Respondent_mat = respond;
         choice_dv = dv;
@@ -26,7 +27,7 @@ else
         [N, J, K] = size(data);
         T = Xlocation;
         I = N/T;
-        [iv, dv, respond] = debug(J,I,T,K);
+        [iv, dv, respond, real_bs] = debug(J,I,T,K);
         IV = iv;
         Respondent_mat = respond;
         choice_dv = dv;

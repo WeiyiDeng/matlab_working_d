@@ -1,11 +1,11 @@
-function [iv, dv, respond] = debug(J,I,T,K)
+function [iv, dv, respond, real_bs] = debug(J,I,T,K)
 
 % rng(0);
 seed = 1;
 threshold = 4;
 
 unobs0 = [(1:J-1).*2 0];           % means
-unobs1 = [ones(1,J-1) 0];          % variances
+unobs1 = [ones(1,J-1) 3];          % variances
 % unobs0 = [1 2 3 4 0]
 % unobs1 = [2 1.5 1 3 0]
 
@@ -28,9 +28,12 @@ features = repmat(1:J,[I*T,1,K]);
 features=features-mean(mean(mean(features)));
 iv = features;
 
-if K >0    
-    beta0 = ones(1,K).*2;
-    beta1 = ones(1,K);    
+    
+beta0 = ones(1,K).*2;
+beta1 = ones(1,K);
+real_bs = [[unobs0 beta0]' [unobs1 beta1]'];
+
+if K >0
     beta_alt = zeros(I*T,K);                 % IT*K
     for k = 1:K
         rng(seed);

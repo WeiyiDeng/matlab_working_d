@@ -1,4 +1,4 @@
-function [iv, dv, respond] = simu(J,I,T,K)
+function [iv, dv, respond, real_bs] = simu(J,I,T,K)
 
 % rng(0);
 seed = 1;
@@ -8,11 +8,11 @@ threshold = 4;
 % unobs1 = [ones(1,J-1) 0];          % variances
 % unobs0 = [1 2 3 4 0]
 % unobs1 = [2 1.5 1 3 0]
-unobs0 = [(1:J-1).*1 0];           % means
-unobs1 = [ones(1,J-1)*2 3];          % variances
+unobs0 = [(1:J-1).*2 0];           % means
+unobs1 = [ones(1,J-1) 3];          % variances
 
 const_alt = zeros(I*T,J);
-draws_collect = zeros(I,J);
+% draws_collect = zeros(I,J);
 for j = 1:J
     rng(seed);
     constrain_randn = randn(2*I,1);          % over sample by 1 time
@@ -22,16 +22,18 @@ for j = 1:J
     % mu_j = unobs0(j) + randn(I,1).*unobs1(j);
     const_alt(:,j) = reshape(repmat(mu_j,1,T)',I*T,1);
     seed = seed +1;
-    draws_collect(:,j) = constrain_randn;
+    % draws_collect(:,j) = constrain_randn;
 end
 
 features = randn(I*T,J,K);
 features=features-mean(mean(mean(features)));
 iv = features;
 
+beta0 = ones(1,K).*2;
+beta1 = ones(1,K);
+real_bs = [[unobs0 beta0]' [unobs1 beta1]'];
+
 if K >0    
-    beta0 = ones(1,K).*2;
-    beta1 = ones(1,K);    
     beta_alt = zeros(I*T,K);                 % IT*K
     for k = 1:K
         rng(seed);
