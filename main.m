@@ -1,7 +1,7 @@
 clc
 clear
 
-type = 2                            % choose 1 to input data, 2 to simulate, 3 to debug
+type = 3                            % choose 1 to input data, 2 to simulate, 3 to debug
 
 if type == 1
     data = csvread('mod_data.csv');
@@ -16,8 +16,13 @@ elseif type == 2
     ylocation = []
     Ilocation = []
     b0 = zeros(1,8)
-else
+else                                 % type = 3
     % debug
+    data = zeros(50,3,2);          % IT*J*K
+    Xlocation = 5                   % Xlocation is T now
+    ylocation = type
+    Ilocation = []
+    b0 = zeros(1,8)
 end
 
 [betas, se] = run_mnl(data, Xlocation, ylocation, Ilocation, b0)
