@@ -1,7 +1,7 @@
 function LL = mnl_ll(beta_0)
 global I IV choice_dv J K Respondent_mat
 
-D = 10;                                        % number of draws
+D = 100;                                        % number of draws
 
 % bb = beta_0(2*J-1:2*(J-1+K));
 bb = beta_0(2*J+1:2*(J+K));
