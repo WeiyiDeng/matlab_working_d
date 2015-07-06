@@ -18,7 +18,7 @@ c_se = c(:,2);
 c_mu(J) = 0;
 % c_mu(1) = 1;                            % fixed
 
-seed = 1;
+seed = 14239;
 prob_simu = zeros(I,1);
 Respondent = Respondent_mat(:,1);
 threshold = 4;
