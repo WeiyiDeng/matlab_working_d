@@ -86,7 +86,7 @@ for j = 1:J
     end
 end
 
-introdate = csvread('introdate.csv');
+introdate = csvread('introdatej.csv');
 
 introdate(:,2) = introdate(:,2)-old_bandt;    
 
@@ -123,4 +123,129 @@ for i = 1:I
 end
 
 EAi = [(1:I)' EAi];
-csvwrite('EAi.csv',EAi);
+% csvwrite('EAi.csv',EAi);
+
+%%
+% friend trials
+friendlist = csvread('testfriends.csv');
+
+bandtime = csvread('tbands.csv');
+bandtime(:,2) = bandtime(:,2)-old_bandt;
+bandtime(:,3) = bandtime(:,3)-old_bandt;
+
+timesplit(:,2) = timesplit(:,2)-old_bandt;
+timesplit(:,3) = timesplit(:,3)-old_bandt;
+timesplit(:,4) = timesplit(:,4)-old_bandt;
+
+useractive = zeros(I,T);
+for i = 1:I
+    useractive(i,timesplit(i,3):timesplit(i,4)) = 1;
+end
+
+bandactive = zeros(J,T);
+for j = 1:J
+    bandactive(j,bandtime(j,2):bandtime(j,3)) = 1;
+end
+
+% band_adopt_weeks = sparse(adoptions(:,1),adoptions(:,2),adoptions(:,3),I,J);  
+
+% % rows for all members as friends
+% friend = [];
+% band = [];
+% timeobs = [];
+% DV = [];
+% for i = 1:I
+%     for j = 1:J
+%         row_adoptij = find(adoptions(:,1) == i & adoptions(:,2) == j);
+%         adoptij_time = adoptions(row_adoptij,3);
+%         if isempty(row_adoptij)==0 && adoptij_time < timesplit(i,3)      % remove obs of band j if it was adopted by i in period 1
+%         else
+%             product = useractive(i,:).*bandactive(j,:);
+%             if sum(product)>0
+%                 friend = [friend; i.*ones(sum(product),1)];
+%                 band = [band; j.*ones(sum(product),1)];
+%                 timeobs = [timeobs; find(product)'];
+%                 DV = [DV; zeros(sum(product),1)];
+%             else
+%             end
+%             if isempty(row_adoptij)==0
+%                 row_ijt = find(friend == i & band == j & timeobs == adoptij_time);   % assign 1 to DV at adoption time t
+%                 DV(row_ijt) = 1;
+%                 rows_ind = find(friend == i & band == j & timeobs > adoptij_time);   % get rid of obs after i adopts j
+%                 DV(rows_ind) = [];
+%                 friend(rows_ind) = [];
+%                 band(rows_ind) = [];
+%                 timeobs(rows_ind) = [];
+%             else
+%             end
+%         end
+%     end
+% %     if i >=2
+% %         break
+% %     end
+% end
+            
+% A(any(A==5, 2),:)=[]            % method to remove rows    
+
+% test
+% find(friend == 2 & band == 61)
+% test2
+% A =  find(friend == 2 & band == 555);
+% b = find(friend == 2 & band == 555 & timeobs == 318)
+% DV(b)
+% DV(b+1)
+% band(b+1)
+% timeobs(b+1)
+
+
+member = [];
+friend = [];
+band = [];
+timeobs = [];
+DV = [];
+friend_adopted = [];
+for i = 1:2                                         % i here  is the row num of friendlist
+    id_member = friendlist(i,1);
+    id_friend = friendlist(i,2);
+    for j = 1:J
+        row_adoptfij = find(adoptions(:,1) == id_friend & adoptions(:,2) == j);    
+        adoptfij_time = adoptions(row_adoptfij,3);
+        if isempty(row_adoptfij)==0 && adoptfij_time < timesplit(id_friend,3)      % remove obs of band j if it was adopted by i in period 1
+        else
+            product = useractive(id_friend,:).*bandactive(j,:);
+            if sum(product)>0
+                member = [member; id_member.*ones(sum(product),1)];
+                friend = [friend; id_friend.*ones(sum(product),1)];
+                band = [band; j.*ones(sum(product),1)];
+                timeobs = [timeobs; find(product)'];
+                DV = [DV; zeros(sum(product),1)];
+                friend_adopted = [friend_adopted; zeros(sum(product),1)];
+            else
+            end
+            if isempty(row_adoptfij)==0                                               % member == id_member ??
+                row_ijt = find(member == id_member & friend == id_friend & band == j & timeobs == adoptfij_time);   % assign 1 to DV at adoption time t
+                DV(row_ijt) = 1;
+                rows_ind = find(member == id_member & friend == id_friend & band == j & timeobs > adoptfij_time);   % get rid of obs after i adopts j
+                DV(rows_ind) = [];
+                friend(rows_ind) = [];
+                band(rows_ind) = [];
+                timeobs(rows_ind) = [];
+                member(rows_ind) = [];
+                friend_adopted(rows_ind) = [];
+            else
+            end
+            row_adoptmij = find(adoptions(:,1) == id_member & adoptions(:,2) == j);
+            adoptmij_time = adoptions(row_adoptmij,3);
+            if isempty(row_adoptmij)==0
+                rows_ind2 = find(member == id_member & friend == id_friend & band == j & timeobs - adoptmij_time <= 8);  % member == id_member ??
+                % rows_ind2 = find(friend == id_friend & band == j & timeobs - adoptmij_time <= 8);  % member == id_member ??
+                friend_adopted(rows_ind2) = 1;
+            else
+            end
+        end
+    end
+%     if i >=2
+%         break
+%     end
+end
+
