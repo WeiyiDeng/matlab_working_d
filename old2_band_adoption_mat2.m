@@ -1,12 +1,12 @@
 clc
 clear
 
-adoptions = csvread('bandadoptions3.csv');               % note that adoptions has not subtracted 104
+adoptions = csvread('bandadoptions3.csv');
 adopt_ones = ones(size(adoptions, 1),1);
 
 % total number of weeks: length(105:527) = 423
 T = 423
-I = 8320                                                 % 165 members
+I = 8320
 J = 6046
 old_bandt = 104
 band_adoption = cell(T,1);
@@ -17,7 +17,7 @@ for t = 1:T
     band_adoption{t} = sparse(adopt_ind(:,1),adopt_ind(:,2),adopt_ones(r),I,J);
 end
 
-band_adopt_mat = sparse(adoptions(:,1),adoptions(:,2),adoptions(:,3)-old_bandt,I,J);                % important fix !!
+band_adopt_mat = sparse(adoptions(:,1),adoptions(:,2),adoptions(:,3),I,J);
 
 % wwwwwwwwwwwwwwwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -112,7 +112,7 @@ explorer = csvread('explorer3.csv');
 % give headers "BAND_ID", "USER_ID", "week_mod" etc.
 % to the csv files in Emeditor before importing to SQL 
 
-% adoptingweek = csvread('adoptingweek3.csv');
+adoptingweek = csvread('adoptingweek3.csv');
 
 % EAij = 1-(adoptingweek(:,3)-adoptingweek(:,4))./(adoptingweek(:,5)-adoptingweek(:,4));
 % % some have the same intro week and peak week, get NAN for 0 in denominator
@@ -235,7 +235,7 @@ for i = 1:size(friendlist,1)                                         % i here  i
         else
         end
     end
-        if i >=10
+        if i >=100
             break
         end
 end
@@ -312,8 +312,8 @@ for r = 1:length(adopted_bands)
         friend_adopted(rows_indall) = 1;
     else
     end
-    if pre_start > 1 && pre_end > 1
-        totaladopt_t(ind:ind+interval-1) = band_pop(pre_start-1:pre_end-1,band_id);                  % fixed bug here
+    for t = pre_start:pre_end
+        totaladopt_t(ind:ind+interval-1) = band_pop(t-1,band_id);
     end
     sinceintro_t(ind:ind+interval-1) = timeobs(ind:ind+interval-1)-bandtime(band_id,2);
     
@@ -456,19 +456,4 @@ find(sinceintro_t<0)
 %     MAf_t(f_ind) = EAcat(i,2);
 %     LAf_t(f_ind) = EAcat(i,3);
 % end
-
-%%
-mat1 = [member_a friend_a band_a DV1 bandpopular_a explorerm_a explorerf_a EAm_a MAm_a LAm_a EAf_a MAf_a LAf_a];
-mat2 = [member_t friend_t band_t timeobs DV2 friend_adopted totaladopt_t sinceintro_t explorerm_t explorerf_t EAm_t MAm_t LAm_t EAf_t MAf_t LAf_t];
-
-clearvars -EXCEPT mat1 mat2
-
-% save('mat1.mat','mat1')
-% save('mat2.mat','mat2')
-save('mat1.mat','mat1', '-v7.3') ;
-save('mat2.mat','mat2', '-v7.3') ;
-
-display('save as csv')
-csvwrite('mat1.csv',mat1);
-csvwrite('mat2.csv',mat2);
 
