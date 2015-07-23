@@ -235,7 +235,7 @@ for i = 1:size(friendlist,1)                                         % i here  i
         else
         end
     end
-        if i >=10
+        if i >=55
             break
         end
 end
@@ -461,7 +461,7 @@ find(sinceintro_t<0)
 mat1 = [member_a friend_a band_a DV1 bandpopular_a explorerm_a explorerf_a EAm_a MAm_a LAm_a EAf_a MAf_a LAf_a];
 mat2 = [member_t friend_t band_t timeobs DV2 friend_adopted totaladopt_t sinceintro_t explorerm_t explorerf_t EAm_t MAm_t LAm_t EAf_t MAf_t LAf_t];
 
-clearvars -EXCEPT mat1 mat2
+% clearvars -EXCEPT mat1 mat2
 
 % save('mat1.mat','mat1')
 % save('mat2.mat','mat2')

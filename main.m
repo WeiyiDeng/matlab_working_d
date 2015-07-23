@@ -1,8 +1,13 @@
 clc
 clear
 rng('default')
+global cswitch PARAMTOL
 
 type = 1                            % choose 1 to input data, 2 to simulate, 3 to debug
+cswitch = 0                         % to turn on and off the alternative specific constants in estimation
+PARAMTOL = 0.000001;                % change value of functional tolerance
+% PARAMTOL = [];
+
 
 if type == 1
 %     data = csvread('mod_data.csv');     % to compare with Train mxl results
@@ -16,7 +21,11 @@ if type == 1
     Xlocation = 10:24                 % columns of IVs     cannot be 0s
     ylocation = 7:9
     Ilocation = 1:3
-    b0 = zeros(1,16)
+    if cswitch == 1
+        b0 = zeros(1,16)
+    else
+        b0 = zeros(1,10)
+    end
 
 elseif type == 2
     % if simulation
@@ -40,5 +49,6 @@ end
 [betas, se, real_bs] = run_mnl(data, Xlocation, ylocation, Ilocation, b0)
 
 disp(real_bs) 
-disp(betas)
-disp(se)
+% disp('betas')
+% disp(betas)
+% disp(se)

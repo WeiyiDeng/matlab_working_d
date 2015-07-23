@@ -1,5 +1,5 @@
 function [betas, se, real_bs] = run_mnl(data, Xlocation, ylocation, Ilocation, b0)
-global I IV choice_dv J N K Respondent_mat
+global I IV choice_dv J N K Respondent_mat PARAMTOL
 
 if any(data) == 1
     N = size(data,1);
@@ -34,7 +34,7 @@ else
     end
 end
 
-options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter', 'MaxIter',1e4, 'MaxFunEvals', 1e5)
+options = optimset('LargeScale','off','GradObj','off','Hessian','off','display','iter', 'MaxIter',1e4, 'TolX',PARAMTOL,'MaxFunEvals', 1e5)
 
 [beta_0, fval,exitflag,output,grad,hessian] = fminunc(@mnl_ll,b0,options);
 
