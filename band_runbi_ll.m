@@ -1,4 +1,4 @@
-function [b, hessian, standard_error, covariance_matrix, t_stat] = band_runbi_ll(X, y, beta_0)
+function [b, hessian, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll(X, y, beta_0)
 global I J choice_dv IVs se T
 
 % I = 10000
@@ -50,6 +50,8 @@ covariance_matrix = inv(hessian);
 
 t_stat = b./standard_error';
 % disp(['t statistics ' num2str(t_stat) '']);
+
+exit_flag = exitflag;
 
 % real_bs = [b0(1) b1(1) b2(1)];
 % disp(real_bs)

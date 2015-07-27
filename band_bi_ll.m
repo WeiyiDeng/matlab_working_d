@@ -16,8 +16,8 @@ pmat = pmat.*choice_dv;
 [r c p] = find(pmat);                                             % I*1
 LL = -sum(log(p));                                                % 1*1
 
-format long g
-LL
+% format long g
+% LL
 
 %  p_all = utility_all./repmat(sum(utility_all,2),1,J);
 %  d = p_all-choice_dv;                     % beware the sequence of what minus what !!
