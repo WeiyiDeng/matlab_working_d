@@ -3,6 +3,7 @@ clear all
 
 % load('mat1b.mat');
 % load('mat2b.mat');
+% load('member_adopt_b.mat');        % w: error message cannot read file??
 
 % mat1 = csvread('mat1.csv');
 
@@ -10,6 +11,7 @@ mat1 = csvread('mat1.csv');
 mat2 = csvread('mat2.csv');      % 13137715	13145733
 
 % mat1(13137715:13145733,:)=[];           % removes obs of member 2978
+% member_adopt(13137715:13145733,:)=[];
 
 member_inds1 = csvread('member_ind_mat1.csv');
 member_inds2 = csvread('member_ind_mat2.csv');
@@ -92,6 +94,7 @@ for i = 1:I
 %     EA_location{i} = EA_col;
     %     csvwrite('imat1.csv',imat);
 %     X = imat(:,[5 7 11:12]);
+%     X = [member_adopt(ind+1:ind+nrows,:) imat(:,[5 7 EA_col])];
     X = imat(:,[5 7 EA_col]);
     y = imat(:,4);
     beta_0 = zeros(1,size(X,2)+1);

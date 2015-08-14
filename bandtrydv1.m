@@ -1,5 +1,5 @@
 clc
-clear
+clear all
 
 adoptions = csvread('bandadoptions3.csv');               % note that adoptions has not subtracted 104
 adopt_ones = ones(size(adoptions, 1),1);
@@ -174,14 +174,15 @@ timesplit(:,4) = timesplit(:,4)-old_bandt;
 % band_a = [];
 % % timeobs = [];
 % DV1 = [];
-% largeNum_a = 48000000
-largeNum_a = 600000
+largeNum_a = 48000000
+% largeNum_a = 600000
 
 member_a = zeros(largeNum_a,1);
 friend_a = zeros(largeNum_a,1);
 band_a = zeros(largeNum_a,1);
 % timeobs = [];
 DV1 = zeros(largeNum_a,1);
+member_adopt = zeros(largeNum_a,1);
 % obs_start = zeros(size(friendlist,1),J);
 % friend_adopted = [];
 bandpopular_a = zeros(largeNum_a,1);
@@ -218,6 +219,11 @@ for i = 1:size(friendlist,1)                                         % i here  i
                     DV1(ind) = 1;
                 else
                 end
+                adoptmij_time = band_adopt_mat(id_member,j);
+                if adoptmij_time~=0 && adoptmij_time > pre_start && adoptmij_time < pre_end
+                    member_adopt(ind) = 1;
+                else
+                end
                 if pre_start > 1
                     bandpopular_a(ind) = cumu_diffusion(pre_start-1,j);
                 else
@@ -235,15 +241,16 @@ for i = 1:size(friendlist,1)                                         % i here  i
         else
         end
     end
-        if i >=55
-            break
-        end
+%         if i >=55
+%             break
+%         end
 end
 
 member_a = member_a(1:(ind-1));
 friend_a = friend_a(1:(ind-1));
 band_a = band_a(1:(ind-1));
 DV1 = DV1(1:(ind-1));
+member_adopt = member_adopt(1:(ind-1));
 bandpopular_a = bandpopular_a(1:(ind-1));
 
 explorerm_a = explorerm_a(1:(ind-1));
@@ -255,13 +262,16 @@ EAf_a = EAf_a(1:(ind-1));
 MAf_a = MAf_a(1:(ind-1));
 LAf_a = LAf_a(1:(ind-1));
 
+save('member_adopt.mat','member_adopt');
+
 display('DV1')
+
 %%
 % test: some member and friends have no overlap in obs period 2
 % A = find(member == 66 & friend == 33);
 
-% largeNum_t = 64000000
-largeNum_t = 800000
+largeNum_t = 64000000
+% largeNum_t = 800000
 member_t = zeros(largeNum_t,1);
 friend_t = zeros(largeNum_t,1);
 band_t = zeros(largeNum_t,1);
@@ -308,7 +318,7 @@ for r = 1:length(adopted_bands)
 %     if adoptmij_time~=0 && adoptfij_time > adoptmij_time
     if adoptmij_time~=0 && adoptmij_time < adoptfij_time && adoptmij_time > pre_start
 %         rows_ind2 = member_t == member_id & friend_t == friend_id & band_t == band_id & timeobs >= adoptmij_time & timeobs - adoptmij_time <= 8;
-        rows_ind2 = timeobs(ind:ind+interval-1) >= adoptmij_time & timeobs(ind:ind+interval-1) - adoptmij_time <= 8;
+        rows_ind2 = timeobs(ind:ind+interval-1) >= adoptmij_time & timeobs(ind:ind+interval-1) - adoptmij_time <= 4;
         rows_indall = logical([sparse(ind-1,1); rows_ind2; sparse(largeNum_t-(ind+interval-1),1)]);
         friend_adopted(rows_indall) = 1;
     else
@@ -358,118 +368,3 @@ LAf_t = LAf_t(1:(ind-1));
 % sum(DV2)
 
 display('DV2')
-%%
-% explorerm_a = zeros(length(member_a),1);
-% for i = 1:194                                % number of members here !!
-%     m_ind = find(member_a == i);
-%     explorerm_a(m_ind) = explorer(i);
-% end
-% 
-% explorerf_a = zeros(length(friend_a),1);
-% for i = 1:194                                % number of friends here !!
-%     f_ind = find(friend_a == i);
-%     explorerf_a(f_ind) = explorer(i);
-% end
-% 
-% EAm_a = zeros(length(member_a),1);
-% MAm_a = zeros(length(member_a),1);
-% LAm_a = zeros(length(member_a),1);
-% for i = 1:194                                % number of members here !!
-%     m_ind = find(member_a == i);
-%     EAm_a(m_ind) = EAcat(i,1);
-%     MAm_a(m_ind) = EAcat(i,2);
-%     LAm_a(m_ind) = EAcat(i,3);
-% end
-% 
-% EAf_a = zeros(length(friend_a),1);
-% MAf_a = zeros(length(friend_a),1);
-% LAf_a = zeros(length(friend_a),1);
-% for i = 1:194                                % number of friends here !!
-%     f_ind = find(friend_a == i);
-%     EAf_a(f_ind) = EAcat(i,1);
-%     MAf_a(f_ind) = EAcat(i,2);
-%     LAf_a(f_ind) = EAcat(i,3);
-% end
-
-% bandpopular_a = zeros(length(band_a),1);            % revise here !!
-% for i = 1:size(friendlist,1)                % i here is the row num of friendlist
-%     for j = 1:J
-%         if obs_start(i,j) > 0
-%             mij_ind = find(member_a == friendlist(i,1) & friend_a == friendlist(i,2) & band_a == j);
-%             if obs_start(i,j) > 1
-%                 bandpopular_a(mij_ind) = cumu_diffusion(obs_start(i,j)-1,j);
-%             else
-%             end
-%         else
-%         end
-%     end
-% end
-
-
-% totaladopt_t = zeros(length(timeobs),1);
-% for j = 1:J
-%     for t = 1:T
-%         jt_ind = find(band_t == j & timeobs == t);
-%         if t > 1
-%             totaladopt_t(jt_ind) = band_pop(t-1,j);
-%         else
-%         end
-%     end
-% end
-% 
-% sinceintro_t = zeros(length(timeobs),1);
-% for j = 1:J
-%     j_ind = find(band_t == j);
-%     sinceintro_t(j_ind) = timeobs(j_ind)-bandtime(j,2);
-% end
-
-% test
-find(sinceintro_t<0)
-
-% explorerm_t = zeros(length(member_t),1);
-% for i = 1:194                                % number of members here !!
-%     m_ind = find(member_t == i);
-%     explorerm_t(m_ind) = explorer(i);
-% end
-% 
-% explorerf_t = zeros(length(friend_t),1);
-% for i = 1:194                                % number of friends here !!
-%     f_ind = find(friend_t == i);
-%     explorerf_t(f_ind) = explorer(i);
-% end
-% 
-% EAm_t = zeros(length(member_t),1);
-% MAm_t = zeros(length(member_t),1);
-% LAm_t = zeros(length(member_t),1);
-% for i = 1:194                                % number of members here !!
-%     m_ind = find(member_t == i);
-%     EAm_t(m_ind) = EAcat(i,1);
-%     MAm_t(m_ind) = EAcat(i,2);
-%     LAm_t(m_ind) = EAcat(i,3);
-% end
-% 
-% EAf_t = zeros(length(friend_t),1);
-% MAf_t = zeros(length(friend_t),1);
-% LAf_t = zeros(length(friend_t),1);
-% for i = 1:194                                % number of friends here !!
-%     f_ind = find(friend_t == i);
-%     EAf_t(f_ind) = EAcat(i,1);
-%     MAf_t(f_ind) = EAcat(i,2);
-%     LAf_t(f_ind) = EAcat(i,3);
-% end
-
-%%
-mat1 = [member_a friend_a band_a DV1 bandpopular_a explorerm_a explorerf_a EAm_a MAm_a LAm_a EAf_a MAf_a LAf_a];
-mat2 = [member_t friend_t band_t timeobs DV2 friend_adopted totaladopt_t sinceintro_t explorerm_t explorerf_t EAm_t MAm_t LAm_t EAf_t MAf_t LAf_t];
-
-% clearvars -EXCEPT mat1 mat2
-
-% save('mat1.mat','mat1')
-% save('mat2.mat','mat2')
-save('mat1.mat','mat1', '-v7.3') ;
-save('mat2.mat','mat2', '-v7.3') ;
-
-display('save as csv')
-csvwrite('mat1.csv',mat1);
-csvwrite('mat2.csv',mat2);
-

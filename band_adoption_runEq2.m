@@ -3,12 +3,14 @@ clear all
 
 % load('mat1b.mat');
 % load('mat2b.mat');
-load('resid_mat.mat');
+load('resid_mat_b.mat');
 
 % mat1 = csvread('mat1.csv');
 mat2 = csvread('mat2.csv');      % 13137715	13145733
 
 mat2(36342,:)=[];           % removes obs of member 1578
+% mat2([36342 18284496 7419025 17297457:17297461 20426329:20426334 548878:548885 9761552:9761560 548851:548877],:)=[];           % removes obs of member 1578
+% CANNOT remove separately, row numbers will change
 % mat2(18284496,:)=[];           % removes obs of member 7315
 % mat2(7419025,:)=[];           % removes obs of member 7605
 % mat2(17297457:17297461,:)=[];           % removes obs of member 1148
@@ -41,7 +43,7 @@ end
 % I = 152
 NUSER = 8320;                % max number of users
 NBAND = 6046;                % max number of bands
-% I = 152
+% I = 152-8
 I = 2
 % K = 4                        % number of parameters not including constant
 % b_store = zeros(I,K+1);
@@ -118,6 +120,11 @@ for i = 1:I
         break
     end
 end
+
+save('b_store.mat','b_store') ;
+save('se_store.mat','se_store') ;
+save('tstat_store.mat','tstat_store') ;
+save('est2_exitflag.mat','est2_exitflag') ;
 
 % [x,fval,exitflag,output,grad,hessian] = logregr(imat(:,5), imat(:,7), imat(:,4), 0, 0, 0)
 % [b,dev,stats] = glmfit([imat(:,5) imat(:,7)], imat(:,4),'binomial')
