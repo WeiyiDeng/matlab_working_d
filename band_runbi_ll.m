@@ -34,7 +34,7 @@ beta0 = beta_0;
 
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off')
-options = optimset('LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5);
+options = optimset('LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-7, 'MaxIter',1e4, 'MaxFunEvals', 1e5);
 
 [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll,beta0,options);
 
