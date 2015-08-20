@@ -1,4 +1,4 @@
-function [LL_sum, gr, H] = band_bi_ll_re(b, member, friendlist_updated)
+function [LL_sum, gr, H] = band_bi_ll_re(b, member, friendlist_updated, EA_col)
 % global friendlist_updated
 % global I J choice_dv IVs se T
 
@@ -12,11 +12,12 @@ for i = 1:size(mf_rows)     % tbchanged
     %     friend_files{i} = load(sprintf('C:\\Users\\etp21998@eur.nl\\matfolder\\%d_%d.mat',2898,i));
     % end
     % friend_files{1}.mat_r(1,2)
-    load(sprintf('E:\\Wei\\Graduate\\Matlab\\matfolder\\%d_%d',member,mf_rows(i)));
-    mat_dummies = [mat_r(:,11).*mat_r(:,15) mat_r(:,11).*mat_r(:,16) mat_r(:,12).*mat_r(:,14) mat_r(:,12).*mat_r(:,15) mat_r(:,12).*mat_r(:,16) mat_r(:,13).*mat_r(:,14) mat_r(:,13).*mat_r(:,15) mat_r(:,13).*mat_r(:,16)];
-    mat_r = [mat_r mat_dummies];
+%     load(sprintf('E:\\Wei\\Graduate\\Matlab\\matfolder\\%d_%d',member,mf_rows(i)));
+    load(sprintf('C:\\Users\\etp21998@eur.nl\\matfolder\\%d_%d.mat',member,mf_rows(i)));
+%     mat_dummies = [mat_r(:,11).*mat_r(:,15) mat_r(:,11).*mat_r(:,16) mat_r(:,12).*mat_r(:,14) mat_r(:,12).*mat_r(:,15) mat_r(:,12).*mat_r(:,16) mat_r(:,13).*mat_r(:,14) mat_r(:,13).*mat_r(:,15) mat_r(:,13).*mat_r(:,16)];
+%     mat_r = [mat_r mat_dummies];
     
-    IVs = mat_r(:,[6:8 10]);
+    IVs = mat_r(:,[6:8 10 EA_col]);
     choice_dv = [mat_r(:,5) 1-mat_r(:,5)];
     clearvars mat_r
     

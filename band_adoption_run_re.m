@@ -1,16 +1,17 @@
 clc
 clear all
 
-if matlabpool('size') == 0
-    matlabpool local 2
-end
+% if matlabpool('size') == 0
+%     matlabpool local 2
+% end
 
 % global friendlist_updated          % global variables do not get passed to workers in matlab !! 
 
 % friendlist_updated = csvread('E:\matfolder\updated_friend.csv');
-friendlist_updated = csvread('E:\Wei\Graduate\Matlab\matfolder\updated_friend.csv');
-
+% friendlist_updated = csvread('E:\Wei\Graduate\Matlab\matfolder\updated_friend.csv');
+friendlist_updated = csvread('C:\Users\etp21998@eur.nl\matfolder\updated_friend.csv');
 member_list = csvread('mlist.csv');
+EAcat = csvread('EAdummy3.csv');
 
 % load('mat1b.mat');
 % load('mat2b.mat');
@@ -82,8 +83,34 @@ est2_exitflag = zeros(I,1);
 % beta_0 = [0 0 0];
 % ind = 0;
 % for i = 1:length(member_list)
-parfor i = 1:3
+EA_location = cell(length(member_list),1);
+f_type = zeros(length(member_list),3);
+m_type = zeros(length(member_list),3);
+
+% for i = 1:length(member_list)
+for i = 3:3
     member = member_list(i);
+    mf_rows = find(friendlist_updated(:,1)==member);
+    friends = friendlist_updated(mf_rows,2);
+    EAall = EAcat(friends,:);
+    EAsum = sum(EAall,1);
+    m_type(i,:) = EAcat(member,:);
+    f_EA = EAsum(1)~=0;
+    f_MA = EAsum(2)~=0;
+    f_LA = EAsum(3)~=0;
+    f_type(i,:) = [f_EA f_MA f_LA];
+    if f_EA == 1 && f_MA == 1 && f_LA == 1
+        EA_col = [14:15];
+    elseif f_EA == 1 && f_MA == 1
+        EA_col = 14;
+    elseif f_MA == 1 && f_LA == 1
+        EA_col = 15;
+    elseif f_EA == 1 && f_LA == 1
+        EA_col = 14;
+    else
+        EA_col = [];
+    end
+    EA_location{i} = EA_col; 
 %     i_id(i) = mat2(ind+1,1);
 %     nrows = member_inds2(member_inds2(:,1)==i_id(i),2);
 %     imat = mat2(ind+1:ind+nrows,:);         % ind tbc
@@ -110,11 +137,11 @@ parfor i = 1:3
 %     y = imat(:,5);
 %     beta_0 = zeros(1,size(X,2)+1);
 %     [b, hessian, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll_re(X, y, beta_0);
-    beta_0 = zeros(1,5);                % k+1
+    beta_0 = zeros(1,5+length(EA_col));                % k+1
     
     options = optimset('LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5);
 
-    [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_re,beta_0,options,member,friendlist_updated);
+    [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_re,beta_0,options,member,friendlist_updated,EA_col);
     
     % disp(['constant ' num2str(b(1)) '']);
     % disp(['coefficients ' num2str(b(2:end)) '']);
@@ -159,7 +186,7 @@ save('se_store.mat','se_store') ;
 save('tstat_store.mat','tstat_store') ;
 save('est2_exitflag.mat','est2_exitflag') ;
 
-matlabpool CLOSE
+% matlabpool CLOSE
 
 % [x,fval,exitflag,output,grad,hessian] = logregr(imat(:,5), imat(:,7), imat(:,4), 0, 0, 0)
 % [b,dev,stats] = glmfit([imat(:,5) imat(:,7)], imat(:,4),'binomial')

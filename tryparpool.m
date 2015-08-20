@@ -1,5 +1,6 @@
 % feature('numCores')
-matlabpool local 6               % same as parpool in new version matlab
+diary('wdiary.txt')
+matlabpool local 2               % same as parpool in new version matlab
 
 tic
 num = 300
@@ -16,7 +17,7 @@ end
 toc
 
 matlabpool CLOSE
-
+diary off 
 % job = batch('trypar')
 % delete(job)                       % after job finishes
 
