@@ -1,6 +1,11 @@
 clc
 clear all
 
+% % fminunc seems to be using multiple cores automatically without
+% % being manually specified. Can be seen from the task manager. if the computer
+% % has more than two cores and is specified to use two, it actually becomes
+% % slower (it uses all cores on the computer automatically without being asked)
+
 % if matlabpool('size') == 0
 %     matlabpool local 2
 % end

@@ -34,12 +34,24 @@ for t = 1:T
     diffusion_jt(t,:) = sum(band_adoption{t},1);           % T*J
 end
 
-cumu_diffusion = cumsum(diffusion_jt);                    % T*J
-
 % overall probability of adopting band j at time t (pdf)
 sum_adoptions_j = sum(diffusion_jt,1);
-prob_adoption_tj = diffusion_jt./repmat(sum_adoptions_j,T,1);    % PAjt   
+% prob_adoption_tj = diffusion_jt./repmat(sum_adoptions_j,T,1);    % PAjt 
 
+diffusion_year = zeros(T,J);
+for i = 1:7
+    ind = (i-1)*52+1;
+    year_adopt = sum(diffusion_jt(ind:ind+51,:),1);
+    diffusion_year(ind:ind+51,:) = repmat(year_adopt,52,1);
+end
+year_adopt_8th = sum(diffusion_jt(365:423,:),1);
+diffusion_year(365:423,:) = repmat(year_adopt_8th,59,1);
+
+% sum_adoptions_yearj = sum(diffusion_year,1);
+prob_adoption_yearj = diffusion_year./repmat(sum_adoptions_j,T,1);    % PAjt 
+
+cumu_diffusion = cumsum(diffusion_jt);                    % T*J
+ 
 timesplit = csvread('tsplit3.csv');
 friendlist = csvread('friends3.csv');
 bandtime = csvread('tbands3.csv');
@@ -51,8 +63,8 @@ timesplit(:,2) = timesplit(:,2)-old_bandt;
 timesplit(:,3) = timesplit(:,3)-old_bandt;
 timesplit(:,4) = timesplit(:,4)-old_bandt;
 
-% largeNum_p = 80000000
-largeNum_p = 600000
+largeNum_p = 68000000
+% largeNum_p = 600000
 
 member_p = zeros(largeNum_p,1);
 friend_p = zeros(largeNum_p,1);
@@ -62,8 +74,6 @@ DV = zeros(largeNum_p,1);
 prob_adopt_week = zeros(largeNum_p,1);
 abs_week_diff = zeros(largeNum_p,1);
 
-% rownum = zeros(size(friendlist,1),2);
-% row_ind = 1;
 
 ind = 1;
 for i = 1:size(friendlist,1)                                         % i here  is the row num of friendlist
@@ -81,18 +91,15 @@ for i = 1:size(friendlist,1)                                         % i here  i
             band_p(ind:ind+interval-1) = j;
             timeobs(ind:ind+interval-1) = pre_start:pre_end;
             DV(ind+(adoptfij_time-pre_start)) = 1;
-            prob_adopt_week(ind:ind+interval-1) = prob_adoption_tj(pre_start:pre_end,j);
+            prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
             abs_week_diff(ind:ind+interval-1) = abs((pre_start:pre_end) - adoptmij_time);
             ind = ind+interval;
         else
         end
     end
-%     rownum(row_ind,1) = member_id;
-%     rownum(row_ind,2) = ind-1;
-%     row_ind = row_ind +1;
-    if i >=55
-        break
-    end
+%     if i >=55
+%         break
+%     end
 end
 
 member_p = member_p(1:(ind-1));
@@ -134,15 +141,12 @@ sum(row_num)
 save('row_num.mat','row_num');
 save('row_mid.mat','row_mid');
 
-%%
-% diffusion_year = zeros(T,J);
-% for i = 1:7
-%     ind = (i-1)*52+1;
-%     year_adopt = sum(diffusion_jt(ind:ind+51,:),1);
-%     diffusion_year(ind:ind+51,:) = repmat(year_adopt,52,1);
-% end
-% year_adopt_8th = sum(diffusion_jt(365:423,:),1);
-% diffusion_year(365:423,:) = repmat(year_adopt_8th,59,1);
+
+
+
+
+
+
 
 
 
