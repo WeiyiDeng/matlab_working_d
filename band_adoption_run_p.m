@@ -54,7 +54,7 @@ diary off
 %     X = imat(:,[6 7]);
 %     y = imat(:,5);
 %     beta_0 = zeros(1,size(X,2)+1);
-%     [b, hessian, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll(X, y, beta_0);
+%     [b, hessian, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll_p(X, y, beta_0);
 % 
 %     b_store_p{i} = b;
 %     se_store_p{i} = standard_error';
