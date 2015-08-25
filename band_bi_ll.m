@@ -10,7 +10,7 @@ FV = IVs*bs;
 % exp_util = exp(const+FV);          % utility of choosing the product
 % prob=exp_util./(1+exp_util);
 exp_util = exp(-(const+FV));         % this is now the utility of the external good
-prob=1./(1+exp_util);
+prob=1./(1+exp_util);                % this is still the probability of choosing the product
 pmat = [prob 1-prob]; 
 pmat = pmat.*choice_dv;
 [r c p] = find(pmat);                                             % I*1
@@ -18,6 +18,23 @@ LL = -sum(log(p));                                                % 1*1
 
 % format long g
 % LL
+
+d = choice_dv(:,1)-prob;                                % I*1
+Gt = repmat(d,1,size(b,2)).*[ones(size(IVs,1),1) IVs];    % I*k
+gr = sum(Gt,1);
+
+% d = pmat-choice_dv;                                % I*2
+% Gt = zeros(size(IVs,1), size(IVs,2)+1);
+% Gt(:,1) = sum([zeros(size(IVs,1),1) -ones(size(IVs,1),1)].*d, 2);
+% for i = 1:size(IVs,2)
+%     Gt(:,i+1) = sum([zeros(size(IVs,1),1) -IVs(:,i)].*d, 2);
+% end
+% gr = sum(Gt,1);
+
+% % w: hessian not working, why ??
+% H = inv(Gt'*Gt);                          % H is actually the inverse of B here (B is approaching -Ht asymptotically)
+% disp(gr);
+% se = sqrt(diag(H));                      % H is the covariance matrix here ?
 
 %  p_all = utility_all./repmat(sum(utility_all,2),1,J);
 %  d = p_all-choice_dv;                     % beware the sequence of what minus what !!

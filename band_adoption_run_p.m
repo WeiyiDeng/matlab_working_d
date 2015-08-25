@@ -1,5 +1,6 @@
 clc
-clear all
+clear
+% clear all
 
 % diary('wwdiary.txt')
 
@@ -16,7 +17,7 @@ y = matp(:,5);
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+1);
-beta_0 = [-6 2.6 0];
+beta_0 = [0 0 0]
 [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll_p(X, y, beta_0);
 
 save('b.mat','b') ;
