@@ -18,17 +18,19 @@ y = matp(:,5);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+1);
 beta_0 = [0 0 0]
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag] = band_runbi_ll_p(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
 save('t_stat.mat','t_stat') ;
 save('exit_flag.mat','exit_flag') ;
 
+display(exit_flag)
 display(b)
 % display(standard_error)
 display(t_stat)
 display(grad)
+display(output)
 
 diary off 
 
