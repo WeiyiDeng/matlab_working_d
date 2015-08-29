@@ -140,15 +140,47 @@ sum(row_num)
 
 save('row_num.mat','row_num');
 save('row_mid.mat','row_mid');
+% csvwrite('row_num.csv',row_num);
+% csvwrite('row_mid.csv',row_mid);
 
+%% create member dummies
+load('matp.mat');
+matp_len = size(matp,1);
+week_diff_for_d = matp(:,7);
+clearvars matp
 
+load('row_num.mat')
+load('row_mid.mat')
+members_for_d = csvread('members_for_dummies.csv');
 
+row_cumsum = cumsum(row_num,2);
 
+% w = sparse([3:5 7],ones(1,4).*2,1,10,5);
+% ww = repmat(w,2,1);                % after repmat still a sparse matrix
+% www = w*rand(5);                   % after matrix mutiplication becomes a solid matrix 
 
+members_rind = [];
+dummies_cind = [];
+num_ind = 1
+for i = 1:size(members_for_d,1)
+    [r c v] = find(row_mid == members_for_d(i,1));
+    start_ind = row_cumsum(c-1)+1;
+    end_ind = row_cumsum(c);
+    members_rind = [members_rind start_ind:end_ind];
+    dummies_cind = [dummies_cind ones(1,length(start_ind:end_ind)).*num_ind];
+    num_ind = num_ind+1;
+end
 
+member_dummies = sparse(members_rind,dummies_cind,1,matp_len,size(members_for_d,1));
 
+save('member_dummies.mat','member_dummies');
 
+member_dummies_week_d = member_dummies;
+for i = 1:size(member_dummies_week_d,2)
+    member_dummies_week_d(:,i) = member_dummies_week_d(:,i).*week_diff_for_d;
+end
 
+save('member_dummies_week_d.mat','member_dummies_week_d');
 
 
 

@@ -1,6 +1,6 @@
 clc
-clear
-% clear all
+% clear
+clear all
 
 % diary('wwdiary.txt')
 
@@ -11,13 +11,21 @@ diary(resultsfilename);
 % load('matp_b.mat');
 load('matp.mat');
 % mat1 = csvread('imat4474.csv');
+load('member_dummies.mat');
+load('member_dummies_week_d.mat');
 
-X = matp(:,[6 7]);
+% matp(:,6) = matp(:,6)-mean(matp(:,6));
+% matp(:,7) = matp(:,7)-mean(matp(:,7));
+% matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
+% matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
+
+X = [matp(:,[6 7]) member_dummies member_dummies_week_d];
 y = matp(:,5);
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
-% beta_0 = zeros(1,size(X,2)+1);
-beta_0 = [0 0 0]
+beta_0 = zeros(1,size(X,2)+1);
+% beta_0 = [-100 100 -10]
+% beta_0 = [-5.6814 2.6098 -0.0040]
 [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
 
 save('b.mat','b') ;
@@ -25,7 +33,6 @@ save('standard_error.mat','standard_error') ;
 save('t_stat.mat','t_stat') ;
 save('exit_flag.mat','exit_flag') ;
 
-display(exit_flag)
 display(b)
 % display(standard_error)
 display(t_stat)
