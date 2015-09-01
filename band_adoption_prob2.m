@@ -157,7 +157,7 @@ row_cumsum = cumsum(row_num,2);
 
 % w = sparse([3:5 7],ones(1,4).*2,1,10,5);
 % ww = repmat(w,2,1);                % after repmat still a sparse matrix
-% www = w*rand(5);                   % after matrix mutiplication becomes a solid matrix 
+% www = w*rand(5);                   % after matrix mutiplication becomes a dense matrix 
 
 members_rind = [];
 dummies_cind = [];
@@ -182,5 +182,24 @@ end
 
 save('member_dummies_week_d.mat','member_dummies_week_d');
 
+%% friend and band obs overlaps
+row_ind = 1
+row_fid = [];
+row_interval = [];
+new_row = matp(1,1);
+for i = 2:size(matp,1)
+    old_row = new_row;
+    new_row = matp(i,2);
+    if new_row == old_row
+        row_ind = row_ind + 1;
+    else
+        row_fid = [row_fid old_row];
+        row_interval = [row_interval row_ind];
+        row_ind = 1;
+    end
+end
+row_fid = [row_fid new_row];
+row_interval = [row_interval row_ind];
 
-
+save('row_fid.mat','row_fid');
+save('row_interval.mat','row_interval');

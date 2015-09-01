@@ -19,14 +19,16 @@ load('member_dummies_week_d.mat');
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
-X = [matp(:,[6 7]) member_dummies member_dummies_week_d];
+X = matp(:,[6 7]);
 y = matp(:,5);
+dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
-beta_0 = zeros(1,size(X,2)+1);
+% beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
+beta_0 = zeros(1,size(X,2))
 % beta_0 = [-100 100 -10]
 % beta_0 = [-5.6814 2.6098 -0.0040]
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
@@ -38,6 +40,8 @@ display(b)
 display(t_stat)
 display(grad)
 display(output)
+
+m = grad'*(-inv(hessian))*grad;          % convergence criterion of Train
 
 diary off 
 

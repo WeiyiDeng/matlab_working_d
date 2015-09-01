@@ -1,5 +1,5 @@
-function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0)
-global I J choice_dv IVs se T
+function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
+global I J choice_dv IVs dummies se T
 
 % I = 10000
 % J = 2
@@ -13,6 +13,7 @@ global I J choice_dv IVs se T
 % IVs = [IV1 IV2];
 IVs = X;
 
+% dummies = dummy_X;
 % b0 = 7;
 % % b0 = repmat(b0,I*T,1);
 % 
@@ -36,7 +37,7 @@ beta0 = beta_0;
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off')
 options = optimset('Display','iter-detailed','LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-7, 'TolX',1e-6, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);   %, 'FinDiffType', 'central');
 
-[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll,beta0,options);
+[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_p,beta0,options);
 
 % disp(['constant ' num2str(b(1)) '']);
 % disp(['coefficients ' num2str(b(2:end)) '']);
