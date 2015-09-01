@@ -38,11 +38,11 @@ LL = -sum(log(p));                                                % 1*1
 % gr = d'*[ones(I,1) IVs];                          % 1*k
 % gr = -gr;                                                   % w: why reverse ??
 % 
-% H = (repmat(prob.*(1-prob),1,K+1).*[ones(I,1) IVs])'*[ones(I,1) IVs];
+H = (repmat(prob.*(1-prob),1,K+1).*[ones(I,1) IVs])'*[ones(I,1) IVs];
 
-% d = prob - choice_dv(:,1);                                % I*1        w: reverse?    
-% Gt = repmat(d,1,size(b,2)).*[ones(size(IVs,1),1) IVs];    % I*k
-% gr = sum(Gt,1);
+d = prob - choice_dv(:,1);                                % I*1        w: reverse?    
+Gt = repmat(d,1,size(b,2)).*[ones(size(IVs,1),1) IVs];    % I*k
+gr = sum(Gt,1);
 
 % small_value = (2.*rand(1,3)-1)*0.0000005;
 % gr = sum(Gt,1).*(1+small_value);

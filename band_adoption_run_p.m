@@ -10,9 +10,24 @@ diary(resultsfilename);
 
 % load('matp_b.mat');
 load('matp.mat');
+
+% % w: draw a small random sample from the obs 
+% temp1=rand(size(matp,1),1)>.985;     
+% matp=matp(  matp(:,5)==1 | (matp(:,5)==0 &  temp1 ), :);
+% matp=matp(rand(size(matp,1),1)>.95, :);
+% sum(matp(:,5)==1)
+
+% num = 200
+% rand_vector = rand(num,1);
+% y_simu = zeros(num,1);
+% y_simu(rand_vector>0.5) = 1;
+% 
+% matp = zeros(num,7);
+% matp(:,5) = y_simu;
+
 % mat1 = csvread('imat4474.csv');
-load('member_dummies.mat');
-load('member_dummies_week_d.mat');
+% load('member_dummies.mat');
+% load('member_dummies_week_d.mat');
 
 % matp(:,6) = matp(:,6)-mean(matp(:,6));
 % matp(:,7) = matp(:,7)-mean(matp(:,7));
@@ -21,14 +36,15 @@ load('member_dummies_week_d.mat');
 
 X = matp(:,[6 7]);
 y = matp(:,5);
-dummy_X = [member_dummies member_dummies_week_d];
+% dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-beta_0 = zeros(1,size(X,2))
+beta_0 = zeros(1,size(X,2)+1)
 % beta_0 = [-100 100 -10]
 % beta_0 = [-5.6814 2.6098 -0.0040]
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
+% [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;

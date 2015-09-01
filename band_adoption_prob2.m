@@ -84,7 +84,7 @@ for i = 1:size(friendlist,1)                                         % i here  i
         adoptmij_time = band_adopt_mat(member_id, j);
         if adoptfij_time~=0 && adoptmij_time~=0
             pre_start = max([timesplit(friend_id,2) bandtime(j,2)]);
-            pre_end = min([timesplit(friend_id,4) bandtime(j,3)]);
+            pre_end = min([timesplit(friend_id,4) bandtime(j,3)]);        % still overlap period between friend obs and band obs ??
             interval = pre_end - pre_start +1;
             member_p(ind:ind+interval-1) = member_id;
             friend_p(ind:ind+interval-1) = friend_id;
