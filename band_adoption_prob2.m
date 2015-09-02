@@ -63,8 +63,8 @@ timesplit(:,2) = timesplit(:,2)-old_bandt;
 timesplit(:,3) = timesplit(:,3)-old_bandt;
 timesplit(:,4) = timesplit(:,4)-old_bandt;
 
-largeNum_p = 68000000
-% largeNum_p = 600000
+% largeNum_p = 68000000
+largeNum_p = 600000
 
 member_p = zeros(largeNum_p,1);
 friend_p = zeros(largeNum_p,1);
@@ -72,8 +72,9 @@ band_p = zeros(largeNum_p,1);
 timeobs = zeros(largeNum_p,1);
 DV = zeros(largeNum_p,1);
 prob_adopt_week = zeros(largeNum_p,1);
-abs_week_diff = zeros(largeNum_p,1);
-
+% abs_week_diff = zeros(largeNum_p,1);
+new_week_diff = zeros(largeNum_p,1);
+A_week_ijt = zeros(largeNum_p,1);
 
 ind = 1;
 for i = 1:size(friendlist,1)                                         % i here  is the row num of friendlist
@@ -92,14 +93,21 @@ for i = 1:size(friendlist,1)                                         % i here  i
             timeobs(ind:ind+interval-1) = pre_start:pre_end;
             DV(ind+(adoptfij_time-pre_start)) = 1;
             prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
-            abs_week_diff(ind:ind+interval-1) = abs((pre_start:pre_end) - adoptmij_time);
+            week_diff = (pre_start:pre_end) - adoptmij_time;
+            week_diff_rep = week_diff;
+%             abs_week_diff(ind:ind+interval-1) = abs(week_diff);
+            week_diff(week_diff<0) = 0;
+            new_week_diff(ind:ind+interval-1) = week_diff;
+            week_diff_rep(week_diff_rep>=0) = 1;
+            week_diff_rep(week_diff_rep<0) = 0;
+            A_week_ijt(ind:ind+interval-1) = week_diff_rep;
             ind = ind+interval;
         else
         end
     end
-%     if i >=55
-%         break
-%     end
+    if i >=55
+        break
+    end
 end
 
 member_p = member_p(1:(ind-1));
@@ -108,11 +116,14 @@ band_p = band_p(1:(ind-1));
 timeobs = timeobs(1:(ind-1));
 DV = DV(1:(ind-1));
 prob_adopt_week = prob_adopt_week(1:(ind-1));
-abs_week_diff = abs_week_diff(1:(ind-1));
+% abs_week_diff = abs_week_diff(1:(ind-1));
+new_week_diff = new_week_diff(1:(ind-1));
+A_week_ijt = A_week_ijt(1:(ind-1));
 
 display('save as mat')
 
-matp = [member_p friend_p band_p timeobs DV prob_adopt_week abs_week_diff];
+% matp = [member_p friend_p band_p timeobs DV prob_adopt_week abs_week_diff];
+matp = [member_p friend_p band_p timeobs DV prob_adopt_week new_week_diff A_week_ijt];
 % clearvars -EXCEPT matp
 save('matp.mat','matp', '-v7.3') ;
 % csvwrite('matp.csv',matp);
@@ -183,6 +194,7 @@ end
 save('member_dummies_week_d.mat','member_dummies_week_d');
 
 %% friend and band obs overlaps
+load('matp.mat');
 row_ind = 1
 row_fid = [];
 row_interval = [];

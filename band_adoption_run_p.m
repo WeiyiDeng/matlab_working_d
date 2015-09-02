@@ -1,6 +1,6 @@
 clc
-% clear
-clear all
+clear
+% clear all
 
 % diary('wwdiary.txt')
 
@@ -34,13 +34,15 @@ load('matp.mat');
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
-X = matp(:,[6 7]);
+X = matp(:,[6 7 8]);
 y = matp(:,5);
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-beta_0 = zeros(1,size(X,2)+1)
+% beta_0 = zeros(1,size(X,2)+1);
+% beta_0 = zeros(1,size(X,2)+2);
+beta_0 = [0 2 2 0 0]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-5.6814 2.6098 -0.0040]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
