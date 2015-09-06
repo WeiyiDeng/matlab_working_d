@@ -12,5 +12,17 @@ plot(x,y)
 hold off
 
 x = 0:0.2:15;
-y = gampdf(x,2,1);
+y = gampdf(x,2,0);
 plot(x,y)
+hold off
+
+x = 0:0.2:30;
+for k = 0:10
+    for theta = 1:5
+        y = gampdf(x,k,theta);
+        plot(x,y)
+        hold on
+    end
+end
+hold off
+    

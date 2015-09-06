@@ -20,7 +20,9 @@ bs = b(4:end)';
 % chi-square dist can be considered as a generalization of gamma distribution, which can be extended to non integer values
 % week_IV = IVs(:,3).*chi2pdf(IVs(:,2),b(2));     
 week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
+% week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
 FV = [IVs(:,1) week_IV]*bs;
+% FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
 % bs_d = b(2+size(IVs,2):end);
 % D = zeros(I,1);

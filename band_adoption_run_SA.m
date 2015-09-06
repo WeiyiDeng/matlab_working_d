@@ -1,6 +1,6 @@
 clc
-clear
-% clear all
+% clear
+clear all
 
 % diary('wwdiary.txt')
 
@@ -42,27 +42,34 @@ y = matp(:,5);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
 % beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
-beta_0 = [0 1 2 0 -0.007]
+% beta_0 = [0 1 2 0 -0.007]
+beta_0 = [-6.1572    3.8147    0.1794    3.4866    1.8069]
+
+lb = [-10 0.01 0.01 0 -1]
+ub = [0 3 10 5 5]
+
 % beta_0 = [0 1 2 0]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-5.6814 2.6098 -0.0040]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
+% [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
+[b,fval,exit_flag,output,beta_hist] = band_runbi_ll_SA(X, y, beta_0, lb, ub);
 
 save('b.mat','b') ;
-save('standard_error.mat','standard_error') ;
-save('t_stat.mat','t_stat') ;
+% save('standard_error.mat','standard_error') ;
+% save('t_stat.mat','t_stat') ;
 save('exit_flag.mat','exit_flag') ;
 
 display(b)
 % display(standard_error)
-display(t_stat)
-display(grad)
+% display(t_stat)
+% display(grad)
 display(output)
 
-m = grad'*(-inv(hessian))*grad;          % convergence criterion of Train
+RandStream.getGlobalStream.State = output.rngstate.state;         % reset state of the random number generator
+% m = grad'*(-inv(hessian))*grad;          % convergence criterion of Train
 
-diary off 
+diary off
 
 %%
 % load('row_mid.mat');
