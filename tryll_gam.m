@@ -2,10 +2,15 @@ clc
 clear all
 
 load('matp.mat');
-% matlabpool local 2
+
+if matlabpool('size') == 0
+    matlabpool local 2
+end
 
 X = matp(:,[6 7 8]);
 y = matp(:,5);
+
+clearvars matp
 
 IVs = X;
 choice_dv = [y 1-y];
@@ -23,16 +28,17 @@ b = [-6.1474 0.6 4 3.1975 2];
 const = b(1);
 bs = b(4:end)';
 
-% interval = length(IVs(:,2))/num_workers;
-% ind = interval;
-
 week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
-% week_IV = zeros(IVs(:,2),1);
-% parfor i = 1:length(IVs(:,2))
-%     week_IV(i) = IVs(i,3)*gampdf(IVs(i,2),b(2),b(3));
+
+% WD_IV = IVs(:,2);
+% gamma_trans = zeros(length(WD_IV),1);
+% parfor i = 1:length(WD_IV)
+%     gamma_trans(i) = gampdf(WD_IV(i),b(2),b(3));
 % end
+% week_IV = IVs(:,3).*gamma_trans;
     
 FV = [IVs(:,1) week_IV]*bs;
+clearvars week_IV WD_IV gamma_trans
 
 exp_util = exp(-(const+FV));         % this is now the utility of the external good
 prob=1./(1+exp_util);                % this is still the probability of choosing the product
@@ -47,3 +53,5 @@ toc
 % values = IVs(ind,2);
 % 
 % gampdf(IVs(ind(1),2),0.6,4)
+
+matlabpool CLOSE
