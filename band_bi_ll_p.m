@@ -19,10 +19,22 @@ bs = b(4:end)';
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
 % chi-square dist can be considered as a generalization of gamma distribution, which can be extended to non integer values
 % week_IV = IVs(:,3).*chi2pdf(IVs(:,2),b(2));     
-week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
+% week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
+
+week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
+
+% WD_IV = IVs(:,2);
+% gamma_trans = zeros(length(WD_IV),1);
+% parfor i = 1:length(WD_IV)
+%     gamma_trans(i) = gampdf(WD_IV(i),b(2),b(3));            % w: cpu stucked here, seems to be slower with separate indices. Why?
+% end
+% week_IV = IVs(:,3).*gamma_trans;
+
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
-FV = [IVs(:,1) week_IV]*bs;
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
+
+FV = [IVs(:,1) week_IV]*bs;
+clearvars week_IV WD_IV gamma_trans
 
 % bs_d = b(2+size(IVs,2):end);
 % D = zeros(I,1);

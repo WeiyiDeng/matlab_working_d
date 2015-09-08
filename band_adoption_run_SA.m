@@ -11,6 +11,10 @@ diary(resultsfilename);
 % load('matp_b.mat');
 load('matp.mat');
 
+% if matlabpool('size') == 0
+%     matlabpool local 2
+% end
+
 % % w: draw a small random sample from the obs 
 % temp1=rand(size(matp,1),1)>.985;     
 % matp=matp(  matp(:,5)==1 | (matp(:,5)==0 &  temp1 ), :);
@@ -36,6 +40,9 @@ load('matp.mat');
 
 X = matp(:,[6 7 8]);
 y = matp(:,5);
+
+clearvars matp
+
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -43,7 +50,8 @@ y = matp(:,5);
 % beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
-beta_0 = [-6.1572    3.8147    0.1794    3.4866    1.8069]
+% beta_0 = [-6.1572    3.8147    0.1794    3.4866    1.8069]
+beta_0 = [-6.1476    1.9194    2.7917    3.1376    2.5191]
 
 lb = [-10 0.01 0.01 0 -1]
 ub = [0 3 10 5 5]
@@ -53,7 +61,7 @@ ub = [0 3 10 5 5]
 % beta_0 = [-5.6814 2.6098 -0.0040]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
-[b,fval,exit_flag,output,beta_hist] = band_runbi_ll_SA(X, y, beta_0, lb, ub);
+[b,fval,exit_flag,output] = band_runbi_ll_SA(X, y, beta_0, lb, ub);
 
 save('b.mat','b') ;
 % save('standard_error.mat','standard_error') ;
@@ -68,6 +76,8 @@ display(output)
 
 RandStream.getGlobalStream.State = output.rngstate.state;         % reset state of the random number generator
 % m = grad'*(-inv(hessian))*grad;          % convergence criterion of Train
+
+% matlabpool CLOSE
 
 diary off
 

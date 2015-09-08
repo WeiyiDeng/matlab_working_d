@@ -40,6 +40,11 @@ y = matp(:,5);
 IVs = X;
 choice_dv = [y 1-y];
 
+plus = zeros(length(choice_dv),1);
+plus(IVs(:,2)==0)=0.01;               % w: change all 0s to 0.01s, LL increases (for gamma parameter k > 1) ? 
+IVs(:,2) = IVs(:,2)+plus;
+clearvars plus matp
+
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -47,9 +52,17 @@ choice_dv = [y 1-y];
 % beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 
-b_k = 0:0.5:5;
-b_theta = 0:1:10;
-b_wd = 0:0.2:2;                   % 0.2495
+% b_k = 0:0.5:5;
+% b_theta = 0:1:10;
+% b_wd = 0:0.2:2;     
+
+% b_k = 0.01:0.5:2.01;
+% b_theta = 0.01:1:10.01;
+% b_wd = 0:1:4;                   % 0.2495
+
+b_k = 0.01:0.5:4.01;
+b_theta = 0.01:1:7.01;
+b_wd = 2;    
 
 display('LL')
 
@@ -157,5 +170,40 @@ parameters = [b_k(i) b_theta(j) b_wd(d)]
 % save('se_store_p.mat','se_store_p') ;
 % save('tstat_store_p.mat','tstat_store_p') ;
 % save('est_exitflag_p.mat','est_exitflag_p') ;
-   
+
+b_k = 0:0.5:5;
+b_theta = 0:1:10;
+b_wd = 0:0.2:4;  
+
+load('ll_cube_0.01_2.01_0.01_10.01_0_4.mat')
+ll_cube3 = ll_cube;
+
+load('ll_cube_0_5_0_10_0_2.mat')
+ll_cube2 = ll_cube;
+
+N = NaN(size(ll_cube2,1),size(ll_cube2,2),size(ll_cube2,3));
+ll_combine = cat(3,ll_cube2,N);
+
+for i = 1:5
+    ll_combine(1:5,:,(i-1)*5+1) = ll_cube3(:,:,i);
+end
+
+[mv,id] = max(ll_combine(:));
+[i,j,d] = ind2sub(size(ll_combine),id)
+
+surf(ll_combine(:,:,d))
+parameters = [b_k(i) b_theta(j) b_wd(d)]
+
+% % no need for this, can just use A(A>0.5)=1
+% k = find(ll_combine<-1300000);
+% [i,j,d] = ind2sub(size(ll_combine),k);
+% for ind = 1:length(k)
+%     ll_combine(i(ind),j(ind),d(ind))=NaN;
+% end
+ll_combine(ll_combine<-1250000)=NaN;
+[mv,id] = max(ll_combine(:));
+[i,j,d] = ind2sub(size(ll_combine),id)
+ll_combine(i,j,d)
+surf(ll_combine(:,:,d))
     
+% surf(ll_combine(3:11,2:11,11))

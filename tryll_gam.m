@@ -28,14 +28,14 @@ b = [-6.1474 0.6 4 3.1975 2];
 const = b(1);
 bs = b(4:end)';
 
-week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
+% week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
 
-% WD_IV = IVs(:,2);
-% gamma_trans = zeros(length(WD_IV),1);
-% parfor i = 1:length(WD_IV)
-%     gamma_trans(i) = gampdf(WD_IV(i),b(2),b(3));
-% end
-% week_IV = IVs(:,3).*gamma_trans;
+WD_IV = IVs(:,2);
+gamma_trans = zeros(length(WD_IV),1);
+parfor i = 1:length(WD_IV)
+    gamma_trans(i) = gampdf(WD_IV(i),b(2),b(3));
+end
+week_IV = IVs(:,3).*gamma_trans;
     
 FV = [IVs(:,1) week_IV]*bs;
 clearvars week_IV WD_IV gamma_trans

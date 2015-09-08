@@ -1,5 +1,5 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b,fval,exit_flag,output,beta_hist] = band_runbi_ll_SA(X, y, beta_0, lb, ub)
+function [b,fval,exit_flag,output] = band_runbi_ll_SA(X, y, beta_0, lb, ub)
 global I J choice_dv IVs dummies se T b_best ll_best
 
 % I = 10000
@@ -72,8 +72,6 @@ options = saoptimset('Display','iter','DisplayInterval',400,'OutputFcns',@beta_i
 % disp(['t statistics ' num2str(t_stat) '']);
 
 exit_flag = exitflag;
-
-beta_hist = b_hist;
 
 % real_bs = [b0(1) b1(1) b2(1)];
 % disp(real_bs)
