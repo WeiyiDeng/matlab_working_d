@@ -10,10 +10,10 @@ I = size(choice_dv,1);
 
 const = b(1);
 
-bs = b(4:end)';
-% bs = b(2:end)';
+% bs = b(4:end)';
+bs = b(2:end)';
 % bs = b(2:1+size(IVs,2))';
-% FV = IVs*bs;
+FV = IVs*bs;
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -21,7 +21,7 @@ bs = b(4:end)';
 % week_IV = IVs(:,3).*chi2pdf(IVs(:,2),b(2));     
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
 
-week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
+% week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
 
 % WD_IV = IVs(:,2);
 % gamma_trans = zeros(length(WD_IV),1);
@@ -33,8 +33,8 @@ week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
-FV = [IVs(:,1) week_IV]*bs;
-clearvars week_IV WD_IV gamma_trans
+% FV = [IVs(:,1) week_IV]*bs;
+% clearvars week_IV WD_IV gamma_trans
 
 % bs_d = b(2+size(IVs,2):end);
 % D = zeros(I,1);

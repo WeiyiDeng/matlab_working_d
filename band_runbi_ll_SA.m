@@ -16,10 +16,10 @@ IVs = X;
 
 choice_dv = [y 1-y];
 
-plus = zeros(length(choice_dv),1);
-plus(IVs(:,2)==0)=0.01;
-IVs(:,2) = IVs(:,2)+plus;
-clearvars plus
+% plus = zeros(length(choice_dv),1);
+% plus(IVs(:,2)==0)=0.01;
+% IVs(:,2) = IVs(:,2)+plus;
+% clearvars plus
 
 % dummies = dummy_X;
 % b0 = 7;

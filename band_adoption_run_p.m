@@ -1,6 +1,6 @@
 clc
-clear
-% clear all
+% clear
+clear all
 
 % diary('wwdiary.txt')
 
@@ -10,6 +10,11 @@ diary(resultsfilename);
 
 % load('matp_b.mat');
 load('matp.mat');
+
+week1_dummy = matp(:,7);
+% sum(week1_dummy==1)
+week1_dummy(week1_dummy~=1)=0;
+matp(:,7) = week1_dummy;
 
 % % w: draw a small random sample from the obs 
 % temp1=rand(size(matp,1),1)>.985;     
@@ -34,15 +39,18 @@ load('matp.mat');
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
-X = matp(:,[6 7 8]);
+% X = matp(:,[6 7 8]);
+X = matp(:,[6 7]);
 y = matp(:,5);
+
+clearvars matp
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-% beta_0 = zeros(1,size(X,2)+1);
+beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
-beta_0 = [0 1 2 0 -0.007]
+% beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [0 1 2 0]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-5.6814 2.6098 -0.0040]

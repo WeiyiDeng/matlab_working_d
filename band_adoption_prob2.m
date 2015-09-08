@@ -215,3 +215,10 @@ row_interval = [row_interval row_ind];
 
 save('row_fid.mat','row_fid');
 save('row_interval.mat','row_interval');
+
+%% week dummy
+load('matp.mat')
+week1_dummy = matp(:,7);
+% sum(week1_dummy==1)
+week1_dummy(week1_dummy~=1)=0;
+matp(:,7) = week1_dummy;
