@@ -12,8 +12,31 @@ diary(resultsfilename);
 load('matp.mat');
 
 week1_dummy = matp(:,7);
-% sum(week1_dummy==1)
+week1_dummy(week1_dummy==2)=1;
+week1_dummy(week1_dummy==3)=1;
 week1_dummy(week1_dummy~=1)=0;
+
+week2_dummy = matp(:,7);
+week2_dummy(week2_dummy==1)=0;
+week2_dummy(week2_dummy==4)=1;
+week2_dummy(week2_dummy==5)=1;
+week2_dummy(week2_dummy==6)=1;
+week2_dummy(week2_dummy~=1)=0;
+
+week3_dummy = matp(:,7);
+week3_dummy(week3_dummy==1)=0;
+week3_dummy(week3_dummy==7)=1;
+week3_dummy(week3_dummy==8)=1;
+week3_dummy(week3_dummy==9)=1;
+week3_dummy(week3_dummy~=1)=0;
+
+week4_dummy = matp(:,7);
+week4_dummy(week4_dummy==1)=0;
+week4_dummy(week4_dummy==10)=1;
+week4_dummy(week4_dummy==11)=1;
+week4_dummy(week4_dummy==12)=1;
+week4_dummy(week4_dummy~=1)=0;
+
 matp(:,7) = week1_dummy;
 
 % if matlabpool('size') == 0
@@ -43,27 +66,27 @@ matp(:,7) = week1_dummy;
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
-% X = matp(:,[6 7 8]);
-X = matp(:,[6 7]);
+X = [matp(:,[6 7])  week2_dummy week3_dummy week4_dummy];
+% X = matp(:,[6 7]);
 y = matp(:,5);
 
-clearvars matp
+clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy
 
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-beta_0 = zeros(1,size(X,2)+1);
+% beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1572    3.8147    0.1794    3.4866    1.8069]
 
-% beta_0 = [-6.1476    1.9194    2.7917    3.1376    2.5191]
+beta_0 = [ -6.1486    3.4752   -0.0653    0.2114   -0.0648   -0.4056]
 % lb = [-10 0.01 0.01 0 -1]
 % ub = [0 3 10 5 5]
 
-lb = [-10 0 -1]
-ub = [0 5 5]
+lb = [-10 0 -1 -1 -1 -1]
+ub = [0 5 5 5 5 5]
 
 % beta_0 = [0 1 2 0]
 % beta_0 = [-100 100 -10]
