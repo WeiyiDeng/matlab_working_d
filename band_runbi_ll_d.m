@@ -15,6 +15,8 @@ global I J choice_dv IVs se T
 IVs = X;
 
 dummies = dummy_X;
+% dummies = dummies.';
+
 % b0 = 7;
 % % b0 = repmat(b0,I*T,1);
 % 

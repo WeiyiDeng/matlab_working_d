@@ -39,7 +39,7 @@ FV = IVs*bs;
 % loop over columns, still too slow
 % bs_d = b(2+size(IVs,2):end)';
 % D = zeros(I,1);
-% dummies = dummies.';
+% % DELETE dummies = dummies.';          % w: did this step in the previous function         
 % parfor i = 1:size(dummies,2)
 %     [r c v] = find(dummies(:,i));
 %     D(i) = sum(v.*bs_d(r));          % avoid matrix multiplication in sparse matrix    
