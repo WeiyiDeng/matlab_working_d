@@ -1,6 +1,6 @@
 clc
-% clear
-clear all
+clear
+% clear all
 
 % diary('wwdiary.txt')
 
@@ -11,39 +11,143 @@ diary(resultsfilename);
 % load('matp_b.mat');
 load('matp.mat');
 
-week1_dummy = matp(:,7);
-week1_dummy(week1_dummy==2)=1;
-week1_dummy(week1_dummy==3)=1;
-week1_dummy(week1_dummy~=1)=0;
-
-week2_dummy = matp(:,7);
-week2_dummy(week2_dummy==1)=0;
-week2_dummy(week2_dummy==4)=1;
-week2_dummy(week2_dummy==5)=1;
-week2_dummy(week2_dummy==6)=1;
-week2_dummy(week2_dummy~=1)=0;
-
-week3_dummy = matp(:,7);
-week3_dummy(week3_dummy==1)=0;
-week3_dummy(week3_dummy==7)=1;
-week3_dummy(week3_dummy==8)=1;
-week3_dummy(week3_dummy==9)=1;
-week3_dummy(week3_dummy~=1)=0;
-
-week4_dummy = matp(:,7);
-week4_dummy(week4_dummy==1)=0;
-week4_dummy(week4_dummy==10)=1;
-week4_dummy(week4_dummy==11)=1;
-week4_dummy(week4_dummy==12)=1;
-week4_dummy(week4_dummy~=1)=0;
-
-% week2_dummy = matp(:,7);
-% % sum(week1_dummy==1)
+% week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;
-matp(:,7) = week1_dummy;
-% week2_dummy(week2_dummy~=2)=0;
+% 
+% week2_dummy = matp(:,7);
+% week2_dummy(week2_dummy==1)=0;
 % week2_dummy(week2_dummy==2)=1;
-% matp(:,8) = week2_dummy;
+% week2_dummy(week2_dummy~=1)=0;
+% 
+% week3_dummy = matp(:,7);
+% week3_dummy(week3_dummy==1)=0;
+% week3_dummy(week3_dummy==3)=1;
+% week3_dummy(week3_dummy~=1)=0;
+% 
+% week4_dummy = matp(:,7);
+% week4_dummy(week4_dummy==1)=0;
+% week4_dummy(week4_dummy==4)=1;
+% week4_dummy(week4_dummy~=1)=0;
+% 
+% week5_dummy = matp(:,7);
+% week5_dummy(week5_dummy==1)=0;
+% week5_dummy(week5_dummy==5)=1;
+% week5_dummy(week5_dummy~=1)=0;
+% 
+% week6_dummy = matp(:,7);
+% week6_dummy(week6_dummy==1)=0;
+% week6_dummy(week6_dummy==6)=1;
+% week6_dummy(week6_dummy~=1)=0;
+% 
+% week7_dummy = matp(:,7);
+% week7_dummy(week7_dummy==1)=0;
+% week7_dummy(week7_dummy==7)=1;
+% week7_dummy(week7_dummy~=1)=0;
+% 
+% week8_dummy = matp(:,7);
+% week8_dummy(week8_dummy==1)=0;
+% week8_dummy(week8_dummy==8)=1;
+% week8_dummy(week8_dummy~=1)=0;
+% 
+% week9_dummy = matp(:,7);
+% week9_dummy(week9_dummy==1)=0;
+% week9_dummy(week9_dummy==9)=1;
+% week9_dummy(week9_dummy~=1)=0;
+% 
+% week10_dummy = matp(:,7);
+% week10_dummy(week10_dummy==1)=0;
+% week10_dummy(week10_dummy==10)=1;
+% week10_dummy(week10_dummy~=1)=0;
+
+% week1_dummy = matp(:,7);
+% week1_dummy(week1_dummy==2)=1;
+% week1_dummy(week1_dummy==3)=1;
+% week1_dummy(week1_dummy==4)=1;
+% week1_dummy(week1_dummy==5)=1;
+% week1_dummy(week1_dummy~=1)=0;
+% 
+% week2_dummy = matp(:,7);
+% week2_dummy(week2_dummy==1)=0;
+% week2_dummy(week2_dummy==6)=1;
+% week2_dummy(week2_dummy==7)=1;
+% week2_dummy(week2_dummy==8)=1;
+% week2_dummy(week2_dummy==9)=1;
+% week2_dummy(week2_dummy==10)=1;
+% week2_dummy(week2_dummy~=1)=0;
+% 
+% week3_dummy = matp(:,7);
+% week3_dummy(week3_dummy==1)=0;
+% week3_dummy(week3_dummy==11)=1;
+% week3_dummy(week3_dummy==12)=1;
+% week3_dummy(week3_dummy==13)=1;
+% week3_dummy(week3_dummy==14)=1;
+% week3_dummy(week3_dummy==15)=1;
+% week3_dummy(week3_dummy~=1)=0;
+
+% week4_dummy = matp(:,7);
+% week4_dummy(week4_dummy==1)=0;
+% week4_dummy(week4_dummy==4)=1;
+% week4_dummy(week4_dummy==5)=1;
+% week4_dummy(week4_dummy==6)=1;
+% week4_dummy(week4_dummy==7)=1;
+% week4_dummy(week4_dummy==8)=1;
+% week4_dummy(week4_dummy~=1)=0;
+% 
+% week5_dummy = matp(:,7);
+% week5_dummy(week5_dummy==1)=0;
+% week5_dummy(week5_dummy==9)=1;
+% week5_dummy(week5_dummy==10)=1;
+% week5_dummy(week5_dummy==11)=1;
+% week5_dummy(week5_dummy==12)=1;
+% week5_dummy(week5_dummy==13)=1;
+% week5_dummy(week5_dummy~=1)=0;
+% 
+% week6_dummy = matp(:,7);
+% week6_dummy(week6_dummy==1)=0;
+% week6_dummy(week6_dummy==14)=1;
+% week6_dummy(week6_dummy==15)=1;
+% week6_dummy(week6_dummy==16)=1;
+% week6_dummy(week6_dummy==17)=1;
+% week6_dummy(week6_dummy==18)=1;
+% week6_dummy(week6_dummy~=1)=0;
+% 
+% week7_dummy = matp(:,7);
+% week7_dummy(week7_dummy==1)=0;
+% week7_dummy(week7_dummy==19)=1;
+% week7_dummy(week7_dummy==20)=1;
+% week7_dummy(week7_dummy==21)=1;
+% week7_dummy(week7_dummy==22)=1;
+% week7_dummy(week7_dummy==23)=1;
+% week7_dummy(week7_dummy~=1)=0;
+% 
+% week8_dummy = matp(:,7);
+% week8_dummy(week8_dummy==1)=0;
+% week8_dummy(week8_dummy==24)=1;
+% week8_dummy(week8_dummy==25)=1;
+% week8_dummy(week8_dummy==26)=1;
+% week8_dummy(week8_dummy==27)=1;
+% week8_dummy(week8_dummy==28)=1;
+% week8_dummy(week8_dummy~=1)=0;
+% 
+% week9_dummy = matp(:,7);
+% week9_dummy(week9_dummy==1)=0;
+% week9_dummy(week9_dummy==29)=1;
+% week9_dummy(week9_dummy==30)=1;
+% week9_dummy(week9_dummy==31)=1;
+% week9_dummy(week9_dummy==32)=1;
+% week9_dummy(week9_dummy==33)=1;
+% week9_dummy(week9_dummy~=1)=0;
+% 
+% week10_dummy = matp(:,7);
+% week10_dummy(week10_dummy==1)=0;
+% week10_dummy(week10_dummy==34)=1;
+% week10_dummy(week10_dummy==35)=1;
+% week10_dummy(week10_dummy==36)=1;
+% week10_dummy(week10_dummy==37)=1;
+% week10_dummy(week10_dummy==38)=1;
+% week10_dummy(week10_dummy~=1)=0;
+
+% matp(:,7) = week1_dummy;
 
 % % w: draw a small random sample from the obs 
 % temp1=rand(size(matp,1),1)>.985;     
@@ -68,21 +172,24 @@ matp(:,7) = week1_dummy;
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
-X = [matp(:,[6 7])  week2_dummy week3_dummy week4_dummy];
+% X = [matp(:,[6 7]) week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy week9_dummy week10_dummy];
+X = matp(:,[6 7 8]);
 % X = matp(:,[6 7]);
 y = matp(:,5);
 
-clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy
+clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-beta_0 = zeros(1,size(X,2)+1);
+% beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
-% beta_0 = [0 1 2 0]
+% beta_0 = [-6.1668   27.4752    3.0187   12.7781]
+beta_0 = [-6.1668   100    3.0187   12.7781]
+% beta_0 = [-6.1668   1.08   27.5    3.0187   5];
 % beta_0 = [-100 100 -10]
-% beta_0 = [-5.6814 2.6098 -0.0040]
+% beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
 [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
 

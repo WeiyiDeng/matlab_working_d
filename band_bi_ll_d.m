@@ -1,5 +1,5 @@
-function [LL, gr, H] = band_bi_ll_p(b)
-global choice_dv IVs dummies se
+function [LL, gr, H] = band_bi_ll_d(b, dummies)
+global choice_dv IVs se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
 
@@ -12,9 +12,8 @@ const = b(1);
 
 % bs = b(4:end)';
 % bs = b(2:end)';
-bs = b(3:end)';
-% bs = b(2:1+size(IVs,2))';
-% FV = IVs*bs;
+bs = b(2:1+size(IVs,2))';
+FV = IVs*bs;
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -23,14 +22,6 @@ bs = b(3:end)';
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
 
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));
-% week_IV = gampdf(IVs(:,2),1.1,20);    % in the case when the first parameter of gamma is larger than 1, at x=0 the prob will be 0 anyway           
-
-% week_IV = IVs(:,3).*exppdf(IVs(:,2),b(2));
-% week_IV(IVs(:,2)<1)=0;
-
-triang_distr = @(x) (b(2)-x)*2/((b(2)-1)*(b(2)-1));
-week_IV = triang_distr(IVs(:,2));
-week_IV(IVs(:,2)<1 | IVs(:,2)>b(2))=0;
 
 % WD_IV = IVs(:,2);
 % gamma_trans = zeros(length(WD_IV),1);
@@ -42,16 +33,33 @@ week_IV(IVs(:,2)<1 | IVs(:,2)>b(2))=0;
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
-FV = [IVs(:,1) week_IV]*bs;
+% FV = [IVs(:,1) week_IV]*bs;
 % clearvars week_IV WD_IV gamma_trans
 
-% bs_d = b(2+size(IVs,2):end);
+% loop over columns, still too slow
+% bs_d = b(2+size(IVs,2):end)';
 % D = zeros(I,1);
-% for i = 1:size(dummies,1)
-%     D(i) = sum(dummies(i,:).*bs_d);       % avoid matrix multiplication in sparse matrix
+% dummies = dummies.';
+% parfor i = 1:size(dummies,2)
+%     [r c v] = find(dummies(:,i));
+%     D(i) = sum(v.*bs_d(r));          % avoid matrix multiplication in sparse matrix    
 % end
-%     
-% FV = FV+D;
+
+bs_d = b(2+size(IVs,2):end)';
+D = zeros(I,1);
+
+numc = 10;                        % number of chunks
+lenc = fix(I/numc);       % length of each chunk
+for i = 1:numc
+    D((i-1)*lenc+1:i*lenc) = dummies((i-1)*lenc+1:i*lenc,:)*bs_d;
+end
+if rem(I,numc)>0
+    D(i*lenc:end) = dummies(i*lenc:end,:)*bs_d;
+else
+end
+
+% clearvars dummies
+FV = FV+D;
 
 % exp_util = exp(const+FV);          % utility of choosing the product
 % prob=exp_util./(1+exp_util);

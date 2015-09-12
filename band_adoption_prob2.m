@@ -222,3 +222,30 @@ week1_dummy = matp(:,7);
 % sum(week1_dummy==1)
 week1_dummy(week1_dummy~=1)=0;
 matp(:,7) = week1_dummy;
+
+%% similar distributions
+hold off
+y = [0.4322    0.3299    0.2496    0.1784    0.1469    0.1049    0.0893    0.0792]
+x = [1:8].*5
+plot(x,y)
+hold on
+x = 0:1:40;
+% plot(x,gampdf(x,1.1,30));
+% plot(x,exppdf(x,30));
+% plot(x,exppdf(x,10));
+% plot(x,exppdf(x,50));
+plot(x,exppdf(x,27.5));          % same as gampdf(x,1,27.5)
+plot(x,gampdf(x,1.08,27.5));
+
+b = 100
+triang_distr = @(x) (b-x)*2/((b-1)*(b-1));
+y = triang_distr(x);
+y(x<1 | x>b)=0;
+plot(x,y);
+
+hold off
+x = 1:10
+y = [0.1742    0.1891    0.1542    0.1356    0.1285    0.1326    0.1384    0.1302    0.1151    0.1156]
+plot(x,y)
+
+
