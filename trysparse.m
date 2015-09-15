@@ -1,9 +1,7 @@
 % load('member_dummies.mat');
 
-% A = sparse([4:7],ones(1,4).*2,3,10,5);
-% b = rand(5,1);
-A = sparse([4:7],ones(1,4).*2,3,100000000,500);
-b = rand(500,1);
+A = sparse([4:7],ones(1,4).*2,3,10,5);
+b = rand(5,1);
 
 % direct multiplication
 tic

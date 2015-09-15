@@ -1,6 +1,6 @@
 clc
-clear
-% clear all
+% clear
+clear all
 
 % diary('wwdiary.txt')
 

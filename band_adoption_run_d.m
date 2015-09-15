@@ -11,6 +11,15 @@ diary(resultsfilename);
 % load('matp_b.mat');
 load('matp.mat');
 
+dummies_namelist = csvread('dummies5_namelist.csv');
+num_d = length(dummies_namelist)+1;
+b_wd = 1:num_d;
+
+temp = ones(size(matp,1),1);
+for i = 2:num_d
+    temp(matp(:,1)==dummies_namelist(i-1)) = i;
+end
+
 week1_dummy = matp(:,7);
 week1_dummy(week1_dummy==2)=1;
 week1_dummy(week1_dummy==3)=1;

@@ -230,12 +230,13 @@ x = [1:8].*5
 plot(x,y)
 hold on
 x = 0:1:40;
+plot(x,gampdf(x,0.9354,27.4738))
 % plot(x,gampdf(x,1.1,30));
 % plot(x,exppdf(x,30));
 % plot(x,exppdf(x,10));
 % plot(x,exppdf(x,50));
 plot(x,exppdf(x,27.5));          % same as gampdf(x,1,27.5)
-plot(x,gampdf(x,1.08,27.5));
+plot(x,gampdf(x,1,27.5));
 
 b = 100
 triang_distr = @(x) (b-x)*2/((b-1)*(b-1));
