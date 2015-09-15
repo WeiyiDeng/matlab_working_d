@@ -173,8 +173,8 @@ load('matp.mat');
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
 % X = [matp(:,[6 7]) week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy week9_dummy week10_dummy];
-X = matp(:,[6 7 8]);
-% X = matp(:,[6 7]);
+% X = matp(:,[6 7 8]);
+X = matp(:,[6 7]);
 y = matp(:,5);
 
 clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy
@@ -185,9 +185,8 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
+beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   27.4752    3.0187   12.7781]
-beta_0 = [-6.1668   100    3.0187   12.7781]
-% beta_0 = [-6.1668   1.08   27.5    3.0187   5];
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
