@@ -8,13 +8,15 @@ global se
 I = size(choice_dv,1);
 % K = size(IVs,2);
 
-const = b(1);
+% const = b(1);
+const = -6.1710;
 
 % bs = b(4:end)';
 % bs = b(2:end)';
 % bs = b(2:1+size(IVs,2))';
 % FV = IVs*bs;
-BP_X = IVs(:,1).*repmat(b(4),I,1);         % baseline probability of adopting a band at time t
+% BP_X = IVs(:,1).*repmat(b(4),I,1);         % baseline probability of adopting a band at time t
+BP_X = IVs(:,1).*repmat(3.0426,I,1);         % baseline probability of adopting a band at time t
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -22,13 +24,14 @@ BP_X = IVs(:,1).*repmat(b(4),I,1);         % baseline probability of adopting a 
 % week_IV = IVs(:,3).*chi2pdf(IVs(:,2),b(2));     
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
 
-week_IV = gampdf(IVs(:,2),b(2),b(3));
+week_IV = gampdf(IVs(:,2),0.9337,27.4738);
 % week_IV = gampdf(IVs(:,2),1.1,20);    % in the case when the first parameter of gamma is larger than 1, at x=0 the prob will be 0 anyway           
 % week_IV = IVs(:,3).*exppdf(IVs(:,2),b(2));
 week_IV(IVs(:,2)<1)=0;  
 
 % b_ds = b(5:end)';
-b_ds = [b(5) prev_bds b(6:end)]';
+% b_ds = [b(5) prev_bds b(6:end)]';
+b_ds = [b(1) prev_bds b(2:end)]';
 b_dummies = b_ds(temp);                       % I*1
 dummies_X = b_dummies.*week_IV;
 

@@ -12,7 +12,7 @@ diary(resultsfilename);
 load('matp.mat');
 
 % create temp indiviual dummy index
-dummies_namelist = csvread('dummies5_namelist.csv');
+dummies_namelist = csvread('dummies15_namelist.csv');
 num_d = length(dummies_namelist)+1;
 
 temp = ones(size(matp,1),1);
@@ -24,8 +24,8 @@ end
 % [r c v] = find(matp(:,1) == 7099);
 % unique(temp(r))
 
-num_new_d = num_d;
-% num_new_d = 5+1;
+% num_new_d = num_d;
+num_new_d = 10+1;                 % number of new individuals plus 1
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy==2)=1;
@@ -116,9 +116,10 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
 % beta_0 = zeros(1,size(X,2)+size(dummy_X,2)+1);
-beta_0 = [-6.1710    0.9337   27.4738    3.0426    zeros(1,num_new_d)];
-% beta_0 = zeros(1,num_new_d);
-prev_bds = [];                           % previously estimated dummy parameters, not including first one (all other members)
+% beta_0 = [-6.1710    0.9337   27.4738    3.0426    zeros(1,num_new_d)];  % not good, hessian matrix is singular, will not be able to estimate t-statistics
+beta_0 = ones(1,num_new_d).*12.7745
+% beta_0 = [13.2724   15.7243    5.6467    8.0134    0.6217   12.7157]
+prev_bds = [15.7237    5.6426    8.0137    0.6190   12.7171]             % previously estimated dummy parameters, not including first one (all other members)
 % beta_0 = zeros(1,size(X,2)+1);
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
