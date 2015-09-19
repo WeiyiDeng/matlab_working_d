@@ -293,6 +293,24 @@ clearvars innov_contin
 explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
 save('explor_contin.mat','explor_contin','-v7.3');
 
+%% standardize
+load('innov_contin.mat');
+innov_m = innov_contin(:,1);
+innov_f = innov_contin(:,3);
+innov_m = (innov_m-mean(innov_m))./std(innov_m);
+innov_f = (innov_f-mean(innov_f))./std(innov_f);
+innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
+save('innov_contin.mat','innov_contin','-v7.3');
+clearvars innov_contin
+
+load('explor_contin.mat');
+explor_m = explor_contin(:,1);
+explor_f = explor_contin(:,3);
+explor_m = (explor_m-mean(explor_m))./std(explor_m);
+explor_f = (explor_f-mean(explor_f))./std(explor_f);
+explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
+save('explor_contin.mat','explor_contin','-v7.3');
+
 %% cut into chunks
 clear all
 load('matp.mat');
