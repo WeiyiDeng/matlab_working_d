@@ -17,6 +17,13 @@ for k = 1:numc
     load(sprintf('E:\\Wei\\Graduate\\Matlab\\matfolder\\innov_contin_%d.mat',k));
     load(sprintf('E:\\Wei\\Graduate\\Matlab\\matfolder\\explor_contin_%d.mat',k));
     
+    C_innov = C_innov(:,1:4);
+    C_explor = C_explor(:,1:4);
+
+%     load(sprintf('C:\\Users\\etp21998@eur.nl\\matfolder\\matp_%d.mat',k));
+%     load(sprintf('C:\\Users\\etp21998@eur.nl\\matfolder\\innov_contin_%d.mat',k));
+%     load(sprintf('C:\\Users\\etp21998@eur.nl\\matfolder\\explor_contin_%d.mat',k));
+    
     %     IVs = [C_matp C_innov C_explor]
     const = b(1);
     bs = b(4:end)';
@@ -37,15 +44,15 @@ for k = 1:numc
     % week_IV = IVs(:,3).*exppdf(IVs(:,2),b(2));
     week_IV(C_matp(:,3)<1)=0;                  % when x equal to (or smaller than) 0 the variable is set to zero, not to be estimated
     
-    innov_WD_multip = zeros(size(C_innov));
-    for i = 1:size(C_innov,2);
-        innov_WD_multip(:,i) = C_innov(:,i).*week_IV;
-    end
-    
-    explor_WD_multip = zeros(size(C_explor));
-    for j = 1:size(C_explor,2);
-        explor_WD_multip(:,j) = C_explor(:,j).*week_IV;
-    end
+%     innov_WD_multip = zeros(size(C_innov));
+%     for i = 1:size(C_innov,2);
+%         innov_WD_multip(:,i) = C_innov(:,i).*week_IV;
+%     end
+%     
+%     explor_WD_multip = zeros(size(C_explor));
+%     for j = 1:size(C_explor,2);
+%         explor_WD_multip(:,j) = C_explor(:,j).*week_IV;
+%     end
     
     choice_dv = [C_matp(:,1) 1-C_matp(:,1)];
     
@@ -63,7 +70,9 @@ for k = 1:numc
     % week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
     % FV = [IVs(:,1) week_IV]*[bs; 0.07];
     
-    FV = [C_matp(:,2) week_IV C_innov innov_WD_multip C_explor explor_WD_multip]*bs;
+%     FV = [C_matp(:,2) week_IV C_innov innov_WD_multip C_explor explor_WD_multip]*bs;
+    FV = [C_matp(:,2) week_IV C_innov C_explor]*bs;
+%     FV = [C_matp(:,2) week_IV C_innov innov_WD_multip]*bs;
 %     FV = [C_matp(:,2) week_IV]*bs;
     % clearvars week_IV WD_IV gamma_trans
     
@@ -79,6 +88,9 @@ for k = 1:numc
     % prob=exp_util./(1+exp_util);
     exp_util = exp(-(const+FV));         % this is now the utility of the external good
     prob=1./(1+exp_util);                % this is still the probability of choosing the product
+    if sum(isnan(prob))>0
+        error('there is NaN')
+    end
     pmat = [prob 1-prob];
     pmat = pmat.*choice_dv;
     [r c p] = find(pmat);                                             % I*1

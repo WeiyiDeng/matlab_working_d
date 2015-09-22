@@ -293,23 +293,23 @@ clearvars innov_contin
 explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
 save('explor_contin.mat','explor_contin','-v7.3');
 
-%% standardize
-load('innov_contin.mat');
-innov_m = innov_contin(:,1);
-innov_f = innov_contin(:,3);
-innov_m = (innov_m-mean(innov_m))./std(innov_m);
-innov_f = (innov_f-mean(innov_f))./std(innov_f);
-innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
-save('innov_contin.mat','innov_contin','-v7.3');
-clearvars innov_contin
-
-load('explor_contin.mat');
-explor_m = explor_contin(:,1);
-explor_f = explor_contin(:,3);
-explor_m = (explor_m-mean(explor_m))./std(explor_m);
-explor_f = (explor_f-mean(explor_f))./std(explor_f);
-explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
-save('explor_contin.mat','explor_contin','-v7.3');
+% %% standardize
+% load('innov_contin.mat');
+% innov_m = innov_contin(:,1);
+% innov_f = innov_contin(:,3);
+% innov_m = (innov_m-mean(innov_m))./std(innov_m);
+% innov_f = (innov_f-mean(innov_f))./std(innov_f);
+% innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
+% save('innov_contin.mat','innov_contin','-v7.3');
+% clearvars innov_contin
+% 
+% load('explor_contin.mat');
+% explor_m = explor_contin(:,1);
+% explor_f = explor_contin(:,3);
+% explor_m = (explor_m-mean(explor_m))./std(explor_m);
+% explor_f = (explor_f-mean(explor_f))./std(explor_f);
+% explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
+% save('explor_contin.mat','explor_contin','-v7.3');
 
 %% cut into chunks
 clear all
@@ -364,3 +364,37 @@ if rem(I,numc)>0
 else
 end
 clearvars C_explor explor_contin
+
+%% VIF
+% load('matp.mat');
+load('innov_contin.mat');
+load('explor_contin.mat');
+% X = matp(:,6:7);
+X = [explor_contin(:,1:4) innov_contin(:,1:4)];
+R = corrcoef(X);
+VIF = diag(inv(R))'
+
+innov = csvread('EAi3.csv');
+explor = csvread('explorer3.csv');
+scatter(innov(:,2),explor)
+corr(innov(:,2),explor)
+
+load('members_in_mat.mat');
+
+innov_cut = innov(:,2)
+sth = members_in_mat;
+mytry1 = explor(sth);
+mytry2 = innov_cut(sth);
+corr(mytry1,mytry2)
+
+A = rand(100,1).*100;
+B = rand(100,1);
+corr(A,B)
+vecA = [];
+vecB = [];
+for i = 1:length(A)
+    rtimes = round(rand(1)*10000);
+    vecA = [vecA; repmat(A(i),rtimes,1)];
+    vecB = [vecB; repmat(B(i),rtimes,1)];
+end
+corr(vecA,vecB)

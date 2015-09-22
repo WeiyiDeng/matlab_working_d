@@ -196,7 +196,8 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780  zeros(1, size(innov_X,2)*2)]
-beta_0 = [-6.1646   1    27.4751    3.0197   12.7780  zeros(1, 24)]
+beta_0 = [-6.1646   1    27.4751    3.0197   12.7780  zeros(1, 8)]
+% beta_0 = [-6.1710    0.9337   27.4738    3.0426   12.7745  zeros(1, 8)]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   27.4752    3.0187   12.7781]
 % beta_0 = [-100 100 -10]
@@ -263,4 +264,6 @@ diary off
 % save('tstat_store_p.mat','tstat_store_p') ;
 % save('est_exitflag_p.mat','est_exitflag_p') ;
    
-    
+% if sum(isnan(llvector))>0
+% error('there is NaN')
+% end
