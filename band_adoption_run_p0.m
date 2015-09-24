@@ -187,13 +187,18 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
-beta_0 = [-6.1646   3.0197]
+
+
+% beta_0 = [-6.1646   3.0197]
+% beta_0 = 0
+
 % beta_0 = [-6.1646]
 % beta_0 = [-6.1668   27.4752    3.0187   12.7781]
 % beta_0 = [-100 100 -10]
+beta_0 = [0 0 0]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p0(X, y, beta_0);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;

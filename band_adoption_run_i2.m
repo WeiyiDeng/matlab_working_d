@@ -10,6 +10,9 @@ diary(resultsfilename);
 
 % load('matp_b.mat');
 load('matp.mat');
+load('innov_contin.mat');
+load('explor_contin.mat');
+
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;
@@ -175,10 +178,13 @@ load('matp.mat');
 % X = [matp(:,[6 7]) week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy week9_dummy week10_dummy];
 % X = matp(:,[6 7 8]);
 X = matp(:,[6 7]);
-% X = matp(:,6);
 y = matp(:,5);
 
-clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy
+innov_X = innov_contin(:,1);
+% explor_X = explor_contin(:,1);
+explor_X = [];
+
+clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy innov_contin explor_contin
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -187,13 +193,11 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
-beta_0 = [-6.1646   3.0197]
-% beta_0 = [-6.1646]
-% beta_0 = [-6.1668   27.4752    3.0187   12.7781]
+beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i2(X, y, beta_0, innov_X, explor_X);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;

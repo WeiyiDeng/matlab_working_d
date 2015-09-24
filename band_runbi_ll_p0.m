@@ -1,5 +1,5 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0)
+function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p0(X, y, beta_0)
 global I J dummies se T
 
 % I = 10000
@@ -41,9 +41,9 @@ beta0 = beta_0;
 
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off')
-options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-3, 'TolX',1e-14, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);   %, 'FinDiffType', 'central');
+options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-14, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);   %, 'FinDiffType', 'central');
 
-[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_p,beta0,options,IVs,choice_dv);
+[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_p0,beta0,options,IVs,choice_dv);
 
 % disp(['constant ' num2str(b(1)) '']);
 % disp(['coefficients ' num2str(b(2:end)) '']);

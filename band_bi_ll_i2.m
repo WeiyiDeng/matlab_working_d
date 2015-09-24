@@ -1,4 +1,5 @@
-function [LL, gr, H] = band_bi_ll_p(b,IVs,choice_dv)
+% function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
+function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -9,9 +10,9 @@ I = size(choice_dv,1);
 % K = size(IVs,2);
 
 const = b(1);
-% const = repmat(b(1),I,1);
 
-% bs = b(4:end)';
+bs = b(4:end)';
+% bs = b(2:end)';
 % bs = b(2:end)';
 % bs = b(3:end)';
 % bs = b(2:1+size(IVs,2))';
@@ -43,9 +44,24 @@ const = b(1);
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),1,2);
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
-FV = IVs(:,1).*repmat(b(2),I,1); 
+week_IV = gampdf(IVs(:,2),b(2),b(3));          
+week_IV(IVs(:,2)<1)=0;      
 
-% FV = [IVs(:,1) week_IV]*bs;
+innov_WD_multip = zeros(size(innov_X));
+for i = 1:size(innov_X,2);
+    innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
+end
+
+% explor_WD_multip = zeros(size(explor_X));
+% for j = 1:size(explor_X,2);
+%     explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
+% end
+explor_WD_multip = [];
+
+% FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
+FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
+% new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
+% FV = FV + new_FV;
 % clearvars week_IV WD_IV gamma_trans
 
 % bs_d = b(2+size(IVs,2):end);
@@ -56,10 +72,8 @@ FV = IVs(:,1).*repmat(b(2),I,1);
 %     
 % FV = FV+D;
 
-% exp_util = exp(-const);
-
-% % exp_util = exp(const+FV);          % utility of choosing the product
-% % prob=exp_util./(1+exp_util);
+% exp_util = exp(const+FV);          % utility of choosing the product
+% prob=exp_util./(1+exp_util);
 exp_util = exp(-(const+FV));         % this is now the utility of the external good
 prob=1./(1+exp_util);                % this is still the probability of choosing the product
 pmat = [prob 1-prob]; 

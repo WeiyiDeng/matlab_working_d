@@ -51,3 +51,22 @@ for i = 1:length(member_namelist)
     try_rv2 = [try_rv2; repmat(rv2(i),member_rowlist(i),1)];
 end
 corr(try_rv1,try_rv2)
+
+%%
+% gamma function is differentiatable to x (may not wrt k and theta)
+delta = eps
+(gampdf(1,1+delta,2)-gampdf(1,1,2))/delta
+delta = -delta
+(gampdf(1,1+delta,2)-gampdf(1,1,2))/delta
+
+delta = 10*eps
+(gampdf(10,5+delta,6)-gampdf(10,5,6))/delta
+
+delta = -10*eps
+(gampdf(10,5+delta,6)-gampdf(10,5,6))/delta
+
+((2+delta)^2-2^2)/delta
+
+delta = 10*eps
+((2+delta)^2-2^2)/delta
+
