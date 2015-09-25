@@ -52,8 +52,8 @@ for i = 1:length(member_namelist)
 end
 corr(try_rv1,try_rv2)
 
-%%
-% gamma function is differentiatable to x (may not wrt k and theta)
+%% wasted
+% gamma function is differentiatable to x (also wrt k and theta)
 delta = eps
 (gampdf(1,1+delta,2)-gampdf(1,1,2))/delta
 delta = -delta
@@ -69,4 +69,3 @@ delta = -10*eps
 
 delta = 10*eps
 ((2+delta)^2-2^2)/delta
-

@@ -1,6 +1,6 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b,fval,exit_flag,output] = band_runbi_ll_SA(X, y, beta_0, lb, ub)
-global I J choice_dv IVs dummies se T b_best ll_best
+function [b,fval,exit_flag,output] = band_runbi_ll_SA(X, y, beta_0, lb, ub, innov_X, explor_X)
+global I J dummies se T b_best ll_best choice_dv IVs week_IV innov_IV explor_IV innov_WD_multip explor_WD_multip
 
 % I = 10000
 % J = 2
@@ -15,6 +15,14 @@ global I J choice_dv IVs dummies se T b_best ll_best
 IVs = X;
 
 choice_dv = [y 1-y];
+
+clearvars X Y
+
+innov_IV = innov_X;
+clearvars innov_X
+
+explor_IV = explor_X;
+clearvars explor_X
 
 % plus = zeros(length(choice_dv),1);
 % plus(IVs(:,2)==0)=0.01;
@@ -40,6 +48,20 @@ choice_dv = [y 1-y];
 % beta0 = [0 0 0]
 beta0 = beta_0;
 
+week_IV = gampdf(IVs(:,2),0.9337,27.4738);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV(IVs(:,2)<1)=0; 
+
+innov_WD_multip = zeros(size(innov_IV));
+for i = 1:size(innov_IV,2);
+    innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+end
+
+% explor_WD_multip = zeros(size(explor_IV));
+% for j = 1:size(explor_IV,2);
+%     explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+% end
+explor_WD_multip = [];
+
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off')
 % options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-6, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);   %, 'FinDiffType', 'central');
@@ -55,7 +77,7 @@ save('ll_best.mat','ll_best')
 options = saoptimset('Display','iter','DisplayInterval',400,'OutputFcns',@beta_iter);
 
 % [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_p,beta0,options);
-[b, fval,exitflag,output] = simulannealbnd(@band_bi_ll_p,beta0,lb,ub,options);
+[b, fval,exitflag,output] = simulannealbnd(@band_bi_ll_SA,beta0,lb,ub,options);
 % [b, fval,exitflag,output] = simulannealbnd(@band_bi_ll_p,beta0,lb,ub);
 
 % disp(['constant ' num2str(b(1)) '']);

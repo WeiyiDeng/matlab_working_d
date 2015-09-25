@@ -180,7 +180,7 @@ load('explor_contin.mat');
 X = matp(:,[6 7]);
 y = matp(:,5);
 
-innov_X = innov_contin(:,1);
+innov_X = innov_contin(:,[1 3]);
 % explor_X = explor_contin(:,1);
 explor_X = [];
 

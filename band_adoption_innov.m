@@ -398,3 +398,32 @@ for i = 1:length(A)
     vecB = [vecB; repmat(B(i),rtimes,1)];
 end
 corr(vecA,vecB)
+
+%% standardize
+load('matp.mat');
+matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
+save('matpstd.mat','matp','-v7.3');
+clearvars matp
+
+load('innov_contin.mat');
+innov_m = innov_contin(:,1);
+innov_f = innov_contin(:,3);
+% innov_m = (innov_m-mean(innov_m))./std(innov_m);
+% innov_f = (innov_f-mean(innov_f))./std(innov_f);
+innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
+for i = 1:size(innov_contin,2)
+    innov_contin(:,i) = (innov_contin(:,i)-mean(innov_contin(:,i)))./std(innov_contin(:,i));
+end
+save('innov_contin_std.mat','innov_contin','-v7.3');
+clearvars innov_contin
+
+load('explor_contin.mat');
+explor_m = explor_contin(:,1);
+explor_f = explor_contin(:,3);
+% explor_m = (explor_m-mean(explor_m))./std(explor_m);
+% explor_f = (explor_f-mean(explor_f))./std(explor_f);
+explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
+for i = 1:size(explor_contin,2)
+    explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
+end
+save('explor_contin_std.mat','explor_contin','-v7.3');
