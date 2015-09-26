@@ -1,5 +1,5 @@
-% function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
-function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X)
+function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
+% function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -9,9 +9,9 @@ global dummies se
 I = size(choice_dv,1);
 % K = size(IVs,2);
 
-const = b(1);
+const = -5.6204;
 
-bs = b(4:end)';
+bs = [0.3900 0.1015 b]';
 % bs = b(2:end)';
 % bs = b(2:end)';
 % bs = b(3:end)';
@@ -45,20 +45,20 @@ bs = b(4:end)';
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
 % week_IV = gampdf(IVs(:,2),b(2),b(3));
-week_IV = 100*gampdf(IVs(:,2),b(2),b(3));          
-week_IV(IVs(:,2)<1)=0;      
+% week_IV = 100*gampdf(IVs(:,2),b(2),b(3));          
+% week_IV(IVs(:,2)<1)=0;      
 
 % innov_WD_multip = zeros(size(innov_X));
 % for i = 1:size(innov_X,2);
 %     innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
 % end
-innov_WD_multip = [];
+% innov_WD_multip = [];
 
 % explor_WD_multip = zeros(size(explor_X));
 % for j = 1:size(explor_X,2);
 %     explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
 % end
-explor_WD_multip = [];
+% explor_WD_multip = [];
 
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
