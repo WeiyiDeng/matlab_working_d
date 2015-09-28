@@ -37,6 +37,62 @@ load('matpstd.mat');
 % matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % matp(:,7) = (matp(:,7)-mean(matp(:,7)))./std(matp(:,7));
 
+%%
+% load('matpstd.mat');
+% 
+% X = matp(:,[6 7]);
+% y = matp(:,5);
+% 
+% IVs = X;
+% choice_dv = [y 1-y];
+% 
+% week_IV = 100*gampdf(IVs(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
+% week_IV(IVs(:,2)<1)=0; 
+% 
+% prev_FV_basic = [IVs(:,1) week_IV]*[0.3870    0.1020]';
+% 
+% clearvars matp IVs
+% 
+% load('innov_contin_std.mat');
+% % load('explor_contin_std.mat');
+% innov_X = innov_contin(:,1:4);
+% 
+% clearvars innov_contin
+% 
+% innov_WD_multip = zeros(size(innov_X));
+% for i = 1:size(innov_X,2);
+%     innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
+% end
+% % innov_WD_multip = [];
+% 
+% prev_FV_innov = [innov_X innov_WD_multip]*[-0.0509    0.0281   -0.2486    0.2183  0.0102    0.0140    0.0414   -0.0358]';
+% 
+% clearvars innov_X innov_WD_multip
+% 
+% load('explor_contin_std.mat');
+% explor_X = explor_contin(:,1:4);
+% 
+% clearvars explor_contin
+% 
+% explor_WD_multip = zeros(size(explor_X));
+% for j = 1:size(explor_X,2);
+%     explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
+% end
+% % explor_WD_multip = [];
+% 
+% prev_FV_explor = [explor_X explor_WD_multip]*[0.1682   -0.1598    -0.0583    0.0421   0.0538   -0.0406    0.0038   -0.0118]';
+% 
+% clearvars explor_X explor_WD_multip
+% 
+% % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
+% % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
+% prev_FV_WD = prev_FV_basic + prev_FV_innov + prev_FV_explor;
+% 
+% save('prev_FV_WD.mat','prev_FV_WD','-v7.3');
+% clearvars prev_FV_basic  prev_FV_innov  prev_FV_explor
+% 
+% display('prev_FV_WD')
+
 % %%
 % X = matp(:,[6 7]);
 % y = matp(:,5);
@@ -44,7 +100,7 @@ load('matpstd.mat');
 % IVs = X;
 % choice_dv = [y 1-y];
 % 
-% week_IV = 100*gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+% week_IV = 100*gampdf(IVs(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
 % week_IV(IVs(:,2)<1)=0; 
 % 
 % clearvars matp
@@ -55,7 +111,7 @@ load('matpstd.mat');
 % prev_explor_IV = explor_contin(:,1:4);
 % clearvars innov_contin explor_contin
 % 
-% prev_bs = [0.3900    0.1015    -0.0285    0.0031   -0.2426    0.2146    0.1718   -0.1603   -0.0624    0.0459]';
+% prev_bs = [0.3870    0.1020    -0.0285    0.0031   -0.2426    0.2146    0.1718   -0.1603   -0.0624    0.0459]';
 % prev_FV = [IVs(:,1) week_IV prev_innov_IV prev_explor_IV]*prev_bs;
 % save('prev_FV.mat','prev_FV','-v7.3');
 % clearvars prev_innov_IV prev_explor_IV
@@ -75,7 +131,7 @@ choice_dv = [y 1-y];
 
 clearvars matp
 
-week_IV = 100*gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV = 100*gampdf(IVs(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
 week_IV(IVs(:,2)<1)=0; 
 
 rb = -10;
@@ -91,11 +147,11 @@ end
 ev_points = sort([ev_points -ev_points])
 % scatter(1:length(ev_points), ev_points)
 
-seq = [1 2 3 4 1 2 3 4];
-ea_switch = [1 1 1 1 0 0 0 0];
+seq = [5 6 5 6];
+ea_switch = [1 1 0 0];
 % prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
 
-for i = 1:8
+for i = 1:4
     load('innov_contin_std.mat');
     load('explor_contin_std.mat');
     if ea_switch(i) ==1
@@ -121,19 +177,19 @@ for i = 1:8
     
     clearvars innov_contin explor_contin
     
-    innov_WD_multip = zeros(size(innov_IV));
-    for i = 1:size(innov_IV,2);
-        innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
-    end
-    % innov_WD_multip = [];
+%     innov_WD_multip = zeros(size(innov_IV));
+%     for i = 1:size(innov_IV,2);
+%         innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+%     end
+    innov_WD_multip = [];
     
-    explor_WD_multip = zeros(size(explor_IV));
-    for j = 1:size(explor_IV,2);
-        explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
-    end
-    % explor_WD_multip = [];
+%     explor_WD_multip = zeros(size(explor_IV));
+%     for j = 1:size(explor_IV,2);
+%         explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+%     end
+    explor_WD_multip = [];
     
-    load('prev_FV.mat');
+    load('prev_FV_WD.mat');
     
     b_i = ev_points;
     display('LL')
@@ -141,12 +197,13 @@ for i = 1:8
     ll_line = zeros(1,length(b_i));
     for d = 1:length(b_i)
         
-        const = -5.6204;
+        const = -5.6271;
         %     bs = [0.3900 0.1015 -0.2641 -0.5259 b_i(d)]';
         %     FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
         bs = b_i(d);
-        FV = [innov_WD_multip explor_WD_multip].*bs;
-        FV = FV + prev_FV;
+%         FV = [innov_WD_multip explor_WD_multip].*bs;
+        FV = [innov_IV explor_IV].*bs;
+        FV = FV + prev_FV_WD;
         
         exp_util = exp(-(const+FV));         % this is now the utility of the external good
         prob=1./(1+exp_util);                % this is still the probability of choosing the product

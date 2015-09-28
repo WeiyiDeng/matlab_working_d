@@ -1,6 +1,6 @@
 % function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
-function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_WD_multip, explor_WD_multip, prev_FV)
-% function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X)
+% function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_WD_multip, explor_WD_multip, prev_FV)
+function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_IV, explor_IV, prev_FV_WD)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -10,7 +10,7 @@ global dummies se
 I = size(choice_dv,1);
 % K = size(IVs,2);
 
-const = -5.6204;
+const = -5.6271;
 
 bs = b';
 % bs = [0.3900 0.1015 b]';
@@ -64,8 +64,9 @@ bs = b';
 
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
-FV = [innov_WD_multip explor_WD_multip]*bs;
-FV = FV + prev_FV;
+% FV = [innov_WD_multip explor_WD_multip]*bs;
+FV = [innov_IV explor_IV]*bs;
+FV = FV + prev_FV_WD;
 % new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV + new_FV;
 % clearvars week_IV WD_IV gamma_trans

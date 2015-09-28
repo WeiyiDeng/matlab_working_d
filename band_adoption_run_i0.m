@@ -14,32 +14,32 @@ diary(resultsfilename);
 % load('explor_contin.mat');
 load('matpstd.mat');
 
-%%
-X = matp(:,[6 7]);
-y = matp(:,5);
-
-IVs = X;
-choice_dv = [y 1-y];
-
-week_IV = 100*gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
-week_IV(IVs(:,2)<1)=0; 
-
-clearvars matp
-load('innov_contin_std.mat');
-load('explor_contin_std.mat');
-
-prev_innov_IV = innov_contin(:,1:4);
-prev_explor_IV = explor_contin(:,1:4);
-clearvars innov_contin explor_contin
-
-% prev_bs = [0.3900    0.1015    -0.0285    0.0031   -0.2426    0.2146    0.1718   -0.1603   -0.0624    0.0459]';
-prev_bs = [0.3900    0.1015    -0.0509    0.0281   -0.2486    0.2183    0.1682   -0.1598    -0.0583    0.0421]';
-prev_FV = [IVs(:,1) week_IV prev_innov_IV prev_explor_IV]*prev_bs;
-
-save('prev_FV.mat','prev_FV','-v7.3');
-clearvars prev_innov_IV prev_explor_IV
-
-display('prev_FV')
+% %%
+% X = matp(:,[6 7]);
+% y = matp(:,5);
+% 
+% IVs = X;
+% choice_dv = [y 1-y];
+% 
+% week_IV = 100*gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+% week_IV(IVs(:,2)<1)=0; 
+% 
+% clearvars matp
+% load('innov_contin_std.mat');
+% load('explor_contin_std.mat');
+% 
+% prev_innov_IV = innov_contin(:,1:4);
+% prev_explor_IV = explor_contin(:,1:4);
+% clearvars innov_contin explor_contin
+% 
+% % prev_bs = [0.3900    0.1015    -0.0285    0.0031   -0.2426    0.2146    0.1718   -0.1603   -0.0624    0.0459]';
+% prev_bs = [0.3900    0.1015    -0.0509    0.0281   -0.2486    0.2183    0.1682   -0.1598    -0.0583    0.0421]';
+% prev_FV = [IVs(:,1) week_IV prev_innov_IV prev_explor_IV]*prev_bs;
+% 
+% save('prev_FV.mat','prev_FV','-v7.3');
+% clearvars prev_innov_IV prev_explor_IV
+% 
+% display('prev_FV')
 
 % % w: draw a small random sample from the obs 
 % temp1=rand(size(matp,1),1)>.985;     
@@ -78,31 +78,32 @@ load('innov_contin_std.mat');
 % % innov_X = [];
 % explor_X = explor_contin(:,1:4);
 % % explor_X = [];
-innov_IV = innov_contin(:,1:4);
+innov_IV = innov_contin(:,5:6);
 
 clearvars innov_contin
 
-week_IV = 100*gampdf(X(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV = 100*gampdf(X(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
 week_IV(X(:,2)<1)=0;      
 
-innov_WD_multip = zeros(size(innov_IV));
-for i = 1:size(innov_IV,2);
-    innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
-end
-% innov_WD_multip = [];
-clearvars innov_IV
+% innov_WD_multip = zeros(size(innov_IV));
+% for i = 1:size(innov_IV,2);
+%     innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+% end
+innov_WD_multip = [];
+% clearvars innov_IV
 
 load('explor_contin_std.mat');
-explor_IV = explor_contin(:,1:4);
+
+explor_IV = explor_contin(:,5:6);
 clearvars explor_contin
 
-explor_WD_multip = zeros(size(explor_IV));
-for j = 1:size(explor_IV,2);
-    explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
-end
-% explor_WD_multip = [];
+% explor_WD_multip = zeros(size(explor_IV));
+% for j = 1:size(explor_IV,2);
+%     explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+% end
+explor_WD_multip = [];
 
-clearvars explor_IV
+% clearvars explor_IV
 
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
@@ -115,12 +116,12 @@ clearvars explor_IV
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
 % beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002];
 % beta_0 = [-1.5009    -0.2503    0.5233    -0.4710]
-beta_0 = [0.0370 0.0370 0.0170 0.0070 0.0370 0.0370 0.0070 0.0070]
+beta_0 = [-0.0170 -0.0170 -0.0170 -0.0070]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-% [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_X, explor_X);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_WD_multip, explor_WD_multip);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_IV, explor_IV);
+% [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_WD_multip, explor_WD_multip);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
