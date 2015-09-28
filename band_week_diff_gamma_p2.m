@@ -91,23 +91,23 @@ end
 ev_points = sort([ev_points -ev_points])
 % scatter(1:length(ev_points), ev_points)
 
-seq = [1 2; 3 4; 1 2; 3 4];
-ea_switch = [1 1 0 0];
-prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
+seq = [1 2 3 4 1 2 3 4];
+ea_switch = [1 1 1 1 0 0 0 0];
+% prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
 
-for i = 1:4
+for i = 1:8
     load('innov_contin_std.mat');
     load('explor_contin_std.mat');
     if ea_switch(i) ==1
-        ea_cols = seq(i,:);
+        ea_cols = seq(i);
         explor_cols = [];
-        innov_IV = innov_contin(:,ea_cols)*(prev_joint_bs(i,:)');
+        innov_IV = innov_contin(:,ea_cols);
         explor_IV = [];
     else
         ea_cols = [];
-        explor_cols = seq(i,:);
+        explor_cols = seq(i);
         innov_IV = [];
-        explor_IV = explor_contin(:,explor_cols)*(prev_joint_bs(i,:)');
+        explor_IV = explor_contin(:,explor_cols);
     end   
     
 %     ea_cols = [1];

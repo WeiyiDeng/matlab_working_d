@@ -427,3 +427,40 @@ for i = 1:size(explor_contin,2)
     explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
 end
 save('explor_contin_std.mat','explor_contin','-v7.3');
+
+%% plot estimated main effect and quadratic terms coefficients
+x = -2:0.01:5;
+plot(x,-0.0285*x+0.0031*x.^2,'r')
+hold on
+x = -2:0.01:10;
+plot(x,-0.2426*x+0.2146*x.^2,'g')
+x = -1:0.01:1.6;
+plot(x,0.1718*x-0.1603*x.^2,'b')
+x = -1:0.01:6;
+plot(x,-0.0624*x+0.0459*x.^2,'y')
+hold off
+
+%% try load partial varibles from matfile
+load('innov_contin_std.mat');
+p1 = innov_contin(:,1:2);
+p2 = innov_contin(:,3:4);
+p3 = innov_contin(:,5:6);
+save innov_contin_std_3ps.mat p1 p2 p3 -v7.3;
+clear innov_contin p1 p2 p3
+
+load('explor_contin_std.mat');
+p1 = explor_contin(:,1:2);
+p2 = explor_contin(:,3:4);
+p3 = explor_contin(:,5:6);
+save explor_contin_std_3ps.mat p1 p2 p3 -v7.3;
+clear explor_contin p1 p2 p3
+
+vars = whos('-file','innov_contin_std_3ps.mat');
+sth = load('innov_contin_std_3ps.mat', vars(2).name);
+SNames = fieldnames(sth);
+sth = getfield(sth, SNames{1});
+
+load('innov_contin_std_3ps.mat', vars(2).name)
+innov_contin = matfile('innov_contin_std_3ps.mat');
+innov_ms = innov_contin.p1(:,1:2);
+

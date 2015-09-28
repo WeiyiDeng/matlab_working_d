@@ -13,146 +13,33 @@ diary(resultsfilename);
 % load('innov_contin.mat');
 % load('explor_contin.mat');
 load('matpstd.mat');
+
+%%
+X = matp(:,[6 7]);
+y = matp(:,5);
+
+IVs = X;
+choice_dv = [y 1-y];
+
+week_IV = 100*gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV(IVs(:,2)<1)=0; 
+
+clearvars matp
 load('innov_contin_std.mat');
 load('explor_contin_std.mat');
 
-% week1_dummy = matp(:,7);
-% week1_dummy(week1_dummy~=1)=0;
-% 
-% week2_dummy = matp(:,7);
-% week2_dummy(week2_dummy==1)=0;
-% week2_dummy(week2_dummy==2)=1;
-% week2_dummy(week2_dummy~=1)=0;
-% 
-% week3_dummy = matp(:,7);
-% week3_dummy(week3_dummy==1)=0;
-% week3_dummy(week3_dummy==3)=1;
-% week3_dummy(week3_dummy~=1)=0;
-% 
-% week4_dummy = matp(:,7);
-% week4_dummy(week4_dummy==1)=0;
-% week4_dummy(week4_dummy==4)=1;
-% week4_dummy(week4_dummy~=1)=0;
-% 
-% week5_dummy = matp(:,7);
-% week5_dummy(week5_dummy==1)=0;
-% week5_dummy(week5_dummy==5)=1;
-% week5_dummy(week5_dummy~=1)=0;
-% 
-% week6_dummy = matp(:,7);
-% week6_dummy(week6_dummy==1)=0;
-% week6_dummy(week6_dummy==6)=1;
-% week6_dummy(week6_dummy~=1)=0;
-% 
-% week7_dummy = matp(:,7);
-% week7_dummy(week7_dummy==1)=0;
-% week7_dummy(week7_dummy==7)=1;
-% week7_dummy(week7_dummy~=1)=0;
-% 
-% week8_dummy = matp(:,7);
-% week8_dummy(week8_dummy==1)=0;
-% week8_dummy(week8_dummy==8)=1;
-% week8_dummy(week8_dummy~=1)=0;
-% 
-% week9_dummy = matp(:,7);
-% week9_dummy(week9_dummy==1)=0;
-% week9_dummy(week9_dummy==9)=1;
-% week9_dummy(week9_dummy~=1)=0;
-% 
-% week10_dummy = matp(:,7);
-% week10_dummy(week10_dummy==1)=0;
-% week10_dummy(week10_dummy==10)=1;
-% week10_dummy(week10_dummy~=1)=0;
+prev_innov_IV = innov_contin(:,1:4);
+prev_explor_IV = explor_contin(:,1:4);
+clearvars innov_contin explor_contin
 
-% week1_dummy = matp(:,7);
-% week1_dummy(week1_dummy==2)=1;
-% week1_dummy(week1_dummy==3)=1;
-% week1_dummy(week1_dummy==4)=1;
-% week1_dummy(week1_dummy==5)=1;
-% week1_dummy(week1_dummy~=1)=0;
-% 
-% week2_dummy = matp(:,7);
-% week2_dummy(week2_dummy==1)=0;
-% week2_dummy(week2_dummy==6)=1;
-% week2_dummy(week2_dummy==7)=1;
-% week2_dummy(week2_dummy==8)=1;
-% week2_dummy(week2_dummy==9)=1;
-% week2_dummy(week2_dummy==10)=1;
-% week2_dummy(week2_dummy~=1)=0;
-% 
-% week3_dummy = matp(:,7);
-% week3_dummy(week3_dummy==1)=0;
-% week3_dummy(week3_dummy==11)=1;
-% week3_dummy(week3_dummy==12)=1;
-% week3_dummy(week3_dummy==13)=1;
-% week3_dummy(week3_dummy==14)=1;
-% week3_dummy(week3_dummy==15)=1;
-% week3_dummy(week3_dummy~=1)=0;
+% prev_bs = [0.3900    0.1015    -0.0285    0.0031   -0.2426    0.2146    0.1718   -0.1603   -0.0624    0.0459]';
+prev_bs = [0.3900    0.1015    -0.0509    0.0281   -0.2486    0.2183    0.1682   -0.1598    -0.0583    0.0421]';
+prev_FV = [IVs(:,1) week_IV prev_innov_IV prev_explor_IV]*prev_bs;
 
-% week4_dummy = matp(:,7);
-% week4_dummy(week4_dummy==1)=0;
-% week4_dummy(week4_dummy==4)=1;
-% week4_dummy(week4_dummy==5)=1;
-% week4_dummy(week4_dummy==6)=1;
-% week4_dummy(week4_dummy==7)=1;
-% week4_dummy(week4_dummy==8)=1;
-% week4_dummy(week4_dummy~=1)=0;
-% 
-% week5_dummy = matp(:,7);
-% week5_dummy(week5_dummy==1)=0;
-% week5_dummy(week5_dummy==9)=1;
-% week5_dummy(week5_dummy==10)=1;
-% week5_dummy(week5_dummy==11)=1;
-% week5_dummy(week5_dummy==12)=1;
-% week5_dummy(week5_dummy==13)=1;
-% week5_dummy(week5_dummy~=1)=0;
-% 
-% week6_dummy = matp(:,7);
-% week6_dummy(week6_dummy==1)=0;
-% week6_dummy(week6_dummy==14)=1;
-% week6_dummy(week6_dummy==15)=1;
-% week6_dummy(week6_dummy==16)=1;
-% week6_dummy(week6_dummy==17)=1;
-% week6_dummy(week6_dummy==18)=1;
-% week6_dummy(week6_dummy~=1)=0;
-% 
-% week7_dummy = matp(:,7);
-% week7_dummy(week7_dummy==1)=0;
-% week7_dummy(week7_dummy==19)=1;
-% week7_dummy(week7_dummy==20)=1;
-% week7_dummy(week7_dummy==21)=1;
-% week7_dummy(week7_dummy==22)=1;
-% week7_dummy(week7_dummy==23)=1;
-% week7_dummy(week7_dummy~=1)=0;
-% 
-% week8_dummy = matp(:,7);
-% week8_dummy(week8_dummy==1)=0;
-% week8_dummy(week8_dummy==24)=1;
-% week8_dummy(week8_dummy==25)=1;
-% week8_dummy(week8_dummy==26)=1;
-% week8_dummy(week8_dummy==27)=1;
-% week8_dummy(week8_dummy==28)=1;
-% week8_dummy(week8_dummy~=1)=0;
-% 
-% week9_dummy = matp(:,7);
-% week9_dummy(week9_dummy==1)=0;
-% week9_dummy(week9_dummy==29)=1;
-% week9_dummy(week9_dummy==30)=1;
-% week9_dummy(week9_dummy==31)=1;
-% week9_dummy(week9_dummy==32)=1;
-% week9_dummy(week9_dummy==33)=1;
-% week9_dummy(week9_dummy~=1)=0;
-% 
-% week10_dummy = matp(:,7);
-% week10_dummy(week10_dummy==1)=0;
-% week10_dummy(week10_dummy==34)=1;
-% week10_dummy(week10_dummy==35)=1;
-% week10_dummy(week10_dummy==36)=1;
-% week10_dummy(week10_dummy==37)=1;
-% week10_dummy(week10_dummy==38)=1;
-% week10_dummy(week10_dummy~=1)=0;
+save('prev_FV.mat','prev_FV','-v7.3');
+clearvars prev_innov_IV prev_explor_IV
 
-% matp(:,7) = week1_dummy;
+display('prev_FV')
 
 % % w: draw a small random sample from the obs 
 % temp1=rand(size(matp,1),1)>.985;     
@@ -179,15 +66,44 @@ load('explor_contin_std.mat');
 
 % X = [matp(:,[6 7]) week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy week9_dummy week10_dummy];
 % X = matp(:,[6 7 8]);
+
+load('matpstd.mat');
+
 X = matp(:,[6 7]);
 y = matp(:,5);
+clearvars matp
 
-innov_X = innov_contin(:,1:4);
-% innov_X = [];
-explor_X = explor_contin(:,1:4);
-% explor_X = [];
+load('innov_contin_std.mat');
+% innov_X = innov_contin(:,1:4);
+% % innov_X = [];
+% explor_X = explor_contin(:,1:4);
+% % explor_X = [];
+innov_IV = innov_contin(:,1:4);
 
-clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy innov_contin explor_contin
+clearvars innov_contin
+
+week_IV = 100*gampdf(X(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV(X(:,2)<1)=0;      
+
+innov_WD_multip = zeros(size(innov_IV));
+for i = 1:size(innov_IV,2);
+    innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+end
+% innov_WD_multip = [];
+clearvars innov_IV
+
+load('explor_contin_std.mat');
+explor_IV = explor_contin(:,1:4);
+clearvars explor_contin
+
+explor_WD_multip = zeros(size(explor_IV));
+for j = 1:size(explor_IV,2);
+    explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+end
+% explor_WD_multip = [];
+
+clearvars explor_IV
+
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -197,11 +113,14 @@ clearvars matp week1_dummy week2_dummy week3_dummy week4_dummy week5_dummy week6
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
-beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002];
+% beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002];
+% beta_0 = [-1.5009    -0.2503    0.5233    -0.4710]
+beta_0 = [0.0370 0.0370 0.0170 0.0070 0.0370 0.0370 0.0070 0.0070]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_X, explor_X);
+% [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_X, explor_X);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_i0(X, y, beta_0, innov_WD_multip, explor_WD_multip);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
