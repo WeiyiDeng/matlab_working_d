@@ -10,8 +10,8 @@ diary(resultsfilename);
 
 % load('matp_b.mat');
 % load('matp.mat');
-% load('innov_contin.mat');
-% load('explor_contin.mat');
+load('innov_contin.mat');
+load('explor_contin.mat');
 load('matpstd.mat');
 
 % week1_dummy = matp(:,7);
@@ -180,12 +180,17 @@ load('matpstd.mat');
 X = matp(:,[6 7]);
 y = matp(:,5);
 
+clearvars matp
+
 % innov_X = innov_contin(:,1:4);
 % % innov_X = [];
 % explor_X = explor_contin(:,1:4);
 % % explor_X = [];
 
-clearvars matp
+innov_X = innov_contin;
+explor_X = explor_contin;
+
+clearvars innov_contin explor_contin
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -202,7 +207,7 @@ beta_0 = [beta_0         -0.0112   -0.0003   -0.0245    0.0172    0.0076    0.00
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ip(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ip(X, y, beta_0, innov_X, explor_X);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;

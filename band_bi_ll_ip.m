@@ -1,5 +1,5 @@
 % function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
-function [LL, gr, H] = band_bi_ll_ip(b,IVs,choice_dv)
+function [LL, gr, H] = band_bi_ll_ip(b,IVs,choice_dv, innov_X, explor_X)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -53,38 +53,40 @@ week_IV(IVs(:,2)<1)=0;
 
 FV_basic = [IVs(:,1) week_IV]*b_basic;
 
-load('innov_contin_std.mat');
+% load('innov_contin_std.mat');
 % load('explor_contin_std.mat');
 % innov_X = innov_contin(:,1:4);
 
-innov_WD_multip = zeros(size(innov_contin));
-for i = 1:size(innov_contin,2);
-    innov_WD_multip(:,i) = innov_contin(:,i).*week_IV;
+innov_WD_multip = zeros(size(innov_X));
+for i = 1:size(innov_X,2);
+    innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
 end
 % innov_WD_multip = [];
 
 % FV_innov = [innov_contin innov_WD_multip]*b_innov;
-FV_innov = innov_contin*b_innov(1:6)+innov_WD_multip*b_innov(7:end);
+FV_innov = innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end);
 
-clearvars innov_contin innov_WD_multip
+clearvars innov_WD_multip %innov_contin 
 
-load('explor_contin_std.mat');
+% load('explor_contin_std.mat');
 % explor_X = explor_contin(:,1:4);
 
-explor_WD_multip = zeros(size(explor_contin));
-for j = 1:size(explor_contin,2);
-    explor_WD_multip(:,j) = explor_contin(:,j).*week_IV;
+explor_WD_multip = zeros(size(explor_X));
+for j = 1:size(explor_X,2);
+    explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
 end
 % explor_WD_multip = [];
 
 % FV_explor = [explor_contin explor_WD_multip]*b_explor;
-FV_explor = explor_contin*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
+FV_explor = explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
 
-clearvars explor_contin explor_WD_multip
+clearvars explor_WD_multip %explor_contin
 
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 FV = FV_basic + FV_innov + FV_explor;
+
+clearvars FV_basic FV_innov FV_explor
 % new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV + new_FV;
 % clearvars week_IV WD_IV gamma_trans
