@@ -464,3 +464,23 @@ load('innov_contin_std_3ps.mat', vars(2).name)
 innov_contin = matfile('innov_contin_std_3ps.mat');
 innov_ms = innov_contin.p1(:,1:2);
 
+%% memmapfile
+load('matp.mat');
+
+fileID = fopen('mytry.dat','w');
+fwrite(fileID, matp,'double');
+fclose(fileID);
+
+% m = memmapfile('mytry.dat','Format', 'double');   % w: will load the whole data matrix as a vector
+% length(m.Data(:,1))
+
+% m = memmapfile('mytry.dat', 'Format', {'double', [308581 8], 'im'});
+% mydt = m.Data.im;
+% length(m.Data.im(:,1))
+
+mm = memmapfile('mytry.dat', 'Format', {'double', [308581 1], 'mj'},'Repeat', 8);
+A = mm.Data(1).mj;          % first col
+dtmean = [];
+for i = 1:8
+    dtmean = [dtmean mean(mm.Data(i).mj)];
+end

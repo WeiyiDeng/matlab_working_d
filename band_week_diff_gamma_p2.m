@@ -147,6 +147,13 @@ end
 ev_points = sort([ev_points -ev_points])
 % scatter(1:length(ev_points), ev_points)
 
+prev_interact_bs = [-0.0112   -0.0003;   -0.0245    0.0172];
+load('innov_contin_std.mat');
+load('explor_contin_std.mat');
+prev_innov_IV = innov_contin(:,5:6)*(prev_interact_bs(1,:)');
+prev_explor_IV = explor_contin(:,5:6)*(prev_interact_bs(2,:)');
+clearvars innov_contin explor_contin
+
 seq = [5 6 5 6];
 ea_switch = [1 1 0 0];
 % prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
@@ -177,17 +184,17 @@ for i = 1:4
     
     clearvars innov_contin explor_contin
     
-%     innov_WD_multip = zeros(size(innov_IV));
-%     for i = 1:size(innov_IV,2);
-%         innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
-%     end
-    innov_WD_multip = [];
+    innov_WD_multip = zeros(size(innov_IV));
+    for i = 1:size(innov_IV,2);
+        innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+    end
+%     innov_WD_multip = [];
     
-%     explor_WD_multip = zeros(size(explor_IV));
-%     for j = 1:size(explor_IV,2);
-%         explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
-%     end
-    explor_WD_multip = [];
+    explor_WD_multip = zeros(size(explor_IV));
+    for j = 1:size(explor_IV,2);
+        explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+    end
+%     explor_WD_multip = [];
     
     load('prev_FV_WD.mat');
     
@@ -195,15 +202,14 @@ for i = 1:4
     display('LL')
     
     ll_line = zeros(1,length(b_i));
-    for d = 1:length(b_i)
-        
+    for d = 1:length(b_i) 
         const = -5.6271;
         %     bs = [0.3900 0.1015 -0.2641 -0.5259 b_i(d)]';
         %     FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
         bs = b_i(d);
-%         FV = [innov_WD_multip explor_WD_multip].*bs;
-        FV = [innov_IV explor_IV].*bs;
-        FV = FV + prev_FV_WD;
+        FV = [innov_WD_multip explor_WD_multip].*bs;
+%         FV = [innov_IV explor_IV].*bs;
+        FV = FV + prev_FV_WD + prev_innov_IV + prev_explor_IV;
         
         exp_util = exp(-(const+FV));         % this is now the utility of the external good
         prob=1./(1+exp_util);                % this is still the probability of choosing the product

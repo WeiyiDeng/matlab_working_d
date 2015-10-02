@@ -18,8 +18,8 @@ const = b(1);
 % bs = b(2:1+size(IVs,2))';
 % FV = IVs*bs;
 b_basic = b(4:5)';
-b_innov = b([6:9 14:17])';
-b_explor = b([10:13 18:21])';
+b_innov = b([6:9 22:23 14:17 26:27])';
+b_explor = b([10:13 24:25 18:21 28:29])';
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -55,34 +55,32 @@ FV_basic = [IVs(:,1) week_IV]*b_basic;
 
 load('innov_contin_std.mat');
 % load('explor_contin_std.mat');
-innov_X = innov_contin(:,1:4);
+% innov_X = innov_contin(:,1:4);
 
-clearvars innov_contin
-
-innov_WD_multip = zeros(size(innov_X));
-for i = 1:size(innov_X,2);
-    innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
+innov_WD_multip = zeros(size(innov_contin));
+for i = 1:size(innov_contin,2);
+    innov_WD_multip(:,i) = innov_contin(:,i).*week_IV;
 end
 % innov_WD_multip = [];
 
-FV_innov = [innov_X innov_WD_multip]*b_innov;
+% FV_innov = [innov_contin innov_WD_multip]*b_innov;
+FV_innov = innov_contin*b_innov(1:6)+innov_WD_multip*b_innov(7:end);
 
-clearvars innov_X innov_WD_multip
+clearvars innov_contin innov_WD_multip
 
 load('explor_contin_std.mat');
-explor_X = explor_contin(:,1:4);
+% explor_X = explor_contin(:,1:4);
 
-clearvars explor_contin
-
-explor_WD_multip = zeros(size(explor_X));
-for j = 1:size(explor_X,2);
-    explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
+explor_WD_multip = zeros(size(explor_contin));
+for j = 1:size(explor_contin,2);
+    explor_WD_multip(:,j) = explor_contin(:,j).*week_IV;
 end
 % explor_WD_multip = [];
 
-FV_explor = [explor_X explor_WD_multip]*b_explor;
+% FV_explor = [explor_contin explor_WD_multip]*b_explor;
+FV_explor = explor_contin*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
 
-clearvars explor_X explor_WD_multip
+clearvars explor_contin explor_WD_multip
 
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
