@@ -10,9 +10,14 @@ diary(resultsfilename);
 
 % load('matp_b.mat');
 % load('matp.mat');
-% load('innov_contin.mat');
-% load('explor_contin.mat');
+
 load('matpstd.mat');
+% matp = matp(:,[6 7]);
+% save('matpstd_short.mat','matp','-v7.3');
+% clearvars matp
+
+load('innov_contin_std.mat');
+load('explor_contin_std.mat');
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;
@@ -177,15 +182,19 @@ load('matpstd.mat');
 
 % X = [matp(:,[6 7]) week2_dummy week3_dummy week4_dummy week5_dummy week6_dummy week7_dummy week8_dummy week9_dummy week10_dummy];
 % X = matp(:,[6 7 8]);
-X = matp(:,[6 7]);
+% X = matp(:,[6 7]);
 y = matp(:,5);
+
+clearvars matp
 
 % innov_X = innov_contin(:,1:4);
 % % innov_X = [];
 % explor_X = explor_contin(:,1:4);
 % % explor_X = [];
+innov_X = innov_contin;
+explor_X = explor_contin;
 
-clearvars matp
+clearvars innov_contin explor_contin
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);
 % y = mat1(:,4);
@@ -195,14 +204,14 @@ clearvars matp
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
-beta_0 = [-5.6271    0.8375   27.4694    0.3870    0.1020];
+beta_0 = [-5.6271   0.8375   27.4694    0.3870    0.1020];
 beta_0 = [beta_0         -0.0509    0.0281   -0.2486    0.2183    0.1682   -0.1598    -0.0583    0.0421];  
 beta_0 = [beta_0          0.0102    0.0140    0.0414   -0.0358    0.0538   -0.0406    0.0038   -0.0118];
 beta_0 = [beta_0         -0.0112   -0.0003   -0.0245    0.0172    0.0076    0.0081   -0.0026    0.0057] 
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ip(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ip(y, beta_0, innov_X, explor_X);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
