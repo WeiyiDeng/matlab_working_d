@@ -119,117 +119,117 @@ load('matpstd.mat');
 % display('prev_FV')
 
 %%
-load('matpstd.mat');
+% load('matpstd.mat');
+% % load('innov_contin_std.mat');
+% % load('explor_contin_std.mat');
+% 
+% X = matp(:,[6 7]);
+% y = matp(:,5);
+% 
+% IVs = X;
+% choice_dv = [y 1-y];
+% 
+% clearvars matp
+% 
+% week_IV = 100*gampdf(IVs(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
+% week_IV(IVs(:,2)<1)=0; 
+% 
+% rb = -10;
+% ev_points = [];
+% while rb < 0
+%     ev_points = [ev_points rb];
+%     step = abs(rb/10);
+%     if step < 0.01
+%         step = 0.01;
+%     end
+%     rb = rb + step;
+% end
+% ev_points = sort([ev_points -ev_points])
+% % scatter(1:length(ev_points), ev_points)
+% 
+% prev_interact_bs = [-0.0112   -0.0003;   -0.0245    0.0172];
 % load('innov_contin_std.mat');
 % load('explor_contin_std.mat');
-
-X = matp(:,[6 7]);
-y = matp(:,5);
-
-IVs = X;
-choice_dv = [y 1-y];
-
-clearvars matp
-
-week_IV = 100*gampdf(IVs(:,2),0.8375,27.4694);              % w: NOTICE new lines here for fixed gamma parameters
-week_IV(IVs(:,2)<1)=0; 
-
-rb = -10;
-ev_points = [];
-while rb < 0
-    ev_points = [ev_points rb];
-    step = abs(rb/10);
-    if step < 0.01
-        step = 0.01;
-    end
-    rb = rb + step;
-end
-ev_points = sort([ev_points -ev_points])
-% scatter(1:length(ev_points), ev_points)
-
-prev_interact_bs = [-0.0112   -0.0003;   -0.0245    0.0172];
-load('innov_contin_std.mat');
-load('explor_contin_std.mat');
-prev_innov_IV = innov_contin(:,5:6)*(prev_interact_bs(1,:)');
-prev_explor_IV = explor_contin(:,5:6)*(prev_interact_bs(2,:)');
-clearvars innov_contin explor_contin
-
-seq = [5 6 5 6];
-ea_switch = [1 1 0 0];
-% prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
-
-for i = 1:4
-    load('innov_contin_std.mat');
-    load('explor_contin_std.mat');
-    if ea_switch(i) ==1
-        ea_cols = seq(i);
-        explor_cols = [];
-        innov_IV = innov_contin(:,ea_cols);
-        explor_IV = [];
-    else
-        ea_cols = [];
-        explor_cols = seq(i);
-        innov_IV = [];
-        explor_IV = explor_contin(:,explor_cols);
-    end   
-    
-%     ea_cols = [1];
-%     % ea_cols = 3;
-%     explor_cols = [];
-%     innov_IV = innov_contin(:,[1 3]);
-%     innov_IV = innov_contin(:,ea_cols)*(prev_joint_bs(i,:)');
-%     innov_IV = [];
-%     explor_IV = explor_contin(:,explor_cols)*(prev_joint_bs(i,:)');
-%     explor_IV = [];
-    
-    clearvars innov_contin explor_contin
-    
-    innov_WD_multip = zeros(size(innov_IV));
-    for i = 1:size(innov_IV,2);
-        innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
-    end
-%     innov_WD_multip = [];
-    
-    explor_WD_multip = zeros(size(explor_IV));
-    for j = 1:size(explor_IV,2);
-        explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
-    end
-%     explor_WD_multip = [];
-    
-    load('prev_FV_WD.mat');
-    
-    b_i = ev_points;
-    display('LL')
-    
-    ll_line = zeros(1,length(b_i));
-    for d = 1:length(b_i) 
-        const = -5.6271;
-        %     bs = [0.3900 0.1015 -0.2641 -0.5259 b_i(d)]';
-        %     FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
-        bs = b_i(d);
-        FV = [innov_WD_multip explor_WD_multip].*bs;
-%         FV = [innov_IV explor_IV].*bs;
-        FV = FV + prev_FV_WD + prev_innov_IV + prev_explor_IV;
-        
-        exp_util = exp(-(const+FV));         % this is now the utility of the external good
-        prob=1./(1+exp_util);                % this is still the probability of choosing the product
-        pmat = [prob 1-prob];
-        pmat = pmat.*choice_dv;
-        [r c p] = find(pmat);                                             % I*1
-        ll_line(d) = sum(log(p));
-    end
-    
-    
-    mat_1d_name = ['ll_line_' num2str(ea_cols) '_' num2str(explor_cols) '_' num2str(not(isempty(innov_WD_multip))) '_' num2str(not(isempty(explor_WD_multip))) '_' num2str(b_i(1)) '_' num2str(b_i(end)) '.mat'];
-    save(mat_1d_name,'ll_line') ;
-    
-    [mv,id] = max(ll_line);
-    parameter = b_i(id)
-    % [i,j,d] = ind2sub(size(ll_cube),id)
-    
-    plot(b_i,ll_line)
-    
-end
+% prev_innov_IV = innov_contin(:,5:6)*(prev_interact_bs(1,:)');
+% prev_explor_IV = explor_contin(:,5:6)*(prev_interact_bs(2,:)');
+% clearvars innov_contin explor_contin
+% 
+% seq = [5 6 5 6];
+% ea_switch = [1 1 0 0];
+% % prev_joint_bs = [-0.0285    0.0031;   -0.2426    0.2146;    0.1718   -0.1603;   -0.0624    0.0459];
+% 
+% for i = 1:4
+%     load('innov_contin_std.mat');
+%     load('explor_contin_std.mat');
+%     if ea_switch(i) ==1
+%         ea_cols = seq(i);
+%         explor_cols = [];
+%         innov_IV = innov_contin(:,ea_cols);
+%         explor_IV = [];
+%     else
+%         ea_cols = [];
+%         explor_cols = seq(i);
+%         innov_IV = [];
+%         explor_IV = explor_contin(:,explor_cols);
+%     end   
+%     
+% %     ea_cols = [1];
+% %     % ea_cols = 3;
+% %     explor_cols = [];
+% %     innov_IV = innov_contin(:,[1 3]);
+% %     innov_IV = innov_contin(:,ea_cols)*(prev_joint_bs(i,:)');
+% %     innov_IV = [];
+% %     explor_IV = explor_contin(:,explor_cols)*(prev_joint_bs(i,:)');
+% %     explor_IV = [];
+%     
+%     clearvars innov_contin explor_contin
+%     
+%     innov_WD_multip = zeros(size(innov_IV));
+%     for i = 1:size(innov_IV,2);
+%         innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+%     end
+% %     innov_WD_multip = [];
+%     
+%     explor_WD_multip = zeros(size(explor_IV));
+%     for j = 1:size(explor_IV,2);
+%         explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+%     end
+% %     explor_WD_multip = [];
+%     
+%     load('prev_FV_WD.mat');
+%     
+%     b_i = ev_points;
+%     display('LL')
+%     
+%     ll_line = zeros(1,length(b_i));
+%     for d = 1:length(b_i) 
+%         const = -5.6271;
+%         %     bs = [0.3900 0.1015 -0.2641 -0.5259 b_i(d)]';
+%         %     FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
+%         bs = b_i(d);
+%         FV = [innov_WD_multip explor_WD_multip].*bs;
+% %         FV = [innov_IV explor_IV].*bs;
+%         FV = FV + prev_FV_WD + prev_innov_IV + prev_explor_IV;
+%         
+%         exp_util = exp(-(const+FV));         % this is now the utility of the external good
+%         prob=1./(1+exp_util);                % this is still the probability of choosing the product
+%         pmat = [prob 1-prob];
+%         pmat = pmat.*choice_dv;
+%         [r c p] = find(pmat);                                             % I*1
+%         ll_line(d) = sum(log(p));
+%     end
+%     
+%     
+%     mat_1d_name = ['ll_line_' num2str(ea_cols) '_' num2str(explor_cols) '_' num2str(not(isempty(innov_WD_multip))) '_' num2str(not(isempty(explor_WD_multip))) '_' num2str(b_i(1)) '_' num2str(b_i(end)) '.mat'];
+%     save(mat_1d_name,'ll_line') ;
+%     
+%     [mv,id] = max(ll_line);
+%     parameter = b_i(id)
+%     % [i,j,d] = ind2sub(size(ll_cube),id)
+%     
+%     plot(b_i,ll_line)
+%     
+% end
 
 
 % b_i = -10:5:10;
@@ -267,86 +267,86 @@ end
 % surf(ll_mat)
 
 
-% %% evaluation points
-% X = matp(:,[6 7]);
-% y = matp(:,5);
-% 
-% IVs = X;
-% choice_dv = [y 1-y];
-% 
-% clearvars matp
-% 
-% week_IV = gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
-% week_IV(IVs(:,2)<1)=0; 
-% 
-% rb = -10;
-% ev_points = [];
-% while rb < 0
-%     ev_points = [ev_points rb];
-%     step = abs(rb/4);
-%     if step < 0.01
-%         step = 0.01;
-%     end
-%     rb = rb + step;
-% end
-% ev_points = sort([ev_points -ev_points])
-% % scatter(1:length(ev_points), ev_points)
-% 
-% seq = [1 2; 3 4; 1 2; 3 4];
-% ea_switch = [1 1 0 0];
-% 
-% for i = 1:4
-%     load('innov_contin_std.mat');
-%     load('explor_contin_std.mat');
-%     if ea_switch(i) ==1
-%         ea_cols = seq(i,:);
-%         explor_cols = [];
-%     else
-%         ea_cols = [];
-%         explor_cols = seq(i,:);
-%     end
-%     innov_IV = innov_contin(:,ea_cols);
-%     explor_IV = explor_contin(:,explor_cols);
-%     clearvars innov_contin explor_contin
-%         
-%     % innov_WD_multip = zeros(size(innov_IV));
-%     % for i = 1:size(innov_IV,2);
-%     %     innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
-%     % end
-%     innov_WD_multip = [];
-%     
-%     % explor_WD_multip = zeros(size(explor_IV));
-%     % for j = 1:size(explor_IV,2);
-%     %     explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
-%     % end
-%     explor_WD_multip = []; 
-%     
-%     display('LL_mat')
-%     
-%     ll_mat = zeros(length(ev_points), length(ev_points));
-%     for d = 1:length(ev_points)
-%         for k = 1:length(ev_points)
-%             const = -5.6204;
-%             bs = [0.3900 0.1015 ev_points(d) ev_points(k)]';
-%             FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
-%             
-%             exp_util = exp(-(const+FV));         % this is now the utility of the external good
-%             prob=1./(1+exp_util);                % this is still the probability of choosing the product
-%             pmat = [prob 1-prob];
-%             pmat = pmat.*choice_dv;
-%             [r c p] = find(pmat);                                             % I*1
-%             ll_mat(d,k) = sum(log(p));
-%         end
-%     end    
-%     mat_1d_name = ['ll_mat_' num2str(ea_cols) '_' num2str(explor_cols) '_' num2str(not(isempty(innov_WD_multip))) '_' num2str(not(isempty(explor_WD_multip))) '_' num2str(ev_points(1)) '_' num2str(length(ev_points)) '_' num2str(ev_points(end)) '.mat'];
-%     save(mat_1d_name,'ll_mat') ;
-%     
-%     [mv,id] = max(ll_mat(:));
-%     [i,j] = ind2sub(size(ll_mat),id);
-%     parameters = [ev_points(i) ev_points(j)]
-%     
-%     surf(ll_mat)
-% end
+%% evaluation points
+X = matp(:,[6 7]);
+y = matp(:,5);
+
+IVs = X;
+choice_dv = [y 1-y];
+
+clearvars matp
+
+week_IV = gampdf(IVs(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
+week_IV(IVs(:,2)<1)=0; 
+
+rb = -10;
+ev_points = [];
+while rb < 0
+    ev_points = [ev_points rb];
+    step = abs(rb/4);
+    if step < 0.01
+        step = 0.01;
+    end
+    rb = rb + step;
+end
+ev_points = sort([ev_points -ev_points])
+% scatter(1:length(ev_points), ev_points)
+
+seq = [1 2; 3 4; 1 2; 3 4];
+ea_switch = [1 1 0 0];
+
+for i = 1:4
+    load('innov_contin_std.mat');
+    load('explor_contin_std.mat');
+    if ea_switch(i) ==1
+        ea_cols = seq(i,:);
+        explor_cols = [];
+    else
+        ea_cols = [];
+        explor_cols = seq(i,:);
+    end
+    innov_IV = innov_contin(:,ea_cols);
+    explor_IV = explor_contin(:,explor_cols);
+    clearvars innov_contin explor_contin
+        
+    % innov_WD_multip = zeros(size(innov_IV));
+    % for i = 1:size(innov_IV,2);
+    %     innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
+    % end
+    innov_WD_multip = [];
+    
+    % explor_WD_multip = zeros(size(explor_IV));
+    % for j = 1:size(explor_IV,2);
+    %     explor_WD_multip(:,j) = explor_IV(:,j).*week_IV;
+    % end
+    explor_WD_multip = []; 
+    
+    display('LL_mat')
+    
+    ll_mat = zeros(length(ev_points), length(ev_points));
+    for d = 1:length(ev_points)
+        for k = 1:length(ev_points)
+            const = -5.6204;
+            bs = [0.3900 0.1015 ev_points(d) ev_points(k)]';
+            FV = [IVs(:,1) week_IV innov_IV  innov_WD_multip explor_IV explor_WD_multip]*bs;
+            
+            exp_util = exp(-(const+FV));         % this is now the utility of the external good
+            prob=1./(1+exp_util);                % this is still the probability of choosing the product
+            pmat = [prob 1-prob];
+            pmat = pmat.*choice_dv;
+            [r c p] = find(pmat);                                             % I*1
+            ll_mat(d,k) = sum(log(p));
+        end
+    end    
+    mat_1d_name = ['ll_mat_' num2str(ea_cols) '_' num2str(explor_cols) '_' num2str(not(isempty(innov_WD_multip))) '_' num2str(not(isempty(explor_WD_multip))) '_' num2str(ev_points(1)) '_' num2str(length(ev_points)) '_' num2str(ev_points(end)) '.mat'];
+    save(mat_1d_name,'ll_mat') ;
+    
+    [mv,id] = max(ll_mat(:));
+    [i,j] = ind2sub(size(ll_mat),id);
+    parameters = [ev_points(i) ev_points(j)]
+    
+    surf(ll_mat)
+end
 
 
 

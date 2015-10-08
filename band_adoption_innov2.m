@@ -84,24 +84,27 @@ for i = 1:size(friendlist,1)                                         % i here  i
         adoptfij_time = band_adopt_mat(friend_id,j);
         adoptmij_time = band_adopt_mat(member_id, j);
         if adoptfij_time~=0 && adoptmij_time~=0
-            pre_start = max([timesplit(friend_id,2) bandtime(j,2)]);
-            pre_end = min([timesplit(friend_id,4) bandtime(j,3)]);        % still overlap period between friend obs and band obs ??
-            interval = pre_end - pre_start +1;
-            member_p(ind:ind+interval-1) = member_id;
-            friend_p(ind:ind+interval-1) = friend_id;
-            band_p(ind:ind+interval-1) = j;
-            timeobs(ind:ind+interval-1) = pre_start:pre_end;
-            DV(ind+(adoptfij_time-pre_start)) = 1;
-            prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
-            week_diff = (pre_start:pre_end) - adoptmij_time;
-            week_diff_rep = week_diff;
-%             abs_week_diff(ind:ind+interval-1) = abs(week_diff);
-            week_diff(week_diff<0) = 0;
-            new_week_diff(ind:ind+interval-1) = week_diff;
-            week_diff_rep(week_diff_rep>=0) = 1;
-            week_diff_rep(week_diff_rep<0) = 0;
-            A_week_ijt(ind:ind+interval-1) = week_diff_rep;
-            ind = ind+interval;
+            if adoptfij_time > timesplit(friend_id,3) && adoptmij_time > timesplit(member_id,3)
+                pre_start = max([timesplit(friend_id,3) bandtime(j,2)]);
+                pre_end = min([timesplit(friend_id,4) bandtime(j,3)]);        % still overlap period between friend obs and band obs ??
+                interval = pre_end - pre_start +1;
+                member_p(ind:ind+interval-1) = member_id;
+                friend_p(ind:ind+interval-1) = friend_id;
+                band_p(ind:ind+interval-1) = j;
+                timeobs(ind:ind+interval-1) = pre_start:pre_end;
+                DV(ind+(adoptfij_time-pre_start)) = 1;
+                prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
+                week_diff = (pre_start:pre_end) - adoptmij_time;
+                week_diff_rep = week_diff;
+                %             abs_week_diff(ind:ind+interval-1) = abs(week_diff);
+                week_diff(week_diff<0) = 0;
+                new_week_diff(ind:ind+interval-1) = week_diff;
+                week_diff_rep(week_diff_rep>=0) = 1;
+                week_diff_rep(week_diff_rep<0) = 0;
+                A_week_ijt(ind:ind+interval-1) = week_diff_rep;
+                ind = ind+interval;
+            else
+            end
         else
         end
     end
@@ -125,7 +128,7 @@ display('save as mat')
 % matp = [member_p friend_p band_p timeobs DV prob_adopt_week abs_week_diff];
 matp = [member_p friend_p band_p timeobs DV prob_adopt_week new_week_diff A_week_ijt];
 % clearvars -EXCEPT matp
-save('matp.mat','matp', '-v7.3') ;
+save('matp2.mat','matp', '-v7.3') ;
 % csvwrite('matp.csv',matp);
 
 %% member rows
@@ -250,7 +253,7 @@ y = [0.1742    0.1891    0.1542    0.1356    0.1285    0.1326    0.1384    0.130
 plot(x,y)
 
 %% continuous innovativeness and explorer score
-load('matp.mat');
+load('matp2.mat');
 
 innov = csvread('EAi3.csv');
 explor = csvread('explorer3.csv');
@@ -283,15 +286,15 @@ display('friends EA continous')
 clearvars matp
 
 EA_continous = [innov_m innov_f explor_m explor_f];
-save('EA_continous.mat','EA_continous','-v7.3');
-clearvars EA_continous
+save('EA_continous2.mat','EA_continous','-v7.3');
+clearvars EA_continous2
 
 innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
-save('innov_contin.mat','innov_contin','-v7.3');
-clearvars innov_contin
+save('innov_contin2.mat','innov_contin','-v7.3');
+clearvars innov_contin2
 
 explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
-save('explor_contin.mat','explor_contin','-v7.3');
+save('explor_contin2.mat','explor_contin','-v7.3');
 
 % %% standardize
 % load('innov_contin.mat');
@@ -400,12 +403,12 @@ end
 corr(vecA,vecB)
 
 %% standardize
-load('matp.mat');
+load('matp2.mat');
 matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
-save('matpstd.mat','matp','-v7.3');
+save('matpstd2.mat','matp','-v7.3');
 clearvars matp
 
-load('innov_contin.mat');
+load('innov_contin2.mat');
 innov_m = innov_contin(:,1);
 innov_f = innov_contin(:,3);
 % innov_m = (innov_m-mean(innov_m))./std(innov_m);
@@ -414,10 +417,10 @@ innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.
 for i = 1:size(innov_contin,2)
     innov_contin(:,i) = (innov_contin(:,i)-mean(innov_contin(:,i)))./std(innov_contin(:,i));
 end
-save('innov_contin_std.mat','innov_contin','-v7.3');
+save('innov_contin_std2.mat','innov_contin','-v7.3');
 clearvars innov_contin
 
-load('explor_contin.mat');
+load('explor_contin2.mat');
 explor_m = explor_contin(:,1);
 explor_f = explor_contin(:,3);
 % explor_m = (explor_m-mean(explor_m))./std(explor_m);
@@ -426,7 +429,7 @@ explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (e
 for i = 1:size(explor_contin,2)
     explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
 end
-save('explor_contin_std.mat','explor_contin','-v7.3');
+save('explor_contin_std2.mat','explor_contin','-v7.3');
 
 %% plot estimated main effect and quadratic terms coefficients
 x = -2:0.01:5;
@@ -484,3 +487,13 @@ dtmean = [];
 for i = 1:8
     dtmean = [dtmean mean(mm.Data(i).mj)];
 end
+
+%%
+load('matp.mat');
+x = 0:max(matp(:,7));
+y = zeros(length(x),1);
+y(1)= sum(matp(:,7)==0);
+for i = 1:max(matp(:,7))
+    y(i+1) = sum(matp(:,7)==i);
+end
+bar(x,y)
