@@ -12,7 +12,7 @@ diary(resultsfilename);
 % load('matp.mat');
 % load('innov_contin.mat');
 % load('explor_contin.mat');
-load('matpstd.mat');
+load('matpstd2.mat');
 
 %%
 % X = matp(:,[6 7]);
@@ -78,8 +78,8 @@ clearvars matp
 % week_IV = 100*gampdf(X(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
 % week_IV(X(:,2)<1)=0;   
 
-load('innov_contin_std.mat');
-load('explor_contin_std.mat');
+load('innov_contin_std2.mat');
+load('explor_contin_std2.mat');
 innov_IV = innov_contin(:,1:4);
 % innov_X = [];
 explor_IV = explor_contin(:,1:4);
@@ -93,7 +93,7 @@ clearvars innov_contin explor_contain
 % for i = 1:size(innov_IV,2);
 %     innov_WD_multip(:,i) = innov_IV(:,i).*week_IV;
 % end
-innov_WD_multip = [];
+% innov_WD_multip = [];
 % clearvars innov_IV
 
 % load('explor_contin_std.mat');
@@ -119,7 +119,7 @@ innov_WD_multip = [];
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
-beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002]
+beta_0 = [-0.1002    0.0317   -0.3168    0.2376   -0.0117   -0.0564    -0.1336    0.0752]
 % beta_0 = [-1.5009    -0.2503    0.5233    -0.4710]
 % beta_0 = [0.0170 0.0170 0.0070 0.0070]
 % beta_0 = [-100 100 -10]

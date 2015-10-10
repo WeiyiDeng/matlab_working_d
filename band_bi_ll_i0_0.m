@@ -1,6 +1,6 @@
 % function [LL, gr, H] = band_bi_ll_i0(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
 % function [LL, gr, H] = band_bi_ll_i0_0(b,IVs,choice_dv, innov_WD_multip, explor_WD_multip, prev_FV, prev_innov_IV, prev_explor_IV)
-function [LL, gr, H] = band_bi_ll_i0_0(b,IVs,choice_dv, innov_IV, explor_IV, prev_FV)
+function [LL, gr, H] = band_bi_ll_i0_0(b,IVs,choice_dv, innov_IV, explor_IV)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -10,7 +10,7 @@ global dummies se
 % I = size(choice_dv,1);
 % K = size(IVs,2);
 
-const = -5.6204;
+const = -5.1854;
 
 bs = b';
 % bs = [0.3900 0.1015 b]';
@@ -26,11 +26,12 @@ bs = b';
 % week_IV = IVs(:,3).*chi2pdf(IVs(:,2),b(2));     
 % week_IV = IVs(:,3).*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));         % exp() to change estimated beta to larger than zero
 
-% % week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));          % no need to multiply IVs(:,3) since will set f(x<=0) = 0 
-% week_IV = gampdf(IVs(:,2),b(2),b(3));   
-% % week_IV = gampdf(IVs(:,2),1.1,20);    % in the case when the first parameter of gamma is larger than 1, at x=0 the prob will be 0 anyway           
-% % week_IV = IVs(:,3).*exppdf(IVs(:,2),b(2));
-% week_IV(IVs(:,2)<1)=0;                  % when x equal to (or smaller than) 0 the variable is set to zero, not to be estimated 
+% week_IV = IVs(:,3).*gampdf(IVs(:,2),b(2),b(3));          % no need to multiply IVs(:,3) since will set f(x<=0) = 0 
+% week_IV = 100*gampdf(IVs(:,2),b(2),b(3));   
+week_IV = 100*gampdf(IVs(:,2),0.9649,27.4735);
+% week_IV = gampdf(IVs(:,2),1.1,20);    % in the case when the first parameter of gamma is larger than 1, at x=0 the prob will be 0 anyway           
+% week_IV = IVs(:,3).*exppdf(IVs(:,2),b(2));
+week_IV(IVs(:,2)<1)=0;                  % when x equal to (or smaller than) 0 the variable is set to zero, not to be estimated 
 
 % triang_distr = @(x) (b(2)-x)*2/((b(2)-1)*(b(2)-1));
 % week_IV = triang_distr(IVs(:,2));
@@ -62,13 +63,13 @@ bs = b';
 % end
 % explor_WD_multip = [];
 
-% FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
+FV = [IVs(:,1) week_IV]*[0.2615    0.1641]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = [innov_WD_multip explor_WD_multip]*bs;
-FV = [innov_IV explor_IV]*bs;
-FV = FV + prev_FV;    %_WD + prev_innov_IV + prev_explor_IV;
-% new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
-% FV = FV + new_FV;
+% FV = [innov_IV explor_IV]*bs;
+% FV = FV + prev_FV;    %_WD + prev_innov_IV + prev_explor_IV;
+new_FV = [innov_IV explor_IV]*bs;
+FV = FV + new_FV;
 % clearvars week_IV WD_IV gamma_trans
 
 % bs_d = b(2+size(IVs,2):end);

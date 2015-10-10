@@ -252,6 +252,13 @@ x = 1:10
 y = [0.1742    0.1891    0.1542    0.1356    0.1285    0.1326    0.1384    0.1302    0.1151    0.1156]
 plot(x,y)
 
+% try second half data
+x = 0:1:40;
+plot(x,10.15*gampdf(x,0.9354,27.4738))
+hold on
+plot(x,5*gampdf(x,1.1928,exp(2.0272)))
+hold off
+
 %% continuous innovativeness and explorer score
 load('matp2.mat');
 
@@ -489,7 +496,7 @@ for i = 1:8
 end
 
 %%
-load('matp.mat');
+load('matp2.mat');
 x = 0:max(matp(:,7));
 y = zeros(length(x),1);
 y(1)= sum(matp(:,7)==0);

@@ -2,9 +2,9 @@ clc
 % clear
 clear all
 
-format long g
-
 % diary('wwdiary.txt')
+
+% format long g
 
 date_=clock;
 resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
@@ -120,8 +120,8 @@ clearvars matp
 % beta_0 = zeros(1,size(X,2)+2);
 % beta_0 = [0 1 2 0 -0.007]
 % beta_0 = [-5.6204    0.8343   27.4712    0.3900    0.1015]
-% beta_0 = [-5.0858    1.0000   27.4730    0.2798    0.4785]
-beta_0 = [ -5.1072    1.0000   27.4742    0.2672    0.0443]
+beta_0 = [-5.0318    1.1928    2.0272    0.3235    0.0454]
+% beta_0 = [-5.0354    0.6087   3.31313818317199    0.3250    0.0577]        % log(prev_b(3)) here
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
 % beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002]
 % beta_0 = [-1.5009    -0.2503    0.5233    -0.4710]

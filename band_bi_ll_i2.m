@@ -45,7 +45,7 @@ bs = b(4:end)';
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
 % week_IV = gampdf(IVs(:,2),b(2),b(3));
-week_IV = 100*gampdf(IVs(:,2),b(2),b(3));          
+week_IV = 100*gampdf(IVs(:,2),b(2),exp(b(3)));          
 week_IV(IVs(:,2)<1)=0;      
 
 % innov_WD_multip = zeros(size(innov_X));
