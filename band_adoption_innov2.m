@@ -439,15 +439,28 @@ end
 save('explor_contin_std2.mat','explor_contin','-v7.3');
 
 %% plot estimated main effect and quadratic terms coefficients
-x = -2:0.01:5;
-plot(x,-0.0251*x+0.0116*x.^2,'r')
+load('innov_contin_std2.mat');
+mean(innov_contin)
+std(innov_contin)
+max(innov_contin)
+min(innov_contin)
+load('explor_contin_std2.mat');
+mean(explor_contin)
+std(explor_contin)
+max(explor_contin)
+min(explor_contin)
+
+%
+x = -1.77:0.01:3.58;
+plot(x,-0.0105*x+0.0666*x.^2,'r')
 hold on
-x = -2:0.01:10;
-plot(x, -0.1036*x+0.0434*x.^2,'y')
-x = -1:0.01:1.6;
-plot(x,0.0628*x-0.0694*x.^2,'b')
-x = -1:0.01:6;
-plot(x,-0.0432*x+0.009*x.^2,'g')
+x = -1.73:0.01:10.0;
+plot(x, 0.1276*x+0.0555*x.^2,'y')
+x = -0.92:0.01:1.9;
+plot(x,0*x-0.0653*x.^2,'b')
+x = -0.94:0.01:7.52;
+plot(x,-0.0226*x+0.0052*x.^2,'g')
+% plot(x,-0.0357*x+0.0066*x.^2,'g')      
 hold off
 
 %% try load partial varibles from matfile

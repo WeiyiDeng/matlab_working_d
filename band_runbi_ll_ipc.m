@@ -1,5 +1,5 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, beta_0)
+function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ipc(X, y, beta_0, innov_X, explor_X)
 global I J dummies se T
 
 % I = 10000
@@ -36,14 +36,28 @@ choice_dv = [y 1-y];
 % IVs(:,2) = IVs(:,2)+plus;
 % clearvars plus
 
+% week_IV = gampdf(IVs(:,2),0.9337,27.4738);              % w: NOTICE new lines here for fixed gamma parameters
+% week_IV(IVs(:,2)<1)=0;      
+% 
+% innov_WD_multip = zeros(size(innov_X));
+% for i = 1:size(innov_X,2);
+%     innov_WD_multip(:,i) = innov_X(:,i).*week_IV;
+% end
+% 
+% explor_WD_multip = zeros(size(explor_X));
+% for j = 1:size(explor_X,2);
+%     explor_WD_multip(:,j) = explor_X(:,j).*week_IV;
+% end
+
 % beta0 = [0 0 0]
 beta0 = beta_0;
 
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','off','GradObj','off','Hessian','off')
-options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-14, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);   %, 'FinDiffType', 'central');
+options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-14, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);  % ,'OutputFcn', @showJ_history);   %, 'FinDiffType', 'central');
 
-[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_p,beta0,options,IVs,choice_dv);
+% [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_i2,beta0,options,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip);
+[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_ipc,beta0,options,IVs,choice_dv, innov_X, explor_X);
 
 % disp(['constant ' num2str(b(1)) '']);
 % disp(['coefficients ' num2str(b(2:end)) '']);
