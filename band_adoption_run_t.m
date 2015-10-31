@@ -201,34 +201,11 @@ clearvars innov_contin explor_contin
 % beta_0 = [-6.1646   1    27.4751    3.0197   12.7780]
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
 
-b_seq = [1 1 0 0];
-for i = 1:4
-    if b_seq(i) == 1
-        b_i = 26;
-        b_e = [];
-    else
-        b_i = [];
-        b_e = 26;
-    end
-    if i ==1
-        d_i = 5;
-        d_e = [];
-    elseif i ==2
-        d_i = 6;
-        d_e = [];
-    elseif i ==3
-        d_i = [];
-        d_e = 5;
-    else
-        d_i = [];
-        d_e = 6;
-    end
-
 beta_0 = [-5.0949    0.2016    2.0430    0.3221    0.0626];
 beta_0 = [beta_0         -0.0105    0.0666   -0.1276    0.0555    0.0000   -0.0653    -0.0226    0.0052];  
 beta_0 = [beta_0          0.0182   -0.0184    0.0131   -0.0125   -0.0090    0.0092    -0.0145    0.0017];
 % beta_0 = [beta_0         -0.0159   -0.0046    0.0028    0.0005    0.0117    0.0008    0.0052   -0.0014]
-beta_0 = [beta_0         -0.0159   -0.0046    0.0028    0.0005    0]
+beta_0 = [beta_0         -0.0159   -0.0046    0.0028    0.0005    0.0117]
 % beta_0 = [-5.0318    0.1763    2.0272    0.3235    0.0454];
 % beta_0 = [beta_0         -0.0564    0.0017   -0.1336    0.0423   -0.0423   -0.0117    -0.0752    0.0117];  
 % beta_0 = [beta_0          0 0 0 0 0 0 0 0];
@@ -243,7 +220,7 @@ beta_0 = [beta_0         -0.0159   -0.0046    0.0028    0.0005    0]
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_t(X, y, beta_0, innov_X, explor_X, b_i, b_e, d_i, d_e);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_t(X, y, beta_0, innov_X, explor_X);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
@@ -257,8 +234,6 @@ display(grad)
 display(output)
 
 m = grad'*(-inv(hessian))*grad;          % convergence criterion of Train
-
-end
 
 diary off 
 
