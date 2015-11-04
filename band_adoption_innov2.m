@@ -201,7 +201,7 @@ load('matp.mat');
 row_ind = 1
 row_fid = [];
 row_interval = [];
-new_row = matp(1,1);
+new_row = matp(1,2);
 for i = 2:size(matp,1)
     old_row = new_row;
     new_row = matp(i,2);

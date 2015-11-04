@@ -84,23 +84,36 @@ McFadden_R_square = 1 - ll_ur/ll_r                        % likelihood ratio ind
 % format long g
 
 likelihood_ratio_test = -2*(ll_r-ll_ur)                   % >> chi2inv(0.95,28)
+LR_test_result = 1-chi2cdf(likelihood_ratio_test,28)
 
 % Or compare with the baseline model with 5 parameters including the constant
 % ll_r = -286972                 % baseline mdoel (k = 5)
 % ll_r = -286529                 
-ll_r = -286471                   % model without three-way interaction terms (k = 25)
-ll_ur = -286459                  % full model
+ll_r = -286471                    % model without three-way interaction terms (k = 25)
+% ll_r = -286465
+% ll_ur = -286459                  % full model
+% ll_ur = -286461                     % model with 1st 3-way interation term (k = 26)
+ll_ur = -286467                     % model with 2nd 3-way interation term(k = 26)
+% ll_ur = -286470                     % model with 3rd 3-way interation term(k = 26)
+% ll_ur = -286471                     % model with 4th 3-way interation term(k = 26)
+% w: Note that the ll_ur results for 2-4th 3-way interaction terms were
+% estimated using the starting point = 0 for the variable. This may influence the result
 likelihood_ratio_test = -2*(ll_r-ll_ur)
 chi2inv(0.99,4)
+LR_test_result = 1-chi2cdf(likelihood_ratio_test,4)
 
 % n = size(IVs,2)
 n = 6885477
-k = 29
-% k = 25
-ll = ll_ur
+% k_ur = 29
+k_ur = 26
+k_r = 25
+% ll = ll_ur
 % ll = ll_r
-AIC = -2*ll+2*k
-BIC = -2*ll+ log(n)*k
+AIC_r = -2*ll_r+2*k_r
+BIC_r = -2*ll_r+ log(n)*k_r
+AIC_ur = -2*ll_ur+2*k_ur
+BIC_ur = -2*ll_ur+ log(n)*k_ur
+% format long
 
 % Percent of correctly predicted values not reported because it is against
 % the meaning of specifying choice probabilities (researcher cannot predict
@@ -237,6 +250,195 @@ dP_dXimdXif = diff(dP_dXim,Xif)
 deriv_f = matlabFunction(dP_dXimdXif)
 deriv_f(2,0,0)
 
+%%
+age = 0:1:70;
+male = 1;
+w = -3+0.1*age+0.5*male;
+y = exp(w)./(1+exp(w));
+plot(age,y, 'r')
+hold on
+male = 0;
+w = -3+0.1*age+0.5*male;
+y = exp(w)./(1+exp(w));
+plot(age,y, 'b')
+hold off
 
+w = -5:0.1:5;
+y = exp(w)./(1+exp(w));
+plot(y,'r')
+hold on
+w = w+1;
+y = exp(w)./(1+exp(w));
+plot(y,'b')
+hold off
 
+%% corr time appear in sample vs explor_score
+% clear all
+% 
+% load('matpstd2.mat');
+% 
+% matps = matp(matp(:,7)==0,:);
+% 
+% row_ind = 1
+% row_fid = [];
+% row_interval = [];
+% new_row = matps(1,2);
+% for i = 2:size(matps,1)
+%     old_row = new_row;
+%     new_row = matps(i,2);
+%     if new_row == old_row
+%         row_ind = row_ind + 1;
+%     else
+%         row_fid = [row_fid old_row];
+%         row_interval = [row_interval row_ind];
+%         row_ind = 1;
+%     end
+% end
+% row_fid = [row_fid new_row];
+% row_interval = [row_interval row_ind];
+% 
+% row_interval_sum = cumsum(row_interval);
+% 
+% save('row_fid.mat','row_fid');
+% save('row_interval.mat','row_interval');
+% 
+% %
+% row_ind = 1
+% row_mid = [];
+% row_num = [];
+% new_row = matps(1,1);
+% for i = 2:size(matps,1)
+%     old_row = new_row;
+%     new_row = matps(i,1);
+%     if new_row == old_row
+%         row_ind = row_ind + 1;
+%     else
+%         row_mid = [row_mid old_row];
+%         row_num = [row_num row_ind];
+%         row_ind = 1;
+%     end
+% end
+% row_mid = [row_mid new_row];
+% row_num = [row_num row_ind];
+% 
+% sum(row_num)
+% 
+% row_num_sum = cumsum(row_num);
+% 
+% % row_mid2 = matp(row_interval_sum,1);
+% 
+% save('row_num.mat','row_num');
+% save('row_mid.mat','row_mid');
+% % csvwrite('row_num.csv',row_num);
+% % csvwrite('row_mid.csv',row_mid);
+% 
+% load('innov_contin_std2.mat');
+% load('explor_contin_std2.mat');
+% 
+% innov_contins = innov_contin(matp(:,7)==0,:);
+% explor_contins = explor_contin(matp(:,7)==0,:);
+% 
+% innov_f_score = innov_contins(row_interval_sum,3);
+% explor_f_score = explor_contins(row_interval_sum,3);
+% innov_m_score = innov_contins(row_num_sum,1);
+% explor_m_score = explor_contins(row_num_sum,1);
+% innov_m_score2 = innov_contins(row_interval_sum,1).^2;
+% explor_m_score2 = explor_contins(row_interval_sum,1).^2;
+% 
+% corr(innov_f_score,row_interval')
+% corr(explor_f_score,row_interval')
+% corr(innov_m_score,row_num')
+% corr(explor_m_score,row_num')
+% corr(innov_m_score2,row_interval')
+% corr(explor_m_score2,row_interval')
+
+clear all
+load('matpstd2.mat');
+row_ind = 1
+row_fid = [];
+row_interval = [];
+new_row = matp(1,2);
+for i = 2:size(matp,1)
+    old_row = new_row;
+    new_row = matp(i,2);
+    if new_row == old_row
+        row_ind = row_ind + 1;
+    else
+        row_fid = [row_fid old_row];
+        row_interval = [row_interval row_ind];
+        row_ind = 1;
+    end
+end
+row_fid = [row_fid new_row];
+row_interval = [row_interval row_ind];
+
+row_interval_sum = cumsum(row_interval);
+
+save('row_fid.mat','row_fid');
+save('row_interval.mat','row_interval');
+
+%
+row_ind = 1
+row_mid = [];
+row_num = [];
+new_row = matp(1,1);
+for i = 2:size(matp,1)
+    old_row = new_row;
+    new_row = matp(i,1);
+    if new_row == old_row
+        row_ind = row_ind + 1;
+    else
+        row_mid = [row_mid old_row];
+        row_num = [row_num row_ind];
+        row_ind = 1;
+    end
+end
+row_mid = [row_mid new_row];
+row_num = [row_num row_ind];
+
+sum(row_num)
+
+row_num_sum = cumsum(row_num);
+
+save('row_num.mat','row_num');
+save('row_mid.mat','row_mid');
+% csvwrite('row_num.csv',row_num);
+% csvwrite('row_mid.csv',row_mid);
+
+load('innov_contin_std2.mat');
+load('explor_contin_std2.mat');
+
+innov_m_score = innov_contin(row_num_sum,1);
+innov_f_score = innov_contin(row_interval_sum,3);
+explor_m_score = explor_contin(row_num_sum,1);
+explor_f_score = explor_contin(row_interval_sum,3);
+innov_m_score2 = innov_contin(row_interval_sum,1).^2;
+explor_m_score2 = explor_contin(row_interval_sum,1).^2;
+
+corr(innov_m_score,row_num')
+corr(innov_f_score,row_interval')
+corr(explor_m_score,row_num')
+corr(explor_f_score,row_interval')
+corr(innov_m_score2,row_interval')
+corr(explor_m_score2,row_interval')
+
+% quantile(innov_f_score,[0 0.05 0.25 0.5 0.75 0.95 1])
+% quantile(explor_f_score,[0 0.05 0.25 0.5 0.75 0.95 1])
+% 
+% quantile(innov_m_score,[0 0.05 0.25 0.5 0.75 0.95 1])
+% quantile(explor_m_score,[0 0.05 0.25 0.5 0.75 0.95 1])
+%
+% corr(matp(:,5),innov_contin(:,3))
+% corr(matp(:,5),explor_contin(:,3))
+% corr(matp(:,5),innov_contin(:,1))
+% corr(matp(:,5),explor_contin(:,1))
+
+corr(innov_contin(row_interval_sum,1),explor_contin(row_interval_sum,1))         
+corr(innov_contin(row_interval_sum,2),explor_contin(row_interval_sum,2))
+% high corr bewteen member innov and explor scores may explain why the
+% main effect cofficients are insig
+% corr(innov_contin(:,1),explor_contin(:,1))             
+% corr(innov_contin(:,2),explor_contin(:,2))
+% corr(innov_contin(:,3),explor_contin(:,3))
+% corr(innov_contin(:,4),explor_contin(:,4))
 

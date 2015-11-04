@@ -1,5 +1,5 @@
 % function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
-function [LL, gr, H] = band_bi_ll_t(b,IVs,choice_dv, innov_X, explor_X)
+function [LL, gr, H] = band_bi_ll_t(b,IVs,choice_dv, innov_X, explor_X, b_i, b_e, d_i, d_e)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
@@ -20,8 +20,8 @@ const = b(1);
 b_basic = b(4:5)';
 % b_innov = b([6:9 22:23 14:17 26:27])';
 % b_explor = b([10:13 24:25 18:21 28:29])';
-b_innov = b([6:9 22:23 14:17 26])';
-b_explor = b([10:13 24:25 18:21])';
+b_innov = b([6:9 22:23 14:17 b_i])';
+b_explor = b([10:13 24:25 18:21 b_e])';
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -50,7 +50,7 @@ b_explor = b([10:13 24:25 18:21])';
 % FV = [IVs(:,1) week_IV]*[bs; 0.07];
 
 % week_IV = gampdf(IVs(:,2),b(2),b(3));
-week_IV = 100*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));            % notice here exp(bs) !!
+week_IV = 100*gampdf(IVs(:,2),exp(b(2)),exp(b(3)));           % notice here exp(bs) !!
 week_IV(IVs(:,2)<1)=0;
 
 % FV_basic = [IVs(:,1) week_IV]*b_basic;
@@ -88,7 +88,7 @@ end
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV_basic + FV_innov + FV_explor;
 % FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
-FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,1:5)*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip(:,1:4)*b_explor(7:end);
+FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,[1:4 d_i])*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip(:,[1:4 d_e])*b_explor(7:end);
 
 % clearvars FV_basic FV_innov FV_explor
 % new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
