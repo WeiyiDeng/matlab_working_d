@@ -93,9 +93,9 @@ ll_r = -286471                    % model without three-way interaction terms (k
 % ll_r = -286465
 % ll_ur = -286459                  % full model
 % ll_ur = -286461                     % model with 1st 3-way interation term (k = 26)
-ll_ur = -286467                     % model with 2nd 3-way interation term(k = 26)
+% ll_ur = -286467                     % model with 2nd 3-way interation term(k = 26)
 % ll_ur = -286470                     % model with 3rd 3-way interation term(k = 26)
-% ll_ur = -286471                     % model with 4th 3-way interation term(k = 26)
+ll_ur = -286471                     % model with 4th 3-way interation term(k = 26)
 % w: Note that the ll_ur results for 2-4th 3-way interaction terms were
 % estimated using the starting point = 0 for the variable. This may influence the result
 likelihood_ratio_test = -2*(ll_r-ll_ur)
@@ -107,6 +107,7 @@ n = 6885477
 % k_ur = 29
 k_ur = 26
 k_r = 25
+% k_r = 5
 % ll = ll_ur
 % ll = ll_r
 AIC_r = -2*ll_r+2*k_r
@@ -157,47 +158,100 @@ b_basic = b(4:5)';
 b_innov = b([6:9 22:23 14:17 26:27])';
 b_explor = b([10:13 24:25 18:21 28:29])';
 
-quantile(explor_contin(:,3),[0,0.16,0.84,0.975,1])
-% A = quantile(explor_contin(:,3),0.25)
+% clear all
+% load('innov_contin2.mat');
+% load('explor_contin2.mat');
+
+mean(innov_contin)
+mean(explor_contin)
+quantile(innov_contin(:,1),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
+quantile(innov_contin(:,3),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
+quantile(explor_contin(:,1),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
+quantile(explor_contin(:,3),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
+% quantile(innov_contin(:,1),[0.14 0.5 0.86])
+% quantile(innov_contin(:,3),[0.14 0.5 0.86])
+% quantile(explor_contin(:,1),[0.14 0.5 0.86])
+% quantile(explor_contin(:,3),[0.14 0.5 0.86])
+
+hist(innov_contin(:,1),30)
+hist(innov_contin(:,3),30)
+hist(explor_contin(:,1),30)
+hist(explor_contin(:,3),30)
+line([1.9 1.9],[0 16*10^5], 'Color', 'r','Linestyle',':')
+line([-0.84 -0.84],[0 16*10^5], 'Color', 'r','Linestyle','--')
 
 % WD_plug = mean_wd;
-WD_plug = 2;
+% WD_plug = 0;
 base_prob_plug = mean_base_prob      %+1;
-innov_m_plug = mean_innov_m;
-innov_f_plug = mean_innov_f;
-explor_m_plug = mean_explor_m;
-explor_f_plug = mean_explor_f;
+% innov_m_plug = mean_innov_m;
+% innov_f_plug = mean_innov_f;
+% explor_m_plug = mean_explor_m;
+% explor_f_plug = mean_explor_f;
+% innov_intv_m = [-0.8901   -0.2244    1.7034];     % 14% 50% 86% quantile
+% innov_intv_f = [-0.9770   -0.1805    1.0119];     % 14% 50% 86% quantile
+% explor_intv_m = [-0.8495   -0.4930    1.9075];    % 14% 50% 86% quantile
+% explor_intv_f = [-0.7377   -0.2972    0.6773];    % 14% 50% 86% quantile
+innov_intv_m = [-1   0    1];     % 14% 50% 86% quantile
+innov_intv_f = [-1   0    1];     % 14% 50% 86% quantile
+explor_intv_m = [-1   0    1];    % 14% 50% 86% quantile
+explor_intv_f = [-1   0    1];    % 14% 50% 86% quantile
 
-innov_plug = [innov_m_plug innov_m_plug^2 innov_f_plug innov_f_plug^2 innov_m_plug*innov_f_plug (innov_m_plug*innov_f_plug)^2];
-explor_plug = [explor_m_plug explor_m_plug^2 explor_f_plug explor_f_plug^2 explor_m_plug*explor_f_plug (explor_m_plug*explor_f_plug)^2];
-week_IV = 100*gampdf(WD_plug,exp(b(2)),exp(b(3)));          
-week_IV(WD_plug<1)=0;           
+% WD_plug = -10:1:40;
+WD_plug = 2;
 
-innov_WD_multip = zeros(size(innov_plug));
-for i = 1:size(innov_plug,2);
-    innov_WD_multip(:,i) = innov_plug(:,i).*week_IV;
+prob = zeros(length(WD_plug),length(innov_intv_m));
+for q = 1:length(innov_intv_m)
+    innov_m_plug = innov_intv_m(2);
+    innov_f_plug = innov_intv_f(2);
+%     explor_m_plug = explor_intv_m(q);
+%     explor_f_plug = explor_intv_f(q);
+    explor_m_plug = explor_intv_m(2);            % choose median score for other variables
+    explor_f_plug = explor_intv_f(q);
+    
+    innov_plug = [innov_m_plug innov_m_plug^2 innov_f_plug innov_f_plug^2 innov_m_plug*innov_f_plug (innov_m_plug*innov_f_plug)^2];
+    explor_plug = [explor_m_plug explor_m_plug^2 explor_f_plug explor_f_plug^2 explor_m_plug*explor_f_plug (explor_m_plug*explor_f_plug)^2];
+    
+    for k = 1:length(WD_plug)
+        week_IV = 100*gampdf(WD_plug(k),exp(b(2)),exp(b(3)));
+        week_IV(WD_plug(k)<1)=0;
+        
+        innov_WD_multip = zeros(size(innov_plug));
+        for i = 1:size(innov_plug,2);
+            innov_WD_multip(:,i) = innov_plug(:,i).*week_IV;
+        end
+        
+        explor_WD_multip = zeros(size(explor_plug));
+        for j = 1:size(explor_plug,2);
+            explor_WD_multip(:,j) = explor_plug(:,j).*week_IV;
+        end
+        
+        FV = [base_prob_plug week_IV]*b_basic + innov_plug*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_plug*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
+        
+        % % another way of calculating marginal effect of baseline probability
+        % exp_util = exp(const+FV);
+        % prob = exp_util/(1+exp_util)
+        %
+        % marginal_effect_based_prob = exp_util/(1+exp_util)^2*b(4)
+        
+        exp_util = exp(-(const+FV));         % this is now the utility of the external good
+        prob(k,q)=1./(1+exp_util);
+        % this is still the probability of choosing the product
+        % pmat = [prob 1-prob];
+        % pmat = pmat.*choice_dv;
+        % [r c p] = find(pmat);                                             % I*1
+        % ll_ur = sum(log(p))                 % ll of unrestricted model (the one that was estimated)
+    end
 end
-
-explor_WD_multip = zeros(size(explor_plug));
-for j = 1:size(explor_plug,2);
-    explor_WD_multip(:,j) = explor_plug(:,j).*week_IV;
-end
-
-FV = [base_prob_plug week_IV]*b_basic + innov_plug*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_plug*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
-
-% % another way of calculating marginal effect of baseline probability
-% exp_util = exp(const+FV);         
-% prob = exp_util/(1+exp_util)               
-% 
-% marginal_effect_based_prob = exp_util/(1+exp_util)^2*b(4)
-
-exp_util = exp(-(const+FV));         % this is now the utility of the external good
-prob=1./(1+exp_util)                % this is still the probability of choosing the product
-% pmat = [prob 1-prob]; 
-% pmat = pmat.*choice_dv;
-% [r c p] = find(pmat);                                             % I*1
-% ll_ur = sum(log(p))                 % ll of unrestricted model (the one that was estimated)
-
+plot(WD_plug, prob(:,1),'r')
+hold on 
+plot(WD_plug, prob(:,2),'g')
+plot(WD_plug, prob(:,3),'b')
+legend('innov_m = L','innov_m = M','innov_m = H')
+title('predicted likelihood plot (friend innovativeness is low)')
+xlabel('week diff')
+ylabel('probability')
+set(gca, 'YLim',[0 0.014])                    % change y axis
+hold off
 
 %% analytical derivative
 syms X Z
@@ -273,86 +327,8 @@ plot(y,'b')
 hold off
 
 %% corr time appear in sample vs explor_score
-% clear all
-% 
-% load('matpstd2.mat');
-% 
-% matps = matp(matp(:,7)==0,:);
-% 
-% row_ind = 1
-% row_fid = [];
-% row_interval = [];
-% new_row = matps(1,2);
-% for i = 2:size(matps,1)
-%     old_row = new_row;
-%     new_row = matps(i,2);
-%     if new_row == old_row
-%         row_ind = row_ind + 1;
-%     else
-%         row_fid = [row_fid old_row];
-%         row_interval = [row_interval row_ind];
-%         row_ind = 1;
-%     end
-% end
-% row_fid = [row_fid new_row];
-% row_interval = [row_interval row_ind];
-% 
-% row_interval_sum = cumsum(row_interval);
-% 
-% save('row_fid.mat','row_fid');
-% save('row_interval.mat','row_interval');
-% 
-% %
-% row_ind = 1
-% row_mid = [];
-% row_num = [];
-% new_row = matps(1,1);
-% for i = 2:size(matps,1)
-%     old_row = new_row;
-%     new_row = matps(i,1);
-%     if new_row == old_row
-%         row_ind = row_ind + 1;
-%     else
-%         row_mid = [row_mid old_row];
-%         row_num = [row_num row_ind];
-%         row_ind = 1;
-%     end
-% end
-% row_mid = [row_mid new_row];
-% row_num = [row_num row_ind];
-% 
-% sum(row_num)
-% 
-% row_num_sum = cumsum(row_num);
-% 
-% % row_mid2 = matp(row_interval_sum,1);
-% 
-% save('row_num.mat','row_num');
-% save('row_mid.mat','row_mid');
-% % csvwrite('row_num.csv',row_num);
-% % csvwrite('row_mid.csv',row_mid);
-% 
-% load('innov_contin_std2.mat');
-% load('explor_contin_std2.mat');
-% 
-% innov_contins = innov_contin(matp(:,7)==0,:);
-% explor_contins = explor_contin(matp(:,7)==0,:);
-% 
-% innov_f_score = innov_contins(row_interval_sum,3);
-% explor_f_score = explor_contins(row_interval_sum,3);
-% innov_m_score = innov_contins(row_num_sum,1);
-% explor_m_score = explor_contins(row_num_sum,1);
-% innov_m_score2 = innov_contins(row_interval_sum,1).^2;
-% explor_m_score2 = explor_contins(row_interval_sum,1).^2;
-% 
-% corr(innov_f_score,row_interval')
-% corr(explor_f_score,row_interval')
-% corr(innov_m_score,row_num')
-% corr(explor_m_score,row_num')
-% corr(innov_m_score2,row_interval')
-% corr(explor_m_score2,row_interval')
-
 clear all
+
 load('matpstd2.mat');
 row_ind = 1
 row_fid = [];
@@ -422,12 +398,19 @@ corr(explor_f_score,row_interval')
 corr(innov_m_score2,row_interval')
 corr(explor_m_score2,row_interval')
 
+corr(innov_m_score,explor_m_score)            % 0.03
+corr(innov_f_score,explor_f_score)            % 0.10
+% compare with
+innov = csvread('EAi3.csv');
+explor = csvread('explorer3.csv');
+corr(innov(:,2), explor)                      % -0.04
+
 % quantile(innov_f_score,[0 0.05 0.25 0.5 0.75 0.95 1])
 % quantile(explor_f_score,[0 0.05 0.25 0.5 0.75 0.95 1])
 % 
 % quantile(innov_m_score,[0 0.05 0.25 0.5 0.75 0.95 1])
 % quantile(explor_m_score,[0 0.05 0.25 0.5 0.75 0.95 1])
-%
+% 
 % corr(matp(:,5),innov_contin(:,3))
 % corr(matp(:,5),explor_contin(:,3))
 % corr(matp(:,5),innov_contin(:,1))
@@ -441,4 +424,3 @@ corr(innov_contin(row_interval_sum,2),explor_contin(row_interval_sum,2))
 % corr(innov_contin(:,2),explor_contin(:,2))
 % corr(innov_contin(:,3),explor_contin(:,3))
 % corr(innov_contin(:,4),explor_contin(:,4))
-
