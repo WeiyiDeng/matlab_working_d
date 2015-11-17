@@ -89,16 +89,13 @@ LR_test_result = 1-chi2cdf(likelihood_ratio_test,28)
 % Or compare with the baseline model with 5 parameters including the constant
 % ll_r = -286972                 % baseline mdoel (k = 5)
 % ll_r = -286529                 
-ll_r = -286513                      % model without interaction with WD (k = 17)
-% ll_r = -286471                    % model without three-way interaction terms (k = 25)
+ll_r = -286471                    % model without three-way interaction terms (k = 25)
 % ll_r = -286465
-% ll_ur = -286504                     % model with 2-way interaction of explor scores with WD (k = 21)
-ll_ur = -286484                     % model with 2-way interaction of innov scores with WD (k = 21)
 % ll_ur = -286459                  % full model
 % ll_ur = -286461                     % model with 1st 3-way interation term (k = 26)
 % ll_ur = -286467                     % model with 2nd 3-way interation term(k = 26)
 % ll_ur = -286470                     % model with 3rd 3-way interation term(k = 26)
-% ll_ur = -286471                     % model with 4th 3-way interation term(k = 26)
+ll_ur = -286471                     % model with 4th 3-way interation term(k = 26)
 % w: Note that the ll_ur results for 2-4th 3-way interaction terms were
 % estimated using the starting point = 0 for the variable. This may influence the result
 likelihood_ratio_test = -2*(ll_r-ll_ur)
@@ -194,23 +191,22 @@ base_prob_plug = mean_base_prob      %+1;
 % innov_intv_f = [-0.9770   -0.1805    1.0119];     % 16% 50% 84% quantile
 % explor_intv_m = [-0.8495   -0.4930    1.9075];    % 16% 50% 84% quantile
 % explor_intv_f = [-0.7377   -0.2972    0.6773];    % 16% 50% 84% quantile
-innov_intv_m = quantile(innov_contin(:,1),[0.16 0.5 0.84]);     % 16% 50% 84% quantile
-innov_intv_f = quantile(innov_contin(:,3),[0.16 0.5 0.84]);     % 16% 50% 84% quantile
-explor_intv_m = quantile(explor_contin(:,1),[0.16 0.5 0.84]);    % 16% 50% 84% quantile
-explor_intv_f = quantile(explor_contin(:,3),[0.16 0.5 0.84]);    % 16% 50% 84% quantile
+innov_intv_m = [-1   0    1];     % 16% 50% 84% quantile
+innov_intv_f = [-1   0    1];     % 16% 50% 84% quantile
+explor_intv_m = [-1   0    1];    % 16% 50% 84% quantile
+explor_intv_f = [-1   0    1];    % 16% 50% 84% quantile
 
-WD_plug = -10:1:40;
-% WD_plug = 2;
+% WD_plug = -10:1:40;
+WD_plug = 2;
 
 prob = zeros(length(WD_plug),length(innov_intv_m));
 for q = 1:length(innov_intv_m)
-    innov_m_plug = innov_intv_m(q);
-    innov_f_plug = innov_intv_f(1);
-%     innov_f_plug = 8;                          % upside down shape of prob ?
+    innov_m_plug = innov_intv_m(2);
+    innov_f_plug = innov_intv_f(2);
 %     explor_m_plug = explor_intv_m(q);
 %     explor_f_plug = explor_intv_f(q);
     explor_m_plug = explor_intv_m(2);            % choose median score for other variables
-    explor_f_plug = explor_intv_f(2);
+    explor_f_plug = explor_intv_f(q);
     
     innov_plug = [innov_m_plug innov_m_plug^2 innov_f_plug innov_f_plug^2 innov_m_plug*innov_f_plug (innov_m_plug*innov_f_plug)^2];
     explor_plug = [explor_m_plug explor_m_plug^2 explor_f_plug explor_f_plug^2 explor_m_plug*explor_f_plug (explor_m_plug*explor_f_plug)^2];
@@ -248,12 +244,12 @@ for q = 1:length(innov_intv_m)
 end
 plot(WD_plug, prob(:,1),'k')
 hold on 
-plot(WD_plug, prob(:,2),'r')
+plot(WD_plug, prob(:,2),'g')
 plot(WD_plug, prob(:,3),'b')
-legend('sender innov = L','sender innov = M','sender innov = H')
-title('receiver innov score = low')
-xlabel('week difference')
-ylabel('likelihood')
+legend('innov_m = L','innov_m = M','innov_m = H')
+title('predicted likelihood plot (friend innovativeness is low)')
+xlabel('week diff')
+ylabel('probability')
 set(gca, 'YLim',[0 0.014])                    % change y axis
 hold off
 
@@ -428,30 +424,3 @@ corr(innov_contin(row_interval_sum,2),explor_contin(row_interval_sum,2))
 % corr(innov_contin(:,2),explor_contin(:,2))
 % corr(innov_contin(:,3),explor_contin(:,3))
 % corr(innov_contin(:,4),explor_contin(:,4))
-
-%% descriptive statistics
-clear all
-
-load('matp2.mat');
-load('innov_contin2.mat');
-load('explor_contin2.mat');
-
-% load('matpstd2.mat');
-% load('innov_contin_std2.mat');
-% load('explor_contin_std2.mat');
-
-mean(matp(:,5:7))
-max(matp(:,5:7))
-max(matp(:,5:7))
-std(matp(:,5:7))
-
-mean(innov_contin(:,[1 3]))
-max(innov_contin(:,[1 3]))
-max(innov_contin(:,[1 3]))
-std(innov_contin(:,[1 3]))
-
-mean(explor_contin(:,[1 3]))
-max(explor_contin(:,[1 3]))
-max(explor_contin(:,[1 3]))
-std(explor_contin(:,[1 3]))
-

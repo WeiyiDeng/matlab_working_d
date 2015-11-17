@@ -38,12 +38,12 @@ quantile(innov_contin(:,3),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
 quantile(explor_contin(:,1),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
 quantile(explor_contin(:,3),[0 0.05 0.1 0.25 0.3 0.5 0.6 0.75 0.9 0.95 1])
 
-histogram(innov_contin(:,1),50)
-histogram(innov_contin(:,3),50)
-histogram(explor_contin(:,1),50)
-histogram(explor_contin(:,3),50)
-text(-1,120000,'14%')
-text(2,120000,'86%')
+hist(innov_contin(:,1),50)
+hist(innov_contin(:,3),50)
+hist(explor_contin(:,1),50)
+hist(explor_contin(:,3),50)
+text(-1,120000,'16%')
+text(2,120000,'84%')
 line([1.9 1.9],[0 16*10^5], 'Color', 'r','Linestyle',':')
 line([-0.84 -0.84],[0 16*10^5], 'Color', 'r','Linestyle','--')
 
@@ -56,18 +56,23 @@ explor_f_q = quantile(explor_contin(:,3),q_eval);
 
 % WD_plug = mean_wd;
 WD_plug = 2;
-base_prob_plug = mean_base_prob      %+1;
-innov_m_plug = mean_innov_m;
-innov_f_plug = mean_innov_f;
-explor_m_plug = mean_explor_m;
-explor_f_plug = mean_explor_f;
+% base_prob_plug = mean_base_prob      %+1;
+% innov_m_plug = mean_innov_m;
+% innov_f_plug = mean_innov_f;
+% explor_m_plug = mean_explor_m;
+% explor_f_plug = mean_explor_f;
+base_prob_plug = median(matp(:,6));      %+1;
+innov_m_plug = median(innov_contin(:,1));
+innov_f_plug = median(innov_contin(:,3));
+explor_m_plug = median(explor_contin(:,1));
+explor_f_plug = median(explor_contin(:,3));
 
 prob = zeros(length(q_eval),1);
 for k = 1:length(q_eval)
-%     innov_m_plug = innov_m_q(k);
+    innov_m_plug = innov_m_q(k);
 %     innov_f_plug = innov_f_q(k);                                             %<- to change
 %     explor_m_plug = explor_m_q(k);
-    explor_f_plug = explor_f_q(k);
+%     explor_f_plug = explor_f_q(k);
     
     innov_plug = [innov_m_plug innov_m_plug^2 innov_f_plug innov_f_plug^2 innov_m_plug*innov_f_plug (innov_m_plug*innov_f_plug)^2];
     explor_plug = [explor_m_plug explor_m_plug^2 explor_f_plug explor_f_plug^2 explor_m_plug*explor_f_plug (explor_m_plug*explor_f_plug)^2];
@@ -102,7 +107,7 @@ for k = 1:length(q_eval)
     % ll_ur = sum(log(p))                 % ll of unrestricted model (the one that was estimated)
 end
 
-
+% after running the whole file, rerun from here to get the plot with correct axies
 ax1 = axes;                               % generate two axes at same position
 ax2 = axes('Position', get(ax1, 'Position'),'Color','none');
 
@@ -110,29 +115,29 @@ set(ax2,'YAxisLocation','right')          % move second axis to the right, remov
 set(ax2,'XTick',[])
 % set(ax2,'Xticklabel',[])
 
-% histogram(ax1,innov_contin(:,1),30)
-% histogram(innov_contin(:,1),50)
-% histogram(ax1,innov_contin(:,3),30)                                          %<- to change
-histogram(ax1,explor_contin(:,3),30)
-% histogram(ax1,explor_contin(:,3),30)
+% hist(innov_contin(:,1),50)
+hist(ax1,innov_contin(:,1),100)
+% hist(ax1,innov_contin(:,3),100)                                          %<- to change
+% hist(ax1,explor_contin(:,1),100)
+% hist(ax1,explor_contin(:,3),100)
 
 hold on
 % plot(innov_m_q,prob)
 
 % plot(ax2,innov_f_q,prob,'r','linewidth',0.001)                               %<- to change
-plot(ax2,explor_f_q,prob,'-r.','linewidth',0.001)
+plot(ax2,innov_m_q,prob,'-r.','linewidth',0.001)
 % plot(ax2,innov_m_q,prob,'r.')
 hold off
 
-x_point = quantile(explor_contin(:,3),[0.14 0.86]);                           %<- to change
+x_point = quantile(innov_contin(:,1),[0.16 0.84]);                           %<- to change
 % x_point = x_point +[0.06, -0.06];
 % line([x_point(1) x_point(1)],[0 16*10^5], 'Color', 'r','Linestyle',':')
 % line([x_point(2) x_point(2)],[0 16*10^5], 'Color', 'r','Linestyle','--')
 line([x_point(1) x_point(1)],[0 0.014], 'Color', 'r','Linestyle','--')
 line([x_point(2) x_point(2)],[0 0.014], 'Color', 'r','Linestyle','--')
-text(x_point(1)+0.1,0.001,'14%')
-text(x_point(2)+0.2,0.001,'86%')
+text(x_point(1)+0.1,0.001,'16%')
+text(x_point(2)+0.1,0.001,'84%')
 
-ylabel(ax1,'hist of obs')
-ylabel(ax2,'likelihood to adopt')
-xlabel(ax1,'friend explor score')                                             %<- to change
+ylabel(ax1,'num of obs')
+ylabel(ax2,'likelihood')
+xlabel(ax1,'sender innov score')                                             %<- to change
