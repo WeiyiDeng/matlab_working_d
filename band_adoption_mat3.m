@@ -85,6 +85,18 @@ end
 %     end
 % end
 
+moving_avg = 32;
+moving_w = zeros(J,T-moving_avg);
+for j = 1:J
+    for t = 1:T-moving_avg
+        moving_w(j,t) = mean(diffusion_jt(t:t+moving_avg-1,j));
+    end
+end
+sum(diffusion_jt(:,1577))                % Ed Sheeran
+plot(moving_w(1577,:))
+sum(diffusion_jt(:,799))                % Bruno Mars
+plot(moving_w(799,:))
+
 % introdate = csvread('introdatej3.csv');
 % 
 % introdate(:,2) = introdate(:,2)-old_bandt;    

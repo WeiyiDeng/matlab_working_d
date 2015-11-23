@@ -247,8 +247,8 @@ innov_intv_f = innov_intv_m
 explor_intv_m = quantile([uni_explor_m' uni_explor_f'],[0.1 0.5 0.9])
 explor_intv_f = explor_intv_m
 
-WD_plug = -10:1:40;
-% WD_plug = 2;
+% WD_plug = -10:1:40;
+WD_plug = 0;
 
 prob = zeros(length(WD_plug),length(innov_intv_m));
 for q = 1:length(innov_intv_m)
