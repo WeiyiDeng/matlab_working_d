@@ -89,7 +89,7 @@ LR_test_result = 1-chi2cdf(likelihood_ratio_test,28)
 % Or compare with the baseline model with 5 parameters including the constant
 % ll_r = -286972                 % baseline mdoel (k = 5)
 % ll_r = -286529                 
-ll_r = -286471                    % model without three-way interaction terms (k = 25)
+ll_r = -286513                    % model without three-way interaction terms (k = 25)
 % ll_r = -286465
 % ll_ur = -286459                  % full model
 % ll_ur = -286461                     % model with 1st 3-way interation term (k = 26)
@@ -105,8 +105,8 @@ LR_test_result = 1-chi2cdf(likelihood_ratio_test,4)
 % n = size(IVs,2)
 n = 6885477
 % k_ur = 29
-k_ur = 26
-k_r = 25
+k_ur = 25
+k_r = 17
 % k_r = 5
 % ll = ll_ur
 % ll = ll_r
