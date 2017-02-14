@@ -8,6 +8,8 @@ date_=clock;
 resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
 diary(resultsfilename);
 
+mfilename('fullpath')   
+
 % load('matp_b.mat');
 % load('matp.mat');
 load('innov_contin_std2.mat');

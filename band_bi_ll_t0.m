@@ -17,13 +17,13 @@ const = b(1);
 % bs = b(3:end)';
 % bs = b(2:1+size(IVs,2))';
 % FV = IVs*bs;
-% b_basic = b(4:5)';
-% b_innov = b([6:9 22:23 14:17])';
-% b_explor = b([10:13 24:25 18:21])';
 b_basic = b(4:5)';
-% b_innov = b([6:9 22:23 14:17 26:27])';
 b_innov = b([6:9 22:23 14:17])';
-b_explor = b([10:13 24:25 18:21 28:29])';
+b_explor = b([10:13 24:25 18:21])';
+% b_basic = b(4:5)';
+% b_innov = b([6:9 22:23 14:17 26:27])';
+% b_innov = b([6:9 22:23 14:17])';
+% b_explor = b([10:13 24:25 18:21 28:29])';
 % b_explor = b([10:13 24:25 18:21])';
 % b_innov = b([6:9 18:19])';
 % b_explor = b([10:13 20:21 14:17])';
@@ -92,8 +92,8 @@ end
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV_basic + FV_innov + FV_explor;
-% FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,1:4)*b_innov(7:10) + explor_X*b_explor(1:6)+explor_WD_multip(:,1:4)*b_explor(7:10);
-FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,1:4)*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
+FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,1:4)*b_innov(7:10) + explor_X*b_explor(1:6)+explor_WD_multip(:,1:4)*b_explor(7:10);
+% FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip(:,1:4)*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
 % FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6) + explor_X*b_explor(1:6) + explor_WD_multip(:,1:4)*b_explor(7:end);
 
 % clearvars FV_basic FV_innov FV_explor
