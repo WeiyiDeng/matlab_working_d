@@ -12,13 +12,13 @@ mfilename('fullpath')
 
 % load('matp_b.mat');
 % load('matp.mat');
-% load('innov_contin_std2.mat');
-% load('explor_contin_std2.mat');
-% load('matpstd2.mat');
+load('innov_contin_std2.mat');
+load('explor_contin_std2.mat');
+load('matpstd2.mat');
 
-load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\matpstd2.mat')
-load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\innov_contin_std2.mat');
-load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\explor_contin_std2.mat');
+% load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\matpstd2.mat')
+% load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\innov_contin_std2.mat');
+% load('E:\Trans\Transfer from old Toshiba\Transfer from E Disk Toshiba\temp store\explor_contin_std2.mat');
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;

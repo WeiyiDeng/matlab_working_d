@@ -12,26 +12,13 @@ diary(resultsfilename);
 
 mfilename('fullpath')                           % print filename of currently running script
 
-% disp('run complete cases with mean imputation and exp(log(y_hat)) as predicted trends')                % print message
-% disp('run complete cases with mean imputation and log(y_hat) as predicted trends') 
-% disp('run complete cases with mean imputation and log(y_hat) as predicted trends and baseline probability as controls') 
-% disp('Strict adoption no trend')
-disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends') 
-
-% % load('matp_b.mat');
-% % load('matpstd2.mat');
-% % load('innov_contin_trend.mat');
-% % load('explor_contin_trend.mat');
-% load('matp_trend.mat');                  % goes with the model with 30 variables (two trends)
-% % load('matp_trend_exp.mat');
+% load('matp_b.mat');
+load('matp_trend_rm.mat');
+load('innov_contin_trend_rm.mat');
+load('explor_contin_trend_rm.mat');
+% load('matp_trend.mat');
 % load('innov_contin_std2.mat');
 % load('explor_contin_std2.mat');
-% load('matp_strict_adopt_std.mat');
-% load('innov_contin2_strict_std.mat');
-% load('explor_contin2_strict_std.mat');
-load('matp_trend_strict_rm.mat');
-load('innov_contin_trend_strict_rm.mat');
-load('explor_contin_trend_strict_rm.mat');
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;
@@ -201,11 +188,6 @@ y = matp(:,5);
 
 clearvars matp
 
-% load('matpstd2.mat');                  % add old baseline probability to the model (two controls here: trend and BP)         mar 2017
-% X = [X matp(:,6)];
-% clearvars matp
-
-
 % innov_X = innov_contin(:,1:4);
 % % innov_X = [];
 % explor_X = explor_contin(:,1:4);
@@ -227,8 +209,7 @@ clearvars innov_contin explor_contin
 beta_0 = [-5.0318    0.1763    2.0272    0.3235    0.0454];
 beta_0 = [beta_0         -0.0564    0.0017   -0.1336    0.0423   -0.0423   -0.0117    -0.0752    0.0117];  
 beta_0 = [beta_0          0 0 0 0 0 0 0 0];
-beta_0 = [beta_0         0 0 0 0 0 0 0 0];
-% beta_0 = [beta_0 0]                                  % add one more beta for BP
+beta_0 = [beta_0         0 0 0 0 0 0 0 0]
 % beta_0 = [beta_0         0.1    0.12   0    0.1   0.1   -0.1    0.1    -0.1];  
 % beta_0 = [beta_0          0.04 -0.04 0.03 -0.03 -0.02 0.02 -0.03 0.01];
 % beta_0 = [beta_0         -0.04 -0.01 0.01 0.01 0.03 0.01 0.01 -0.01]
@@ -239,7 +220,7 @@ beta_0 = [beta_0         0 0 0 0 0 0 0 0];
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend(X, y, beta_0, innov_X, explor_X);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_ipc(X, y, beta_0, innov_X, explor_X);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
