@@ -86,7 +86,7 @@ for i = 1:size(friendlist,1)                                         % i here  i
     for j = 1:J
         adoptfij_time = band_adopt_mat(friend_id,j);
         adoptmij_time = band_adopt_mat(member_id, j);
-        if adoptfij_time~=0 && adoptmij_time~=0
+        if adoptfij_time~=0 && adoptmij_time~=0                      % both member and friend have to adopt? why?               Mar 2017
             if adoptfij_time > timesplit(friend_id,3) && adoptmij_time > timesplit(member_id,3)
                 pre_start = max([timesplit(friend_id,3) bandtime(j,2)]);
                 pre_end = min([timesplit(friend_id,4) bandtime(j,3)]);        % still overlap period between friend obs and band obs ??

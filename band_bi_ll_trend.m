@@ -20,7 +20,7 @@ const = b(1);
 b_basic = b(4:5)';
 b_innov = b([6:9 22:23 14:17 26:27])';
 b_explor = b([10:13 24:25 18:21 28:29])';
-% b_BP = b(30);
+b_BP = b(30);
 
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
@@ -86,8 +86,8 @@ end
 % FV = [IVs(:,1) week_IV]*[3.0426   12.7745]'; 
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV_basic + FV_innov + FV_explor;
-FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
-% FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);          % with both trend and BP as controls
+% FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
+FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);          % with both trend and BP as controls
 
 % clearvars FV_basic FV_innov FV_explor
 % new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
