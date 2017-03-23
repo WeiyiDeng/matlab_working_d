@@ -241,7 +241,7 @@ beta_0 = [beta_0 0]                                  % add one more beta for BP
 % beta_0 = [-100 100 -10]
 % beta_0 = [-6.1474    3.1608    0.4154]
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0);
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend(X, y, beta_0, innov_X, explor_X);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_format(X, y, beta_0, innov_X, explor_X);
 
 display(b)
 % display(standard_error)
@@ -255,21 +255,21 @@ betaCoefficient = b';
 StandardError = standard_error;
 tStatistics = t_stat';
 
-var_names = {'constant';'gamma_k';'gamma_?';'BP';'SI';'Innov_m';'Innov_m2';'Innov_f';'Innov_f2';...
-    'Explor_m';'Explor_m2';'Explor_f';'Explor_f2';'Innov_m?Innov_f';'(Innov_m?Innov_f)2';...         % cell object here !
-    'Explor_m?Explor_f';'(Explor_m?Explor_f)2';'Innov_m?SI';'Innov_m2?SI';'Innov_f?SI';'Innov_f2?SI';...
-    'Explor_m?SI';'Explor_m2?SI';'Explor_f?SI';'Explor_f2?SI';'Innov_m?Innov_f?SI';'(Innov_m?Innov_f)2?SI';...
-    'Explor_m?Explor_f?SI';'(Explor_m?Explor_f)2?SI'};
+var_names = {'constant';'gamma_k';'gamma_*';'trend';'SI';'Innov_m';'Innov_m2';'Innov_f';'Innov_f2';...
+    'Explor_m';'Explor_m2';'Explor_f';'Explor_f2';'Innov_m*Innov_f';'(Innov_m*Innov_f)2';...         % cell object here !
+    'Explor_m*Explor_f';'(Explor_m*Explor_f)2';'Innov_m*SI';'Innov_m2*SI';'Innov_f*SI';'Innov_f2*SI';...
+    'Explor_m*SI';'Explor_m2*SI';'Explor_f*SI';'Explor_f2*SI';'Innov_m*Innov_f*SI';'(Innov_m*Innov_f)2*SI';...
+    'Explor_m*Explor_f*SI';'(Explor_m*Explor_f)2*SI';'baseline_prob'};
 
 myTable = table(betaCoefficient, StandardError, tStatistics, 'RowNames', var_names)
 
 mystr = strcat(num2str(date_(1)),num2str(date_(2)),num2str(date_(3)),num2str(date_(4)),num2str(date_(5)));
 disp(mystr)
 
-b_name = strcat('b_',mystr,'.mat');
-SE_name = strcat('standard_error_',mystr,'.mat');
-t_name = strcat('t_stat_',mystr,'.mat');
-flag_name = strcat('exit_flag_',mystr,'.mat');
+b_name = strcat('Results/mat_files/b_',mystr,'.mat');
+SE_name = strcat('Results/mat_files/standard_error_',mystr,'.mat');
+t_name = strcat('Results/mat_files/t_stat_',mystr,'.mat');
+flag_name = strcat('Results/mat_files/exit_flag_',mystr,'.mat');
 
 % save('b.mat','b') ;
 % save('standard_error.mat','standard_error') ;

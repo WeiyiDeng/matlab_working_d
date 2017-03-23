@@ -1,17 +1,12 @@
-%% generate data
-rng(10086)
+% baseline probability smoothing transformation with ad hoc method 
+% (varying moving average window depending on # of observations in the time interval)
+function smooth_array = baseline_prob_smooth_func(myarray, obs_cut)
 
-% sth = ceil(abs(randn(1,20)*10))
-myarray = ceil(abs(trnd(1,1,20)*5-3))
-
-plot(myarray,'o')
-
-%%
 k=0;
 smooth_array = zeros(size(myarray));
 
 for t=1:length(myarray)
-    if myarray(t)>10
+    if myarray(t)>obs_cut
         break
     end
 end
@@ -19,10 +14,10 @@ if t > 1
     smooth_array(1:(t-1)) = mean(myarray(1:t));
 else
 end
-begin_ind = t
+begin_ind = t;
 
 for i=begin_ind:length(myarray)
-    if myarray(i)>10
+    if myarray(i)>obs_cut            % number of observations used as cut-off point; not to do smoothing if above this point
         k = 0;
         smooth_array(i) = myarray(i);
     else k = k+1;
@@ -30,7 +25,7 @@ for i=begin_ind:length(myarray)
         for j = 1:k
             if i+j > length(myarray)
                 break
-            elseif myarray(i+j)>10
+            elseif myarray(i+j)>obs_cut
                 right_end_add = j;
                 break
             end
@@ -45,20 +40,4 @@ for i=begin_ind:length(myarray)
     end
 end
 
-% Index exceeds matrix dimensions            to be fixed ?
-
-% % test break
-% for i = 1:10
-%     for j = 1:10
-%         my_times = i*j
-%         if my_times >50
-%             break                 % only breaks the first loop
-%         end
-%     end
-% end
-
-%% test func for smoothing
-smooth_array = baseline_prob_smooth_func(myarray,10)
-
-myarray = zeros(1,20);
-smooth_array = baseline_prob_smooth_func(myarray,10)
+end
