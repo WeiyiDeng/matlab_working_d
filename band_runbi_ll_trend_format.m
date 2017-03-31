@@ -1,6 +1,6 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
 function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_format(X, y, beta_0, innov_X, explor_X)
-global I J dummies se T
+global I J dummies se T model_num newBP lenient model_stage
 
 % I = 10000
 % J = 2

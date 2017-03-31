@@ -1,8 +1,8 @@
 % modified from band_adoption_run_ipc.m
 
-clc
-% clear
-clear all
+% clc
+% % clear
+% clear all
 
 global model_num newBP lenient
 
@@ -15,9 +15,9 @@ diary(resultsfilename);
 mfilename('fullpath')                           % print filename of currently running script
 
 
-model_num = 1
-newBP = 1
-lenient = 1
+% model_num = 1
+% newBP = 1
+% lenient = 1
 
 if model_num == 1 && newBP == 0 && lenient == 0
     disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls')
@@ -25,40 +25,50 @@ if model_num == 1 && newBP == 0 && lenient == 0
     load('innov_contin_trend_strict_rm.mat');
     load('explor_contin_trend_strict_rm.mat');
 elseif model_num == 1 && newBP == 1 && lenient == 0
-    disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and new baseline probability both as controls')
+    disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
     load('matp_trend_strict_rm.mat');
     load('innov_contin_trend_strict_rm.mat');
     load('explor_contin_trend_strict_rm.mat');
+elseif model_num == 1 && newBP == 1 && lenient == 3
+    disp('run original adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
+    load('matp_trend_rm.mat');
+    load('innov_contin_trend_rm.mat');
+    load('explor_contin_trend_rm.mat');
 elseif model_num == 1 && newBP == 0 && lenient == 1
     disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls')
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
 elseif model_num == 1 && newBP == 1 && lenient == 1
-    disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and new baseline probability both as controls')
+    disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
-elseif model_num == 2 && newBP == 0 && lenient == 0
-    disp('Strict adoption no trend with baseline prob')
-    load('matp_strict_adopt_std.mat');
-    load('innov_contin2_strict_std.mat');
-    load('explor_contin2_strict_std.mat');
+% elseif model_num == 2 && newBP == 0 && lenient == 0
+%     disp('Strict adoption no trend with baseline prob')
+%     load('matp_strict_adopt_std.mat');
+%     load('innov_contin2_strict_std.mat');
+%     load('explor_contin2_strict_std.mat');
 elseif model_num == 2 && newBP == 1 && lenient == 0
-    disp('Strict adoption no trend with new baseline prob with ad hoc smoothing')
-    load('matp_strict_adopt_newBP_std.mat');
+    disp('Strict adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_strict_adopt_newBP_clean_std.mat');
     load('innov_contin2_strict_std.mat');
     load('explor_contin2_strict_std.mat');
-elseif model_num == 2 && newBP == 0 && lenient == 1
-    disp('lenient adoption no trend with baseline prob')
-    load('matp_lenient_adopt_std.mat');
-    load('innov_contin2_lenient_std.mat');
-    load('explor_contin2_lenient_std.mat');
+% elseif model_num == 2 && newBP == 0 && lenient == 1
+%     disp('lenient adoption no trend with baseline prob')
+%     load('matp_lenient_adopt_std.mat');
+%     load('innov_contin2_lenient_std.mat');
+%     load('explor_contin2_lenient_std.mat');
 elseif model_num == 2 && newBP == 1 && lenient == 1
-    disp('lenient adoption no trend with new baseline prob with ad hoc smoothing')
-    load('matp_lenient_adopt_newBP_std.mat');
+    disp('lenient adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_lenient_adopt_newBP_clean_std.mat');
     load('innov_contin2_lenient_std.mat');
     load('explor_contin2_lenient_std.mat');
+elseif model_num == 2 && newBP == 1 && lenient == 3
+    disp('original adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_former_adopt_newBP_clean_std.mat');
+    load('innov_contin2_std.mat');
+    load('explor_contin2_std.mat');
 elseif model_num == 3 && lenient == 0
     disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends')
     load('matp_trend_strict_rm.mat');
@@ -69,6 +79,11 @@ elseif model_num == 3 && lenient == 1
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
+elseif model_num == 3 && lenient == 3
+    disp('run original adoption with bands with no trend data deleted and log(y_hat) as predicted trends')
+    load('matp_trend_rm.mat');
+    load('innov_contin_trend_rm.mat');
+    load('explor_contin_trend_rm.mat');
 end
     
 
@@ -274,12 +289,17 @@ elseif model_num == 1 && newBP == 0 && lenient == 1
     clearvars matp
 elseif model_num == 1 && newBP == 1 && lenient == 0
     % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
-    load('matp_newbp_strict_rm.mat');
+    load('matp_newbp_clean_strict_rm.mat');
     X = [X matp(:,6)];
     clearvars matp
 elseif model_num == 1 && newBP == 1 && lenient == 1
     % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
-    load('matp_newbp_lenient_rm.mat');
+    load('matp_newbp_clean_lenient_rm.mat');
+    X = [X matp(:,6)];
+    clearvars matp
+elseif model_num == 1 && newBP == 1 && lenient == 3
+    % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
+    load('matp_newbp_clean_former_rm.mat');
     X = [X matp(:,6)];
     clearvars matp
 end

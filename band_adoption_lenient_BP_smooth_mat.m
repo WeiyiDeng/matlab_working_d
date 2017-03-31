@@ -2,7 +2,7 @@ clc
 clear all
 
 % adoptions = csvread('bandadoptions3.csv');               % note that adoptions has not subtracted 104
-adoptions = csvread('bandadoptions_strict_adopt.csv',1,0);               % note that adoptions has not subtracted 104
+adoptions = csvread('bandadoptions_lenient_adopt.csv',1,0);               % note that adoptions has not subtracted 104
 adoptions = adoptions(:,1:3);
 adopt_ones = ones(size(adoptions, 1),1);
 
@@ -64,7 +64,7 @@ sum(sum(diffusion_jt_smooth))
  
 timesplit = csvread('tsplit3.csv');
 % friendlist = csvread('friends3.csv');
-friendlist = csvread('new_friendlist_7623.csv');               % changes here !
+friendlist = csvread('new_friendlist_8088.csv',1,0);               % changes here !
 bandtime = csvread('tbands3.csv');
 
 bandtime(:,2) = bandtime(:,2)-old_bandt;
@@ -141,7 +141,7 @@ display('save as mat')
 matp = [member_p friend_p band_p timeobs DV prob_adopt_week new_week_diff A_week_ijt];
 % clearvars -EXCEPT matp
 % save('matp2.mat','matp', '-v7.3') ;
-save('matp_strict_adopt_newBP.mat','matp', '-v7.3') ;
+save('matp_lenient_adopt_newBP.mat','matp', '-v7.3') ;
 % csvwrite('matp.csv',matp);
 
 sum(matp(:,5))
@@ -507,14 +507,14 @@ end
 corr(vecA,vecB)
 
 %% standardize
-load('matp_strict_adopt.mat');
+load('matp_lenient_adopt_newBP.mat');
 % load('matp_strict_adopt_newBP.mat');
 matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
-save('matp_strict_adopt_std.mat','matp','-v7.3');
+save('matp_lenient_adopt_newBP_std.mat','matp','-v7.3');
 % save('matp_strict_adopt_newBP_std.mat','matp','-v7.3');
 clearvars matp
 
-load('innov_contin2_strict.mat');
+load('innov_contin2_lenient.mat');
 innov_m = innov_contin(:,1);
 innov_f = innov_contin(:,3);
 % innov_m = (innov_m-mean(innov_m))./std(innov_m);
@@ -523,10 +523,10 @@ innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.
 for i = 1:size(innov_contin,2)
     innov_contin(:,i) = (innov_contin(:,i)-mean(innov_contin(:,i)))./std(innov_contin(:,i));
 end
-save('innov_contin2_strict_std.mat','innov_contin','-v7.3');
+save('innov_contin2_lenient_std.mat','innov_contin','-v7.3');
 clearvars innov_contin
 
-load('explor_contin2_strict.mat');
+load('explor_contin2_lenient.mat');
 explor_m = explor_contin(:,1);
 explor_f = explor_contin(:,3);
 % explor_m = (explor_m-mean(explor_m))./std(explor_m);
@@ -535,7 +535,7 @@ explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (e
 for i = 1:size(explor_contin,2)
     explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
 end
-save('explor_contin2_strict_std.mat','explor_contin','-v7.3');
+save('explor_contin2_lenient_std.mat','explor_contin','-v7.3');
 
 %% plot estimated main effect and quadratic terms coefficients
 load('innov_contin_std2.mat');

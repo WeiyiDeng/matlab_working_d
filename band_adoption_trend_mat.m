@@ -1,8 +1,9 @@
 clc
 clear
 
-% load('matpstd2.mat');
-load('matp_strict_adopt.mat')
+load('matpstd2.mat');
+% load('matp_strict_adopt.mat')
+% load('matp_lenient_adopt.mat')
 
 % predict_trend = csvread('predict_trend.csv',1,0);       % reads from row 2 of the doc
 predict_trend = csvread('predict_trend_log.csv',1,0);       % reads from row 2 of the doc
@@ -81,12 +82,19 @@ baseline_prob_store = matp(:,6);             % temp store the baseline probabili
 matp(:,6) = trend_hat;
 
 %% get rid of bands without search trend data
-load('innov_contin_std2.mat');
-load('explor_contin_std2.mat');
+% load('innov_contin_std2.mat');
+% load('explor_contin_std2.mat');
+% innov_contin = innov_contin(find(matp(:,6))>0,:);
+% explor_contin = explor_contin(find(matp(:,6))>0,:);
+% save('innov_contin_trend_rm.mat','innov_contin','-v7.3');
+% save('explor_contin_trend_rm.mat','explor_contin','-v7.3');
+
+load('innov_contin2_lenient_std.mat');
+load('explor_contin2_lenient_std.mat');
 innov_contin = innov_contin(find(matp(:,6))>0,:);
 explor_contin = explor_contin(find(matp(:,6))>0,:);
-save('innov_contin_trend_rm.mat','innov_contin','-v7.3');
-save('explor_contin_trend_rm.mat','explor_contin','-v7.3');
+save('innov_contin_trend_lenient_rm.mat','innov_contin','-v7.3');
+save('explor_contin_trend_lenient_rm.mat','explor_contin','-v7.3');
 
 index_keep = find(matp(:,6))>0;          % store indices of obs not to remove
 
@@ -108,14 +116,23 @@ mean(matp(:,6))
 % save('matp_trend_exp.mat','matp','-v7.3');             % take exponent back to log(y_hat) as predicted trend
 % save('matp_trend.mat','matp','-v7.3');
 % save('matp_trend_rm.mat','matp','-v7.3');
-save('matp_trend_strict_rm.mat','matp','-v7.3');
+% save('matp_trend_strict_rm.mat','matp','-v7.3');
+save('matp_trend_lenient_rm.mat','matp','-v7.3');
 
 corr(baseline_prob_store,matp(:,6))                    % check corr between predicted trend and baseline prob
 scatter(baseline_prob_store,matp(:,6))
 
 %% prep matrix to use for band_adoption_run_trend.m for running the model with both baseline probability and trend data (30 variables in total)
-load('matp_strict_adopt.mat')
+% load('matp_lenient_adopt.mat')
+% load('matp_lenient_adopt_newBP_std.mat')
+% load('matp_lenient_adopt_newBP_clean_std.mat')
+% load('matp_strict_adopt_newBP_clean_std.mat')
+load('matp_former_adopt_newBP_clean_std.mat')
 matp = matp(index_keep,:);
-save('matp_bp_strict_rm.mat','matp','-v7.3');          
+% save('matp_bp_lenient_rm.mat','matp','-v7.3');
+% save('matp_newbp_lenient_rm.mat','matp','-v7.3');
+% save('matp_newbp_clean_lenient_rm.mat','matp','-v7.3');
+% save('matp_newbp_clean_strict_rm.mat','matp','-v7.3');
+save('matp_newbp_clean_former_rm.mat','matp','-v7.3');
 
 

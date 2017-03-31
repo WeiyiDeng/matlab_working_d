@@ -226,3 +226,5 @@ mean(num_new_bands_adopt_by_friend)
 witness_new_band_adoption_ratio = num_new_bands_adopt_by_both_member_friend./num_new_bands_adopt_by_member;
 mean(witness_new_band_adoption_ratio)
 
+load('matp_trend_lenient_rm.mat');
+sum(matp(:,5))

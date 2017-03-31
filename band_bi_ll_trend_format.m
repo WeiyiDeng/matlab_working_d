@@ -1,6 +1,6 @@
 % function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
 function [LL, gr, H] = band_bi_ll_trend_format(b,IVs,choice_dv, innov_X, explor_X)
-global dummies se
+global dummies se model_num newBP lenient model_stage
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result
 
@@ -17,11 +17,38 @@ const = b(1);
 % bs = b(3:end)';
 % bs = b(2:1+size(IVs,2))';
 % FV = IVs*bs;
-b_basic = b(4:5)';
-b_innov = b([6:9 22:23 14:17 26:27])';
-b_explor = b([10:13 24:25 18:21 28:29])';
-b_BP = b(30);
-
+if model_stage==4
+    b_basic = b(4:5)';
+    b_innov = b([6:9 14:15 18:21 26:27])';
+    b_explor = b([10:13 16:17 22:25 28:29])';
+    if model_num==1
+        b_BP = b(30);
+    else
+    end
+elseif model_stage==1
+    b_basic = b(4:5)';
+    if model_num==1
+        b_BP = b(6);
+    else
+    end
+elseif model_stage==2
+    b_basic = b(4:5)';
+    b_innov = b([6:9 14:15])';
+    b_explor = b([10:13 16:17])';
+    if model_num==1
+        b_BP = b(18);
+    else
+    end
+elseif model_stage==3
+    b_basic = b(4:5)';
+    b_innov = b([6:9 14:15 18:21])';
+    b_explor = b([10:13 16:17 22:25])';
+    if model_num==1
+        b_BP = b(26);
+    else
+    end
+end
+    
 % if k<2, when x = 0, fk(x)= inf
 % documentation of chi2pdf requires the degree of freedom parameter k must be positive integers
 % chi-square dist can be considered as a generalization of gamma distribution, which can be extended to non integer values
@@ -87,8 +114,17 @@ end
 % FV = [IVs(:,1) week_IV innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV_basic + FV_innov + FV_explor;
 % FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
-FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);          % with both trend and BP as controls
-
+if model_num==1 && model_stage ==1
+    FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP];
+elseif model_num==1 && model_stage ==2
+    FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6) + explor_X*b_explor(1:6);
+elseif model_num==1 && model_stage ==3
+    FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6)+innov_WD_multip(:,1:4)*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip(:,1:4)*b_explor(7:end);
+elseif model_num==1 && model_stage ==4
+    FV = [IVs(:,1) week_IV IVs(:,3)]*[b_basic; b_BP]+ innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);          % with both trend and BP as controls
+elseif model_num ==2 || model_num ==3
+    FV = [IVs(:,1) week_IV]*b_basic + innov_X*b_innov(1:6)+innov_WD_multip*b_innov(7:end) + explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
+end
 % clearvars FV_basic FV_innov FV_explor
 % new_FV = [innov_X explor_X innov_WD_multip explor_WD_multip]*bs;
 % FV = FV + new_FV;

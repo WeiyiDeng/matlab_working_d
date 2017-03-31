@@ -2,7 +2,8 @@ clc
 clear all
 
 % adoptions = csvread('bandadoptions3.csv');               % note that adoptions has not subtracted 104
-adoptions = csvread('bandadoptions_strict_adopt.csv',1,0);               % note that adoptions has not subtracted 104
+% adoptions = csvread('bandadoptions_strict_adopt.csv',1,0);               % note that adoptions has not subtracted 104
+adoptions = csvread('bandadoptions_lenient_adopt.csv',1,0);
 adoptions = adoptions(:,1:3);
 adopt_ones = ones(size(adoptions, 1),1);
 
@@ -36,35 +37,27 @@ for t = 1:T
     diffusion_jt(t,:) = sum(band_adoption{t},1);           % T*J
 end
 
-diffusion_jt_smooth = zeros(T,J);
-for j = 1:J
-    diffusion_jt_smooth(:,j) = baseline_prob_smooth_func(diffusion_jt(:,j),10);
+% overall probability of adopting band j at time t (pdf)
+sum_adoptions_j = sum(diffusion_jt,1);
+% prob_adoption_tj = diffusion_jt./repmat(sum_adoptions_j,T,1);    % PAjt 
+
+diffusion_year = zeros(T,J);
+for i = 1:7
+    ind = (i-1)*52+1;
+    year_adopt = sum(diffusion_jt(ind:ind+51,:),1);
+    diffusion_year(ind:ind+51,:) = repmat(year_adopt,52,1);
 end
+year_adopt_8th = sum(diffusion_jt(365:423,:),1);
+diffusion_year(365:423,:) = repmat(year_adopt_8th,59,1);
 
-sum(sum(diffusion_jt))
-sum(sum(diffusion_jt_smooth))
+% sum_adoptions_yearj = sum(diffusion_year,1);
+prob_adoption_yearj = diffusion_year./repmat(sum_adoptions_j,T,1);    % PAjt 
 
-% % overall probability of adopting band j at time t (pdf)
-% sum_adoptions_j = sum(diffusion_jt,1);
-% % prob_adoption_tj = diffusion_jt./repmat(sum_adoptions_j,T,1);    % PAjt 
-% 
-% diffusion_year = zeros(T,J);
-% for i = 1:7
-%     ind = (i-1)*52+1;
-%     year_adopt = sum(diffusion_jt(ind:ind+51,:),1);
-%     diffusion_year(ind:ind+51,:) = repmat(year_adopt,52,1);
-% end
-% year_adopt_8th = sum(diffusion_jt(365:423,:),1);
-% diffusion_year(365:423,:) = repmat(year_adopt_8th,59,1);
-% 
-% % sum_adoptions_yearj = sum(diffusion_year,1);
-% prob_adoption_yearj = diffusion_year./repmat(sum_adoptions_j,T,1);    % PAjt 
-% 
-% cumu_diffusion = cumsum(diffusion_jt);                    % T*J
+cumu_diffusion = cumsum(diffusion_jt);                    % T*J
  
 timesplit = csvread('tsplit3.csv');
 % friendlist = csvread('friends3.csv');
-friendlist = csvread('new_friendlist_7623.csv');               % changes here !
+friendlist = csvread('new_friendlist_8088.csv',1,0);               % changes here !
 bandtime = csvread('tbands3.csv');
 
 bandtime(:,2) = bandtime(:,2)-old_bandt;
@@ -104,8 +97,7 @@ for i = 1:size(friendlist,1)                                         % i here  i
                 band_p(ind:ind+interval-1) = j;
                 timeobs(ind:ind+interval-1) = pre_start:pre_end;
                 DV(ind+(adoptfij_time-pre_start)) = 1;
-%                 prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
-                prob_adopt_week(ind:ind+interval-1) = diffusion_jt_smooth(pre_start:pre_end,j);       % use smoothed baseline prob (smothed with varying window size) instead
+                prob_adopt_week(ind:ind+interval-1) = prob_adoption_yearj(pre_start:pre_end,j);
                 week_diff = (pre_start:pre_end) - adoptmij_time;
                 week_diff_rep = week_diff;
                 %             abs_week_diff(ind:ind+interval-1) = abs(week_diff);
@@ -141,7 +133,7 @@ display('save as mat')
 matp = [member_p friend_p band_p timeobs DV prob_adopt_week new_week_diff A_week_ijt];
 % clearvars -EXCEPT matp
 % save('matp2.mat','matp', '-v7.3') ;
-save('matp_strict_adopt_newBP.mat','matp', '-v7.3') ;
+save('matp_lenient_adopt.mat','matp', '-v7.3') ;
 % csvwrite('matp.csv',matp);
 
 sum(matp(:,5))
@@ -155,7 +147,7 @@ for i = 1:I
     end
 end
 
-csvwrite('explorer3_strict.csv',explorer);
+csvwrite('explorer3_lenient.csv',explorer);
 
 %% recompute EAij
 
@@ -195,12 +187,12 @@ sum(testA>=0)
 
 peakj = [introdate(:,1) peakj];
 adoptions(:,3) = adoptions(:,3)-old_bandt;
-csvwrite('peak_strict.csv',peakj);
+csvwrite('peak_lenient.csv',peakj);
 % csvwrite('introdate3.csv',introdate);            % introdate uses the old data, only based on listen but not adoption
-csvwrite('mod_adoptions_strict.csv',adoptions);
+csvwrite('mod_adoptions_lenient.csv',adoptions);
 
 %
-adoptingweek = csvread('adoptingweek_strict.csv',1,0);
+adoptingweek = csvread('adoptingweek_lenient.csv',1,0);
 
 EAij = 1-(adoptingweek(:,3)-adoptingweek(:,4))./(adoptingweek(:,5)-adoptingweek(:,4));
 % some have the same intro week and peak week, get NAN for 0 in denominator
@@ -219,7 +211,7 @@ for i = 1:I
 end
 
 EAi = [(1:I)' EAi];
-csvwrite('EAi3_strict.csv',EAi);
+csvwrite('EAi3_lenient.csv',EAi);
 
 sum(~isnan(EAi))                          % 7130 users in strict adoption data
 sum(EAi==0)
@@ -357,10 +349,10 @@ plot(x,5*gampdf(x,1.1928,exp(2.0272)))
 hold off
 
 %% continuous innovativeness and explorer score
-load('matp_strict_adopt.mat');
+load('matp_lenient_adopt.mat');
 
-innov = csvread('EAi3_strict.csv');
-explor = csvread('explorer3_strict.csv');
+innov = csvread('EAi3_lenient.csv');
+explor = csvread('explorer3_lenient.csv');
 
 innov = innov(:,2);
 
@@ -390,15 +382,15 @@ display('friends EA continous')
 clearvars matp
 
 EA_continous = [innov_m innov_f explor_m explor_f];
-save('EA_continous2_strict.mat','EA_continous','-v7.3');
+save('EA_continous2_lenient.mat','EA_continous','-v7.3');
 clearvars EA_continous2
 
 innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
-save('innov_contin2_strict.mat','innov_contin','-v7.3');
+save('innov_contin2_lenient.mat','innov_contin','-v7.3');
 clearvars innov_contin2
 
 explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
-save('explor_contin2_strict.mat','explor_contin','-v7.3');
+save('explor_contin2_lenient.mat','explor_contin','-v7.3');
 
 % %% standardize
 % load('innov_contin.mat');
@@ -507,14 +499,12 @@ end
 corr(vecA,vecB)
 
 %% standardize
-load('matp_strict_adopt.mat');
-% load('matp_strict_adopt_newBP.mat');
+load('matp_lenient_adopt.mat');
 matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
-save('matp_strict_adopt_std.mat','matp','-v7.3');
-% save('matp_strict_adopt_newBP_std.mat','matp','-v7.3');
+save('matp_lenient_adopt_std.mat','matp','-v7.3');
 clearvars matp
 
-load('innov_contin2_strict.mat');
+load('innov_contin2_lenient.mat');
 innov_m = innov_contin(:,1);
 innov_f = innov_contin(:,3);
 % innov_m = (innov_m-mean(innov_m))./std(innov_m);
@@ -523,10 +513,10 @@ innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.
 for i = 1:size(innov_contin,2)
     innov_contin(:,i) = (innov_contin(:,i)-mean(innov_contin(:,i)))./std(innov_contin(:,i));
 end
-save('innov_contin2_strict_std.mat','innov_contin','-v7.3');
+save('innov_contin2_lenient_std.mat','innov_contin','-v7.3');
 clearvars innov_contin
 
-load('explor_contin2_strict.mat');
+load('explor_contin2_lenient.mat');
 explor_m = explor_contin(:,1);
 explor_f = explor_contin(:,3);
 % explor_m = (explor_m-mean(explor_m))./std(explor_m);
@@ -535,7 +525,7 @@ explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (e
 for i = 1:size(explor_contin,2)
     explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
 end
-save('explor_contin2_strict_std.mat','explor_contin','-v7.3');
+save('explor_contin2_lenient_std.mat','explor_contin','-v7.3');
 
 %% plot estimated main effect and quadratic terms coefficients
 load('innov_contin_std2.mat');

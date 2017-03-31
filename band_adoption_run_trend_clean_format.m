@@ -1,10 +1,10 @@
 % modified from band_adoption_run_ipc.m
 
-clc
-% clear
-clear all
+% clc
+% % clear
+% clear all
 
-global model_num newBP lenient
+global model_num newBP lenient model_stage
 
 % diary('wwdiary.txt')
 
@@ -15,9 +15,10 @@ diary(resultsfilename);
 mfilename('fullpath')                           % print filename of currently running script
 
 
-model_num = 1
-newBP = 1
-lenient = 1
+% model_num = 1
+% newBP = 1
+% lenient = 3
+% model_stage = 2
 
 if model_num == 1 && newBP == 0 && lenient == 0
     disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls')
@@ -25,40 +26,50 @@ if model_num == 1 && newBP == 0 && lenient == 0
     load('innov_contin_trend_strict_rm.mat');
     load('explor_contin_trend_strict_rm.mat');
 elseif model_num == 1 && newBP == 1 && lenient == 0
-    disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and new baseline probability both as controls')
+    disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
     load('matp_trend_strict_rm.mat');
     load('innov_contin_trend_strict_rm.mat');
     load('explor_contin_trend_strict_rm.mat');
+elseif model_num == 1 && newBP == 1 && lenient == 3
+    disp('run original adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
+    load('matp_trend_rm.mat');
+    load('innov_contin_trend_rm.mat');
+    load('explor_contin_trend_rm.mat');
 elseif model_num == 1 && newBP == 0 && lenient == 1
     disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls')
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
 elseif model_num == 1 && newBP == 1 && lenient == 1
-    disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and new baseline probability both as controls')
+    disp('run lenient adoption with bands with no trend data deleted and log(y_hat) as predicted trends and clean new baseline probability both as controls')
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
-elseif model_num == 2 && newBP == 0 && lenient == 0
-    disp('Strict adoption no trend with baseline prob')
-    load('matp_strict_adopt_std.mat');
+% elseif model_num == 2 && newBP == 0 && lenient == 0
+%     disp('Strict adoption no trend with baseline prob')
+%     load('matp_strict_adopt_std.mat');
+%     load('innov_contin2_strict_std.mat');
+%     load('explor_contin2_strict_std.mat');
+elseif model_num == 2 && newBP == 1 && lenient == 0         %????????????????
+    disp('Strict adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_strict_adopt_newBP_clean_std.mat');
     load('innov_contin2_strict_std.mat');
     load('explor_contin2_strict_std.mat');
-elseif model_num == 2 && newBP == 1 && lenient == 0
-    disp('Strict adoption no trend with new baseline prob with ad hoc smoothing')
-    load('matp_strict_adopt_newBP_std.mat');
-    load('innov_contin2_strict_std.mat');
-    load('explor_contin2_strict_std.mat');
-elseif model_num == 2 && newBP == 0 && lenient == 1
-    disp('lenient adoption no trend with baseline prob')
-    load('matp_lenient_adopt_std.mat');
-    load('innov_contin2_lenient_std.mat');
-    load('explor_contin2_lenient_std.mat');
+% elseif model_num == 2 && newBP == 0 && lenient == 1
+%     disp('lenient adoption no trend with baseline prob')
+%     load('matp_lenient_adopt_std.mat');
+%     load('innov_contin2_lenient_std.mat');
+%     load('explor_contin2_lenient_std.mat');
 elseif model_num == 2 && newBP == 1 && lenient == 1
-    disp('lenient adoption no trend with new baseline prob with ad hoc smoothing')
-    load('matp_lenient_adopt_newBP_std.mat');
+    disp('lenient adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_lenient_adopt_newBP_clean_std.mat');
     load('innov_contin2_lenient_std.mat');
     load('explor_contin2_lenient_std.mat');
+elseif model_num == 2 && newBP == 1 && lenient == 3           %???????????????????????
+    disp('original adoption no trend with clean new baseline prob with ad hoc smoothing')
+    load('matp_former_adopt_newBP_clean_std.mat');
+    load('innov_contin_std2.mat');
+    load('explor_contin_std2.mat');
 elseif model_num == 3 && lenient == 0
     disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends')
     load('matp_trend_strict_rm.mat');
@@ -69,8 +80,24 @@ elseif model_num == 3 && lenient == 1
     load('matp_trend_lenient_rm.mat');
     load('innov_contin_trend_lenient_rm.mat');
     load('explor_contin_trend_lenient_rm.mat');
+elseif model_num == 3 && lenient == 3
+    disp('run original adoption with bands with no trend data deleted and log(y_hat) as predicted trends')
+    load('matp_trend_rm.mat');
+    load('innov_contin_trend_rm.mat');
+    load('explor_contin_trend_rm.mat');
 end
-    
+
+
+if model_stage == 1
+    disp('model stage 1')
+elseif model_stage == 2
+    disp('model stage 2')
+elseif model_stage == 3
+    disp('model stage 3')
+elseif model_stage == 4
+    disp('model stage 4')
+end
+
 
 % disp('run complete cases with mean imputation and exp(log(y_hat)) as predicted trends')                % print message
 % disp('run complete cases with mean imputation and log(y_hat) as predicted trends') 
@@ -274,12 +301,17 @@ elseif model_num == 1 && newBP == 0 && lenient == 1
     clearvars matp
 elseif model_num == 1 && newBP == 1 && lenient == 0
     % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
-    load('matp_newbp_strict_rm.mat');
+    load('matp_newbp_clean_strict_rm.mat');
     X = [X matp(:,6)];
     clearvars matp
 elseif model_num == 1 && newBP == 1 && lenient == 1
     % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
-    load('matp_newbp_lenient_rm.mat');
+    load('matp_newbp_clean_lenient_rm.mat');
+    X = [X matp(:,6)];
+    clearvars matp
+elseif model_num == 1 && newBP == 1 && lenient == 3
+    % load('matpstd2.mat');                  % add new baseline probability to the model (two controls here: trend and BP)         mar 2017
+    load('matp_newbp_clean_former_rm.mat');
     X = [X matp(:,6)];
     clearvars matp
 end
@@ -308,9 +340,22 @@ beta_0 = [beta_0          0 0 0 0 0 0 0 0];
 beta_0 = [beta_0         0 0 0 0 0 0 0 0];
 
 if model_num == 1
-    beta_0 = [beta_0 0]                                  % add one more beta for BP
+    beta_0 = [beta_0 0];                                  % add one more beta for BP
 else
 end
+
+if model_num == 1 && newBP == 1 && model_stage == 1
+    beta_0 = beta_0([1:5 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 2
+    beta_0 = beta_0([1:17 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 3
+    beta_0 = beta_0([1:25 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 4
+    beta_0 = beta_0([1:29 30]);
+end
+
+beta_0
+
 % beta_0 = [beta_0         0.1    0.12   0    0.1   0.1   -0.1    0.1    -0.1];  
 % beta_0 = [beta_0          0.04 -0.04 0.03 -0.03 -0.02 0.02 -0.03 0.01];
 % beta_0 = [beta_0         -0.04 -0.01 0.01 0.01 0.03 0.01 0.01 -0.01]
@@ -366,6 +411,19 @@ elseif model_num == 3
         'Explor_m*SI';'Explor_m2*SI';'Explor_f*SI';'Explor_f2*SI';'Innov_m*Innov_f*SI';'(Innov_m*Innov_f)2*SI';...
         'Explor_m*Explor_f*SI';'(Explor_m*Explor_f)2*SI'};
 end
+
+
+if model_num == 1 && newBP == 1 && model_stage == 1
+    var_names = var_names([1:5 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 2
+    var_names = var_names([1:17 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 3
+    var_names = var_names([1:25 30]);
+elseif model_num == 1 && newBP == 1 && model_stage == 4
+    var_names = var_names([1:29 30]);
+end
+
+    
 
 myTable = table(betaCoefficient, StandardError, tStatistics, 'RowNames', var_names)
 
