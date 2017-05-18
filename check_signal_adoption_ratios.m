@@ -32,6 +32,8 @@ sum(matp(:,5))
 
 % check why obs only include those bands adopted by both friend and member
 
+% in matp include DV include weeks after adoption of the firend (0s after 1 for all weeks that are possible for the friend to adopt)
+
 %% testing 
 tic
 A = 1:9

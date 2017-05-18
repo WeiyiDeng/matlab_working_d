@@ -50,7 +50,7 @@ elseif model_num == 1 && newBP == 1 && lenient == 1
 %     load('matp_strict_adopt_std.mat');
 %     load('innov_contin2_strict_std.mat');
 %     load('explor_contin2_strict_std.mat');
-elseif model_num == 2 && newBP == 1 && lenient == 0         %????????????????
+elseif model_num == 2 && newBP == 1 && lenient == 0         %???????????????? dimensions not match?
     disp('Strict adoption no trend with clean new baseline prob with ad hoc smoothing')
     load('matp_strict_adopt_newBP_clean_std.mat');
     load('innov_contin2_strict_std.mat');
@@ -65,7 +65,7 @@ elseif model_num == 2 && newBP == 1 && lenient == 1
     load('matp_lenient_adopt_newBP_clean_std.mat');
     load('innov_contin2_lenient_std.mat');
     load('explor_contin2_lenient_std.mat');
-elseif model_num == 2 && newBP == 1 && lenient == 3           %???????????????????????
+elseif model_num == 2 && newBP == 1 && lenient == 3           %??????????????????????? dimensions not match?
     disp('original adoption no trend with clean new baseline prob with ad hoc smoothing')
     load('matp_former_adopt_newBP_clean_std.mat');
     load('innov_contin_std2.mat');
