@@ -72,6 +72,8 @@ clc
 clear all
 
 load('matp_trend_strict_rm.mat');
+load('cut_rows_after_adopt_strict.mat');
+% matp = matp(cut_rows_after_adopt,:);                     % cut 0s in DV after friend adopt ! 
 
 % unrestricted model
 X = matp(:,[6 7]);
@@ -82,6 +84,7 @@ choice_dv = [y 1-y];
 clearvars matp
 
 load('matp_newbp_clean_strict_rm.mat');
+% matp = matp(cut_rows_after_adopt,:);                     % cut 0s in DV after friend adopt !
 
 X = [X matp(:,6)];
 IVs = X;
@@ -92,6 +95,8 @@ clearvars matp
 % load('explor_contin_std2.mat');
 load('innov_contin_trend_strict_rm.mat');
 load('explor_contin_trend_strict_rm.mat');
+% innov_contin = innov_contin(cut_rows_after_adopt,:);      % cut 0s in DV after friend adopt !
+% explor_contin = explor_contin(cut_rows_after_adopt,:);    % cut 0s in DV after friend adopt !
 
 innov_X = innov_contin;
 explor_X = explor_contin;
@@ -99,6 +104,7 @@ explor_X = explor_contin;
 clearvars innov_contin explor_contin
 
 load('Results/mat_files/b_2017331542')
+% load('Results/mat_files/b_20175181316')                     % new bs estimated from data cutting out 0s in DV after friend adopt !
 
 % b = [-5.0951    0.19983    2.0459    0.3222    0.0627];
 % b = [b     -0.0102    0.0667   -0.1275    0.0555   -0.0005   -0.0652    -0.0225    0.0052];  
@@ -140,9 +146,14 @@ ll_ur = sum(log(p))                 % ll of unrestricted model (the one that was
 
 mean_predicted_prob_strict = mean(p)
 
+[X,Y,T,tryAUC] = perfcurve(y,p,1);
+plot(X,Y)
+tryAUC
+
 cut_off_fix_strict = sum(y)/length(y)
 
-cut_off_array = 0.001:0.001:0.02;
+cut_off_array = 0.001:0.001:0.04;
+% cut_off_array = 0.001:0.001:0.02;
 TPR = zeros(length(cut_off_array),1);
 FPR = zeros(length(cut_off_array),1);
 ROC = zeros(length(cut_off_array),1);

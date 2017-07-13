@@ -74,6 +74,13 @@ for i= 2:size(matp,1)
     last_obs = current_obs;
 end
 f_adopt = [f_adopt sum(matp(start_ind:i,5))];
+f_adopt_rows = find(matp(:,5)==1);
+
+cut_rows_after_adopt = [];
+for j = 1:length(f_adopt_rows)
+    cut_rows_after_adopt = [cut_rows_after_adopt band_change_ind(j):f_adopt_rows(j)];
+end
+save('cut_rows_after_adopt_strict.mat','cut_rows_after_adopt', '-v7.3') ;
 
 length(f_adopt)                   % number of adoption observations in DV of the data matrix used for modeling
 sum(f_adopt==1)
