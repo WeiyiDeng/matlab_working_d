@@ -292,7 +292,7 @@ plot(x,5*gampdf(x,1.1928,exp(2.0272)))
 hold off
 
 %% continuous innovativeness and explorer score
-load('matp2.mat');
+load('matp_member_all.mat');
 
 innov = csvread('EAi3.csv');
 explor = csvread('explorer3.csv');
@@ -325,15 +325,15 @@ display('friends EA continous')
 clearvars matp
 
 EA_continous = [innov_m innov_f explor_m explor_f];
-save('EA_continous2.mat','EA_continous','-v7.3');
-clearvars EA_continous2
+save('EA_continous2_all_member.mat','EA_continous','-v7.3');
+clearvars EA_continous
 
 innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.*innov_f).^2];
-save('innov_contin2.mat','innov_contin','-v7.3');
-clearvars innov_contin2
+save('innov_contin2_all_member.mat','innov_contin','-v7.3');
+clearvars innov_contin
 
 explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (explor_m.*explor_f).^2];
-save('explor_contin2.mat','explor_contin','-v7.3');
+save('explor_contin2_all_member.mat','explor_contin','-v7.3');
 
 % %% standardize
 % load('innov_contin.mat');
@@ -442,12 +442,13 @@ end
 corr(vecA,vecB)
 
 %% standardize
-load('matp2.mat');
+% load('matp2.mat');
+load('matp_member_all.mat');
 matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
-save('matpstd2.mat','matp','-v7.3');
+save('matpstd2_all_member.mat','matp','-v7.3');
 clearvars matp
 
-load('innov_contin2.mat');
+load('innov_contin2_all_member.mat');
 innov_m = innov_contin(:,1);
 innov_f = innov_contin(:,3);
 % innov_m = (innov_m-mean(innov_m))./std(innov_m);
@@ -456,10 +457,10 @@ innov_contin = [innov_m innov_m.^2 innov_f innov_f.^2 innov_m.*innov_f (innov_m.
 for i = 1:size(innov_contin,2)
     innov_contin(:,i) = (innov_contin(:,i)-mean(innov_contin(:,i)))./std(innov_contin(:,i));
 end
-save('innov_contin_std2.mat','innov_contin','-v7.3');
+save('innov_contin_std2_all_member.mat','innov_contin','-v7.3');
 clearvars innov_contin
 
-load('explor_contin2.mat');
+load('explor_contin2_all_member.mat');
 explor_m = explor_contin(:,1);
 explor_f = explor_contin(:,3);
 % explor_m = (explor_m-mean(explor_m))./std(explor_m);
@@ -468,7 +469,7 @@ explor_contin = [explor_m explor_m.^2 explor_f explor_f.^2 explor_m.*explor_f (e
 for i = 1:size(explor_contin,2)
     explor_contin(:,i) = (explor_contin(:,i)-mean(explor_contin(:,i)))./std(explor_contin(:,i));
 end
-save('explor_contin_std2.mat','explor_contin','-v7.3');
+save('explor_contin_std2_all_member.mat','explor_contin','-v7.3');
 
 %% plot estimated main effect and quadratic terms coefficients
 load('innov_contin_std2.mat');
