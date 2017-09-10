@@ -45,7 +45,9 @@ store_band_matp = [store_band_matp matp(i,3)];
 band_start_row_matp = [band_start_row_matp i-k+1];
 band_end_row_matp = [band_end_row_matp i];   
 
-distinct_bands_in_matp = unique(store_band_matp);
+% distinct_bands_in_matp = unique(store_band_matp);
+distinct_bands_in_matp = unique(matp(:,3));           % 4061 distinct bands in new data matrix matpstd2_all_member.mat
+csvwrite('newbandsNo4061.csv',distinct_bands_in_matp);
 
 store_band_trend = [];
 last_band_ind = predict_trend(1,1);
