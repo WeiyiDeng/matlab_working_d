@@ -64,7 +64,7 @@ sum(sum(diffusion_jt_smooth))
  
 timesplit = csvread('tsplit3.csv');
 % friendlist = csvread('friends3.csv');
-friendlist = csvread('new_friendlist_7623.csv',1,0);               % changes here !
+friendlist = csvread('new_friendlist_7623.csv');             
 bandtime = csvread('tbands3.csv');
 
 bandtime(:,2) = bandtime(:,2)-old_bandt;

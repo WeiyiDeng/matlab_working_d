@@ -1,3 +1,4 @@
+% simulating data
 rng(100)
 
 k = 2;               % # of parameters
@@ -9,6 +10,7 @@ X = sort(X);
 y = 6+X.*3+2.*randn(n,1);
 scatter(X,y)
 
+% estimate with ols
 X = [ones(n,1) X];
 b_ols = inv(X'*X)*X'*y;
 sigma_squared = 1/(n-k)*sum((y-X*b_ols).^2);
@@ -25,7 +27,7 @@ Var_b_ols
 % plot(x_range,(b(1)-2*Var_b(1,1))+x_range.*(b(2)-2*Var_b(2,2)),'--r')
 % hold off
 
-% try GMM                                 
+% try estimate with GMM                                 
 % see Applied microeconometrics week1 slide 28
 b0_gmm = [1,1]'; 
 % g = 1/n.*X'*(y-X*b_gmm);
