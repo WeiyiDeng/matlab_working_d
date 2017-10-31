@@ -17,7 +17,7 @@ mfilename('fullpath')                           % print filename of currently ru
 % disp('run complete cases with mean imputation and log(y_hat) as predicted trends and baseline probability as controls') 
 % disp('Strict adoption no trend')
 % disp('run strict adoption with bands with no trend data deleted and log(y_hat) as predicted trends')
-disp('run lenient adoption with all member adopted bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls') 
+disp('run original adoption with all member adopted bands with no trend data deleted and log(y_hat) as predicted trends and baseline probability both as controls') 
 
 % % load('matp_b.mat');
 % % load('matpstd2.mat');
@@ -30,9 +30,9 @@ disp('run lenient adoption with all member adopted bands with no trend data dele
 % load('matp_strict_adopt_std.mat');
 % load('innov_contin2_strict_std.mat');
 % load('explor_contin2_strict_std.mat');
-load('matp_trend_rm_all_member_lenient.mat');
-load('explor_contin_trend_rm_all_member_lenient.mat');
-load('innov_contin_trend_rm_all_member_lenient.mat');       % w: inconsistent rows????????????
+load('matp_trend_rm_all_member_original.mat');
+load('explor_contin_trend_rm_all_member_original.mat');
+load('innov_contin_trend_rm_all_member_original.mat');       % w: inconsistent rows????????????
 
 % week1_dummy = matp(:,7);
 % week1_dummy(week1_dummy~=1)=0;
@@ -204,7 +204,7 @@ clearvars matp
 
 % load('matpstd2.mat');                  % add old baseline probability to the model (two controls here: trend and BP)         mar 2017
 % load('matp_bp_strict_rm.mat');
-load('newbp_store_rm_all_member_lenient.mat')       % variable name baseline_prob_store
+load('newbp_store_rm_all_member_original.mat')       % variable name baseline_prob_store
 X = [X baseline_prob_store];
 clearvars baseline_prob_store
 
@@ -221,11 +221,10 @@ clearvars innov_contin explor_contin
 
 
 % debug Oct 11 2017
-X = X(1:8177690,:);
-y = y(1:8177690);
-innov_X = innov_X(1:8177690,:);
-explor_X = explor_X(1:8177690,:);
-
+X = X(9495162:20347805,:);
+y = y(9495162:20347805);
+innov_X = innov_X(9495162:20347805,:);
+explor_X = explor_X(9495162:20347805,:);
 
 % dummy_X = [member_dummies member_dummies_week_d];
 % X = mat1(:,[5 7]);

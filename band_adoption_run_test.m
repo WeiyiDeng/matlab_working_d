@@ -16,7 +16,8 @@ diary(resultsfilename);
 % load('explor_contin.mat');
 % load('matpstd2.mat');
 % load('matp_trend_strict_rm.mat');
-load('test_matp.mat')
+% load('test_matp.mat')
+load('matp_trend_rm_all_member_original.mat');
 
 %%
 % X = matp(:,[6 7]);
@@ -78,9 +79,24 @@ load('test_matp.mat')
 % X = matp(:,[6 7]);
 % y = matp(:,5);
 % clearvars matp
-X = test_matrix(:,[1 2]);
-y = test_matrix(:,3);
-clearvars test_matrix
+% X = test_matrix(:,[1 2]);
+% y = test_matrix(:,3);
+% clearvars test_matrix
+
+X = matp(:,[6 7]);
+y = matp(:,5);
+clearvars matp
+
+% debug Oct 23 2017
+% load('newbp_store_rm_all_member_original.mat')
+% X(:,1) = baseline_prob_store;
+% X = X(:,1);
+% X = X(:,1);
+% X = baseline_prob_store;
+load('innov_contin_trend_rm_all_member_original.mat');
+X(:,2:3) = innov_contin(:,[1 3]);
+clearvars innov_contin
+
 % 
 % week_IV = 100*gampdf(X(:,2),0.8343,27.4712);              % w: NOTICE new lines here for fixed gamma parameters
 % week_IV(X(:,2)<1)=0;   
@@ -129,7 +145,8 @@ clearvars test_matrix
 % beta_0 = [0    1    0    0    0]
 % beta_0 = [-5.0277    1.4538    1.5231    0.3256    0.0366]
 % beta_0 = -5.0277;
-beta_0 = [1    1   1]
+beta_0 = [1    1   1  1]
+% beta_0 = [1    1]
 % beta_0 = [-5.0354    0.6087   3.31313818317199    0.3250    0.0577]        % log(prev_b(3)) here
 % beta_0 = [-6.1668   0.9337   27.4738    3.0426   12.7745    ones(1,2).*(-5)]
 % beta_0 = [-0.0217   -0.0317    -0.2376    0.1782    0.0564   -0.1002    -0.1336    0.1002]

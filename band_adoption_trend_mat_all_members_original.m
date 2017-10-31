@@ -1,13 +1,13 @@
 clc
 clear
 
-% load('matpstd2_all_member.mat');
-load('matpstd2_all_member_lenient.mat')
+load('matpstd2_all_member.mat');
+% load('matp_former_adopt_newBP_clean_std.mat')
 % load('matp_lenient_adopt.mat')
 
 % predict_trend = csvread('predict_trend.csv',1,0);       % reads from row 2 of the doc
 % predict_trend = csvread('predict_trend_log.csv',1,0);       % reads from row 2 of the doc
-predict_trend = csvread('predict_trend_log4061_lenient.csv',1,0);       % reads from row 2 of the doc
+predict_trend = csvread('predict_trend_log4061_original.csv',1,0);       % reads from row 2 of the doc
 
 % trend_hat = [];
 % for i = 1:54921
@@ -95,23 +95,26 @@ clearvars matp
 % save('explor_contin_trend_rm.mat','explor_contin','-v7.3');
 
 % load('innov_contin_std2_all_member.mat');
-load('innov_contin_std2_all_member_lenient.mat');
+% load('innov_contin_std2.mat');
+load('innov_contin2_all_member.mat')
 innov_contin = innov_contin(find(trend_hat>0),:);
-save('innov_contin_trend_rm_all_member_lenient.mat','innov_contin','-v7.3');
+save('innov_contin_trend_rm_all_member_original.mat','innov_contin','-v7.3');
 clearvars matp
 
 % load('explor_contin_std2_all_member.mat');
-load('explor_contin_std2_all_member_lenient.mat');
+% load('explor_contin_std2.mat');
+load('explor_contin2_all_member.mat')
 explor_contin = explor_contin(find(trend_hat>0),:);
-save('explor_contin_trend_rm_all_member_lenient.mat','explor_contin','-v7.3');
+save('explor_contin_trend_rm_all_member_original.mat','explor_contin','-v7.3');
 clearvars matp
 
 index_keep = find(trend_hat>0);          % store indices of obs not to remove
 
 baseline_prob_store = baseline_prob_store(find(trend_hat>0),:);
-save('newbp_store_rm_all_member_lenient.mat','baseline_prob_store','-v7.3');
+save('newbp_store_rm_all_member_original.mat','baseline_prob_store','-v7.3');
 
-load('matpstd2_all_member_lenient.mat')
+% load('matp_original_adopt_newBP_clean_std.mat')
+load('matpstd2_all_member.mat')
 matp(:,6) = trend_hat;
 matp = matp(find(trend_hat>0),:);
 
@@ -131,7 +134,7 @@ matp(:,6) = (matp(:,6)-mean(matp(:,6)))./std(matp(:,6));
 % save('matp_trend.mat','matp','-v7.3');
 % save('matp_trend_rm.mat','matp','-v7.3');
 % save('matp_trend_strict_rm.mat','matp','-v7.3');
-save('matp_trend_rm_all_member_lenient.mat','matp','-v7.3');
+save('matp_trend_rm_all_member_original.mat','matp','-v7.3');
 
 % corr(baseline_prob_store,matp(:,6))                    % check corr between predicted trend and baseline prob
 % scatter(baseline_prob_store,matp(:,6))

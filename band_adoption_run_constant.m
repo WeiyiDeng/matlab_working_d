@@ -15,7 +15,8 @@ diary(resultsfilename);
 % load('innov_contin.mat');
 % load('explor_contin.mat');
 % load('matpstd2.mat');
-load('matp_trend_strict_rm.mat');
+% load('matp_trend_strict_rm.mat');
+load('matp_trend_rm_all_member_original.mat');
 
 %%
 % X = matp(:,[6 7]);

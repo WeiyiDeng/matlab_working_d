@@ -78,6 +78,9 @@ for j = 1:size(explor_X,2);
 end
 % explor_WD_multip = [];
 
+% debug Oct 22 2017
+innov_WD_multip(:,end) = 1;
+
 % % FV_explor = [explor_contin explor_WD_multip]*b_explor;
 % FV_explor = explor_X*b_explor(1:6)+explor_WD_multip*b_explor(7:end);
 % 

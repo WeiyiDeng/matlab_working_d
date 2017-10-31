@@ -41,3 +41,13 @@ T = [labCP.tStart labCP.tStop];
 b = coxphfit(X,T,'Censoring',labCP.Censoring,'Baseline',0)
 % gives error message: Error using coxphfit (line 70) Y must be a real vector.
 % try in 2017a works
+
+%%
+load('cox_mat_tStart.mat');
+mydata = cox_mat_t;
+X = mydata(:,6:20);
+T = mydata(:,21:22);
+MyCensoring = mydata(:,5);
+b = coxphfit(X,T,'Censoring',MyCensoring,'Baseline',0);
+
+
