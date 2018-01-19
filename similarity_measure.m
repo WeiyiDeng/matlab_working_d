@@ -1,3 +1,5 @@
+% see Onenote Similarity measure literature_User-Based Neighborhood Models_C.C.Aggarwal
+% use listen times as ratings, cosine based method
 % combi = combntns(1:3,2);
 % combi
 
@@ -23,7 +25,7 @@ Cosine_similarity = zeros(size(user_dyad,1),1);
 for k = 1:size(user_dyad,1)
     u = user_dyad(k,1);                                    % index user u
     v = user_dyad(k,2);                                    % index user v   
-    co_rated_item_ind = find(user_band_listen_mat(u,:).*user_band_listen_mat(v,:));
+    co_rated_item_ind = find(user_band_listen_mat(u,:).*user_band_listen_mat(v,:));        % two vectors !!
     if isempty(co_rated_item_ind)==0
         u_rated_items = user_band_listen_mat(u,co_rated_item_ind);
         v_rated_items = user_band_listen_mat(v,co_rated_item_ind);
