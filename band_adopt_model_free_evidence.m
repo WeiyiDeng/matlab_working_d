@@ -149,15 +149,15 @@ disp(['homophily_index    ' num2str(mean(homophily_index))])
 
 bands_adopted_within_nWeeks = bands_adopted_within_nWeeks(count_sum_source_recepient_adopts~=0);
 simultaneous_behavior = bands_adopted_within_nWeeks./count_sum_source_recepient_adopts;
-% disp(mean(simultaneous_behavior))
-% 
-% length_both_active_period_weeks = length_both_active_period_weeks(count_sum_source_recepient_adopts~=0);
-% length_both_active_period_weeks = length_both_active_period_weeks(length_both_active_period_weeks~=0);
-% simultaneous_behavior = simultaneous_behavior(length_both_active_period_weeks~=0);
-% homophily_index = homophily_index(length_both_active_period_weeks~=0);
-% social_impact = simultaneous_behavior - homophily_index.*n./length_both_active_period_weeks;
-% disp(mean(social_impact))
+disp(mean(simultaneous_behavior))
+
+length_both_active_period_weeks = length_both_active_period_weeks(count_sum_source_recepient_adopts~=0);
+length_both_active_period_weeks = length_both_active_period_weeks(length_both_active_period_weeks~=0);
+simultaneous_behavior = simultaneous_behavior(length_both_active_period_weeks~=0);
+homophily_index = homophily_index(length_both_active_period_weeks~=0);
+social_impact = simultaneous_behavior - homophily_index.*n./length_both_active_period_weeks;
+disp(mean(social_impact))
 
 disp(['simultaneous_behavior    ' num2str(mean(simultaneous_behavior))])
-% disp(['social_impact    ' num2str(mean(social_impact))])
+disp(['social_impact    ' num2str(mean(social_impact))])
 

@@ -10,7 +10,7 @@ friendlist = csvread('new_friendlist_8088.csv',1,0);
 adoptions_neighbour = csvread('bandadoptions_neighbour.csv',1,0);
 neighbourlist = csvread('neighbourlist_6585.csv',1,0);        % 6585 member & neighbour pairs
 
-adoptions_full = [adoptions(:,1:3);adoptions_neighbour];
+adoptions_full = [adoptions(:,1:3);adoptions_neighbour];      % add neighbour adoptions to below
 
 temp_user_id = 2;
 row_start = 1;
@@ -102,14 +102,16 @@ disp(['homophily_index    ' num2str(mean(homophily_index))])
 
 bands_adopted_within_nWeeks = bands_adopted_within_nWeeks(count_sum_source_recepient_adopts~=0);
 simultaneous_behavior = bands_adopted_within_nWeeks./count_sum_source_recepient_adopts;
-% disp(mean(simultaneous_behavior))
-% 
-% length_both_active_period_weeks = length_both_active_period_weeks(count_sum_source_recepient_adopts~=0);
-% length_both_active_period_weeks = length_both_active_period_weeks(length_both_active_period_weeks~=0);
-% simultaneous_behavior = simultaneous_behavior(length_both_active_period_weeks~=0);
-% homophily_index = homophily_index(length_both_active_period_weeks~=0);
-% social_impact = simultaneous_behavior - homophily_index.*n./length_both_active_period_weeks;
-% disp(mean(social_impact))
+disp(mean(simultaneous_behavior))
+
+length_both_active_period_weeks = length_both_active_period_weeks(count_sum_source_recepient_adopts~=0);
+length_both_active_period_weeks = length_both_active_period_weeks(length_both_active_period_weeks~=0);
+simultaneous_behavior = simultaneous_behavior(length_both_active_period_weeks~=0);
+homophily_index = homophily_index(length_both_active_period_weeks~=0);
+social_impact = simultaneous_behavior - homophily_index.*n./length_both_active_period_weeks;
+disp(mean(social_impact))
 
 disp(['simultaneous_behavior    ' num2str(mean(simultaneous_behavior))])
-% disp(['social_impact    ' num2str(mean(social_impact))])
+disp(['social_impact    ' num2str(mean(social_impact))])
+
+
