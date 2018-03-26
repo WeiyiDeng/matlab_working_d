@@ -158,34 +158,34 @@ NB = 10;
 Cikt = beta_C+se_C*randn(NB,T,NM);
 disp(rand(1))
 disp(Cikt(1,1,1))                    % debug
-% Cijt = zeros(NB,T,sum(num_friends));                  % simulate shocks for friends
-Cijt = beta_C+se_C*randn(NB,T,sum(num_friends));
-% ind = 0;
-% for i = 1:NM
+Cijt = zeros(NB,T,sum(num_friends));                  % simulate shocks for friends
+% Cijt = beta_C+se_C*randn(NB,T,sum(num_friends));
+ind = 0;
+for i = 1:NM
+    row_indice = (ind+1):(ind+num_friends(i));
+    Sjk = similarity_vec(row_indice);
+    temp = repmat(Sjk,1,NB,T);
+    Sjk_ext = permute(temp,[2 3 1]);        
+    Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Sjk));
+    Cijt_part = Sjk_ext.*Cikt_ext+(1-Sjk_ext).*(beta_C+se_C*randn(NB,T,length(Sjk)));
 %     row_indice = (ind+1):(ind+num_friends(i));
-%     Sjk = similarity_vec(row_indice);
-%     temp = repmat(Sjk,1,NB,T);
-%     Sjk_ext = permute(temp,[2 3 1]);        
-%     Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Sjk));
-%     Cijt_part = Sjk_ext.*Cikt_ext+(1-Sjk_ext).*(beta_C+se_C*randn(NB,T,length(Sjk)));
-% %     row_indice = (ind+1):(ind+num_friends(i));
-%     Cijt(:,:,row_indice)=Cijt_part;
-%     ind = ind+num_friends(i);
-% end
+    Cijt(:,:,row_indice)=Cijt_part;
+    ind = ind+num_friends(i);
+end
     
-% Cint = zeros(NB,T,NN*NM);                               % simulate shocks for neighbours
-Cint = beta_C+se_C*randn(NB,T,NN*NM);
-% ind = 0;
-% for i = 1:NM
-%     row_indice = (ind+1):(ind+NN);
-%     Snk = similarity_vec2(row_indice);
-%     temp = repmat(Snk,1,NB,T);
-%     Snk_ext = permute(temp,[2 3 1]);        
-%     Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Snk));
-%     Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*randn(NB,T,length(Snk)));
-%     Cint(:,:,row_indice)=Cint_part;
-%     ind = ind+NN;
-% end
+Cint = zeros(NB,T,NN*NM);                               % simulate shocks for neighbours
+% Cint = beta_C+se_C*randn(NB,T,NN*NM);
+ind = 0;
+for i = 1:NM
+    row_indice = (ind+1):(ind+NN);
+    Snk = similarity_vec2(row_indice);
+    temp = repmat(Snk,1,NB,T);
+    Snk_ext = permute(temp,[2 3 1]);        
+    Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Snk));
+    Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*randn(NB,T,length(Snk)));
+    Cint(:,:,row_indice)=Cint_part;
+    ind = ind+NN;
+end
 
 C = cat(3,Cikt,Cijt,Cint);          % shock per band per t for all users
 C = permute(C,[3 1 2]);                                                                     % NU*NB*t
@@ -197,35 +197,35 @@ C = permute(C,[3 1 2]);                                                         
 bandPref = @(beta1,sigma1, beta2, sigma2, nrow, ncol) repmat(beta1+sigma1*randn(1,ncol),nrow,1)+ (beta2+sigma2*randn(nrow,ncol));            % this approach also gives different means for different band and different draws for different users as well
 Pik = bandPref(beta_P1,se_P1,beta_P2,se_P2,NM,NB);
 disp(Pik(1,1))                                      % debug
-% ind = 0;
-% Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
-% for i = 1:NM
-%     row_indice = (ind+1):(ind+num_friends(i));
-%     Sjk = similarity_vec(row_indice);
-%     Sjk_ext = repmat(Sjk,1,NB);
-%     Pik_ext = repmat(Pik(i,:),length(Sjk),1);
-% %     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8+3*randn(length(Sjk),NB));
-% %     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8*repmat(band_attractiveness_mean,length(Sjk),1)+3*randn(length(Sjk),NB));
-%     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*bandPref(-8,3,-6,2,length(Sjk),NB);
-%     Pij(row_indice,:) = Pij_part;
-%     ind = ind+num_friends(i);
-% end
-Pij = bandPref(beta_P1,se_P1,beta_P2,se_P2,sum(num_friends),NB);                % band preference without similarity between users
+ind = 0;
+Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
+for i = 1:NM
+    row_indice = (ind+1):(ind+num_friends(i));
+    Sjk = similarity_vec(row_indice);
+    Sjk_ext = repmat(Sjk,1,NB);
+    Pik_ext = repmat(Pik(i,:),length(Sjk),1);
+%     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8+3*randn(length(Sjk),NB));
+%     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8*repmat(band_attractiveness_mean,length(Sjk),1)+3*randn(length(Sjk),NB));
+    Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*bandPref(beta_P1,se_P1,beta_P2,se_P2,length(Sjk),NB);
+    Pij(row_indice,:) = Pij_part;
+    ind = ind+num_friends(i);
+end
+% Pij = bandPref(beta_P1,se_P1,beta_P2,se_P2,sum(num_friends),NB);                % band preference without similarity between users
 
-% ind = 0;
-% Pin= zeros(NN*NM,NB);                  % simulate band preferences for neighbours
-% for i = 1:NM
-%     row_indice = (ind+1):(ind+NN);
-%     Snk = similarity_vec2(row_indice);
-%     Snk_ext = repmat(Snk,1,NB);
-%     Pik_ext = repmat(Pik(i,:),length(Snk),1);
-% %     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8+3*randn(length(Snk),NB));
-% %     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8*repmat(band_attractiveness_mean,length(Snk),1)+3*randn(length(Snk),NB));
-%     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*bandPref(-8,3,-6,2,length(Snk),NB);
-%     Pin(row_indice,:) = Pin_part;
-%     ind = ind+NN;
-% end
-Pin = bandPref(beta_P1,se_P1,beta_P2,se_P2,NN*NM,NB);                         % band preference without similarity between users
+ind = 0;
+Pin= zeros(NN*NM,NB);                  % simulate band preferences for neighbours
+for i = 1:NM
+    row_indice = (ind+1):(ind+NN);
+    Snk = similarity_vec2(row_indice);
+    Snk_ext = repmat(Snk,1,NB);
+    Pik_ext = repmat(Pik(i,:),length(Snk),1);
+%     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8+3*randn(length(Snk),NB));
+%     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8*repmat(band_attractiveness_mean,length(Snk),1)+3*randn(length(Snk),NB));
+    Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*bandPref(beta_P1,se_P1,beta_P2,se_P2,length(Snk),NB);
+    Pin(row_indice,:) = Pin_part;
+    ind = ind+NN;
+end
+% Pin = bandPref(beta_P1,se_P1,beta_P2,se_P2,NN*NM,NB);                         % band preference without similarity between users
 
 P = cat(1,Pik,Pij,Pin);          % band preference of all bands for all users                % NU*NB
 
