@@ -35,7 +35,8 @@ clear
 
 tic
 %% no overlaps among members and among friends
-% rng(1)
+rng(1)
+sth = [];
 % rep_times = 10;
 rep_times = 2;
 % rep_times = 1;
@@ -57,6 +58,7 @@ metrics_out_avg_set = zeros(length(NM_set),12);
 average_member_adopts = zeros(length(NM_set),1);
 
 beta_A_set = 1:10;
+% beta_A_set = 3:4;
 % beta_A_set = [1 5 10];
 
 alpha_R = -10;
@@ -77,7 +79,7 @@ average_member_adopts_SI_variant = zeros(length(beta_A_set_disp),1);
 a_ind = 1;
 for a = 1:length(beta_A_set)
     beta_A = beta_A_set(a);
-    rng(10)
+    rng(401716)
 
     seed1 = 1;
 for d = 1:length(NM_set)
@@ -101,12 +103,13 @@ num_friends = nbinrnd(r,1-p,1,NM);                      % simulate # of friends 
 metrics_chunks_cell = cell(NM*CHUNKS,1);
 
 seed2 = 1;
+ind_c = 1:NM;
+
 for c = 1:CHUNKS
     rng(seed2)
 %     debug = rand(1,1);                                       % debug
 %     disp(debug)
     
-ind_c = 1:NM;
 % simulate friend matrix
 sizeF = sum(num_friends)+NM;
 % prep_friend_index = cumsum(num_friends)+100;
@@ -153,8 +156,8 @@ S = full(S_sparse+S_sparse_inv);
 T = 52;                                               % number of weeks
 NB = 10;
 Cikt = beta_C+se_C*randn(NB,T,NM);
-% disp(rand(1))
-% disp(Cikt(1,1,1))                    % debug
+disp(rand(1))
+disp(Cikt(1,1,1))                    % debug
 % Cijt = zeros(NB,T,sum(num_friends));                  % simulate shocks for friends
 Cijt = beta_C+se_C*randn(NB,T,sum(num_friends));
 % ind = 0;
@@ -193,7 +196,7 @@ C = permute(C,[3 1 2]);                                                         
 % Pik = -8+3*randn(NM,NB);
 bandPref = @(beta1,sigma1, beta2, sigma2, nrow, ncol) repmat(beta1+sigma1*randn(1,ncol),nrow,1)+ (beta2+sigma2*randn(nrow,ncol));            % this approach also gives different means for different band and different draws for different users as well
 Pik = bandPref(beta_P1,se_P1,beta_P2,se_P2,NM,NB);
-% disp(Pik(1,1))                                      % debug
+disp(Pik(1,1))                                      % debug
 % ind = 0;
 % Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
 % for i = 1:NM
@@ -236,7 +239,7 @@ R = alpha_R+se_R*randn(NM+sum(num_friends)+NM*NN,NB,T);                         
 Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB,T);                                       % NU*NB*t
 % Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB);                                           % NU*NB
 % Draw_threshold = repmat(Draw_threshold,1,1,T);                      % keep the same draws across different T                % NU*NB*t
-% disp(Draw_threshold(1,1,1))                                         % debug
+disp(Draw_threshold(1,1,1))                                         % debug
 Prob1 = exp(R(:,:,1)+C(:,:,1)+P)./(1+exp(R(:,:,1)+C(:,:,1)+P));
 A1 = Prob1>Draw_threshold(:,:,1);
 % sth = R(:,:,1)+C(:,:,1)+P;
@@ -378,7 +381,9 @@ metrics_out_avg_set_SI_variant(a_ind,:) = metrics_out_avg_set(d,:);
 average_member_adopts_SI_variant(a_ind) = average_member_adopts(d);
 a_ind = a_ind+1;
 
-clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1
+sth = cat(3,sth,metrics_out_avg);
+
+clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth 
 
 seed1 = seed1 +1;
 
