@@ -35,14 +35,13 @@ clear
 
 tic
 %% no overlaps among members and among friends
-rng(1)
 sth = [];
 % rep_times = 10;
 rep_times = 2;
 % rep_times = 1;
 NM_set = [];
-% NM_set = repmat(4,rep_times,1);
-NM_set = [NM_set; repmat(12,rep_times,1)];
+NM_set = repmat(4,rep_times,1);
+% NM_set = [NM_set; repmat(12,rep_times,1)];
 % NM_set = [NM_set; repmat(20,rep_times,1)];
 % NM_set = [NM_set; repmat(40,rep_times,1)];
 % NM_set = [NM_set; repmat(60,rep_times,1)];
@@ -50,16 +49,17 @@ NM_set = [NM_set; repmat(12,rep_times,1)];
 % NM_set = [NM_set; repmat(200,rep_times,1)];
 
 % CHUNKS = 50;
-CHUNKS = 3;
-% CHUNKS = 1;
+% CHUNKS = 3;
+CHUNKS = 1;
 % combined_set = NM_set*CHUNKS;
 
 metrics_out_avg_set = zeros(length(NM_set),12);
 average_member_adopts = zeros(length(NM_set),1);
 
-beta_A_set = 1:10;
-% beta_A_set = 3:4;
+% beta_A_set = 1:10;
+beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
+% beta_A_set = [1 1];
 
 alpha_R = -10;
 se_R = -1;
@@ -79,11 +79,12 @@ average_member_adopts_SI_variant = zeros(length(beta_A_set_disp),1);
 a_ind = 1;
 for a = 1:length(beta_A_set)
         beta_A = beta_A_set(a);
-        rng(401716)
+        rng(1)
 
         seed1 = 1;
+        
     for d = 1:length(NM_set)
-            rng(seed1)
+        rng(1000+seed1)
         % generate members first 
         N_pool = 10000;                                            % # of users in the whole pool
         % NM = 100;                                              % number of members
@@ -95,7 +96,8 @@ for a = 1:length(beta_A_set)
         r = 3;
         p = 0.95;
         num_friends = nbinrnd(r,1-p,1,NM);                      % simulate # of friends drawn from NM members (drawn from skewed negative binomial distribution)
-
+        disp(sum(num_friends))
+        
         % multinomial distribution
         % p = [0.2,0.3,0.5];
         % R = mnrnd(10000,p,1000);
@@ -106,7 +108,7 @@ for a = 1:length(beta_A_set)
         ind_c = 1:NM;
 
         for c = 1:CHUNKS
-            rng(seed2)
+            rng(100000+seed2)
             %     debug = rand(1,1);                                       % debug
             %     disp(debug)
 
@@ -146,7 +148,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec2(row_indice) = similarity_kj;
                 ind = ind+NN;
             end
-            % disp(similarity_vec(1,1))
+%             disp(sum(sum(similarity_vec2)))
 
             S_sparse = sparse([rowF rowN'],[colF colN],[similarity_vec; similarity_vec2],sizeF+NM*NN,sizeF+NM*NN);
             S_sparse_inv = S_sparse';
@@ -156,8 +158,8 @@ for a = 1:length(beta_A_set)
             T = 52;                                               % number of weeks
             NB = 10;
             Cikt = beta_C+se_C*randn(NB,T,NM);
-            disp(rand(1))
-            disp(Cikt(1,1,1))                    % debug
+%             disp(rand(1))
+%             disp(sum(sum(sum(Cikt))))                    % debug
             Cijt = zeros(NB,T,sum(num_friends));                  % simulate shocks for friends
             % Cijt = beta_C+se_C*randn(NB,T,sum(num_friends));
             ind = 0;
@@ -172,6 +174,7 @@ for a = 1:length(beta_A_set)
                 Cijt(:,:,row_indice)=Cijt_part;
                 ind = ind+num_friends(i);
             end
+%             disp(sum(sum(sum(Cijt))))
 
             Cint = zeros(NB,T,NN*NM);                               % simulate shocks for neighbours
             % Cint = beta_C+se_C*randn(NB,T,NN*NM);
@@ -186,6 +189,7 @@ for a = 1:length(beta_A_set)
                 Cint(:,:,row_indice)=Cint_part;
                 ind = ind+NN;
             end
+%             disp(sum(sum(sum(Cint))))
 
             C = cat(3,Cikt,Cijt,Cint);          % shock per band per t for all users
             C = permute(C,[3 1 2]);                                                                     % NU*NB*t
@@ -196,7 +200,7 @@ for a = 1:length(beta_A_set)
             % Pik = -8+3*randn(NM,NB);
             bandPref = @(beta1,sigma1, beta2, sigma2, nrow, ncol) repmat(beta1+sigma1*randn(1,ncol),nrow,1)+ (beta2+sigma2*randn(nrow,ncol));            % this approach also gives different means for different band and different draws for different users as well
             Pik = bandPref(beta_P1,se_P1,beta_P2,se_P2,NM,NB);
-            disp(Pik(1,1))                                      % debug
+%             disp(sum(sum(Pik)))                                      % debug
             ind = 0;
             Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
             for i = 1:NM
@@ -228,10 +232,11 @@ for a = 1:length(beta_A_set)
             % Pin = bandPref(beta_P1,se_P1,beta_P2,se_P2,NN*NM,NB);                         % band preference without similarity between users
 
             P = cat(1,Pik,Pij,Pin);          % band preference of all bands for all users                % NU*NB
-
+%             disp(sum(sum(P)))
+            
             % simulate baseline adoption tendency
             R = alpha_R+se_R*randn(NM+sum(num_friends)+NM*NN,NB,T);                                                   % NU*NB*t
-
+%             disp(sum(sum(sum(R))))
 
 
             % simulate band adoption t=1
@@ -239,7 +244,7 @@ for a = 1:length(beta_A_set)
             Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB,T);                                       % NU*NB*t
             % Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB);                                           % NU*NB
             % Draw_threshold = repmat(Draw_threshold,1,1,T);                      % keep the same draws across different T                % NU*NB*t
-            disp(Draw_threshold(1,1,1))                                         % debug
+%             disp(sum(sum(sum(Draw_threshold))))                                         % debug
             Prob1 = exp(R(:,:,1)+C(:,:,1)+P)./(1+exp(R(:,:,1)+C(:,:,1)+P));
             A1 = Prob1>Draw_threshold(:,:,1);
             % sth = R(:,:,1)+C(:,:,1)+P;
@@ -312,7 +317,7 @@ for a = 1:length(beta_A_set)
             adoption_mat_sparse = sparse(adoption_mat(:,1),adoption_mat(:,2),adoption_mat(:,3),NU,NB);
 
             metrics_store_cell = cell(NM,1);
-            for m = 1:NM
+            for m = 1:  NM
                 m_adoption = member_cells{m};
                 m_metrics_store = zeros(size(m_adoption,1),6);
                 for i = 1:size(m_adoption,1)
@@ -348,8 +353,9 @@ for a = 1:length(beta_A_set)
             disp(c)
 
             seed2 = seed2+1;
+            seed1 = seed1 +1;
 
-            end
+        end
 
         metrics_out_cell = cell(NM*CHUNKS,1);
         metrics_out_avg = zeros(NM*CHUNKS,12);
@@ -383,9 +389,9 @@ for a = 1:length(beta_A_set)
 
         sth = cat(3,sth,metrics_out_avg);
 
-        clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth 
-
-        seed1 = seed1 +1;
+        clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1
+        
+%         seed1 = seed1 +1;
 
     end
 
