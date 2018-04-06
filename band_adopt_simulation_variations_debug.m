@@ -36,11 +36,11 @@ clear
 tic
 %% no overlaps among members and among friends
 sth = [];
-% rep_times = 10;
-rep_times = 2;
+rep_times = 10;
+% rep_times = 2;
 % rep_times = 1;
 NM_set = [];
-NM_set = repmat(4,rep_times,1);
+NM_set = repmat(1,rep_times,1);
 % NM_set = [NM_set; repmat(12,rep_times,1)];
 % NM_set = [NM_set; repmat(20,rep_times,1)];
 % NM_set = [NM_set; repmat(40,rep_times,1)];
@@ -49,22 +49,23 @@ NM_set = repmat(4,rep_times,1);
 % NM_set = [NM_set; repmat(200,rep_times,1)];
 
 % CHUNKS = 50;
-% CHUNKS = 3;
+% CHUNKS = 5;
 CHUNKS = 1;
 % combined_set = NM_set*CHUNKS;
 
 metrics_out_avg_set = zeros(length(NM_set),12);
 average_member_adopts = zeros(length(NM_set),1);
 
-% beta_A_set = 1:10;
-beta_A_set = 1:2;
+beta_A_set = 1:10;
+% beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
 % beta_A_set = [1 1];
 
-alpha_R = -10;
+alpha_R = -12;
 se_R = -1;
-beta_C = 0.3;
-se_C = 1;
+% beta_C = 1;
+beta_C = 0;
+se_C = 10;
 beta_P1 = -0.3;
 se_P1 = 2;
 beta_P2 = -0.3;
@@ -84,7 +85,7 @@ for a = 1:length(beta_A_set)
         seed1 = 1;
         
     for d = 1:length(NM_set)
-        rng(1000+seed1)
+        rng(100+seed1)
         % generate members first 
         N_pool = 10000;                                            % # of users in the whole pool
         % NM = 100;                                              % number of members
@@ -121,6 +122,8 @@ for a = 1:length(beta_A_set)
             F = full(F_sparse+F_sparse_inv);
             rowF = temp;
             colF = NM+(1:sum(num_friends));
+            M_filter = ones(sizeF+NM*NN,sizeF+NM*NN);                      % create m_filter that filter out all members (set to be 0) 
+            M_filter(1:NM,:) = 0;
 
             % simulate neighbour matrix
             rowN = repmat(1:NM,NN,1);
@@ -153,23 +156,63 @@ for a = 1:length(beta_A_set)
             S_sparse = sparse([rowF rowN'],[colF colN],[similarity_vec; similarity_vec2],sizeF+NM*NN,sizeF+NM*NN);
             S_sparse_inv = S_sparse';
             S = full(S_sparse+S_sparse_inv);
+            
+            % simulate extra similarity matrices to be used for temp shocks and band attractiveness 
+            similarity_vec3 = zeros(sum(num_friends),1);
+            ind = 0;
+            for i = 1:NM
+                similarity_kj = rand(num_friends(i),1);           % simulate similarity scores between each member and friends
+                row_indice = (ind+1):(ind+num_friends(i));
+                similarity_vec3(row_indice) = similarity_kj;
+                ind = ind+num_friends(i);
+            end
 
+            similarity_vec4 = zeros(NM*NN,1);
+            ind = 0;
+            for i = 1:NM
+                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                row_indice = (ind+1):(ind+NN);
+                similarity_vec4(row_indice) = similarity_kj;
+                ind = ind+NN;
+            end
+            
+            similarity_vec5 = zeros(sum(num_friends),1);
+            ind = 0;
+            for i = 1:NM
+                similarity_kj = rand(num_friends(i),1);           % simulate similarity scores between each member and friends
+                row_indice = (ind+1):(ind+num_friends(i));
+                similarity_vec5(row_indice) = similarity_kj;
+                ind = ind+num_friends(i);
+            end
+
+            similarity_vec6 = zeros(NM*NN,1);
+            ind = 0;
+            for i = 1:NM
+                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                row_indice = (ind+1):(ind+NN);
+                similarity_vec6(row_indice) = similarity_kj;
+                ind = ind+NN;
+            end            
+            
             % simulate temp shocks 
             T = 52;                                               % number of weeks
-            NB = 10;
-            Cikt = beta_C+se_C*randn(NB,T,NM);
+            NB = 100;
+%             Cikt = beta_C+se_C*randn(NB,T,NM);                  % ??? w: not generating equal number of positive and negative numbers?
+            % test with mean(mean(mean(Cikt)))
+            Cikt = beta_C+se_C*(rand(1,1)*2-1).*randn(NB,T,NM);
 %             disp(rand(1))
-%             disp(sum(sum(sum(Cikt))))                    % debug
+            disp(sum(sum(sum(Cikt))))                    % debug
             Cijt = zeros(NB,T,sum(num_friends));                  % simulate shocks for friends
             % Cijt = beta_C+se_C*randn(NB,T,sum(num_friends));
             ind = 0;
             for i = 1:NM
                 row_indice = (ind+1):(ind+num_friends(i));
-                Sjk = similarity_vec(row_indice);
+                Sjk = similarity_vec3(row_indice);
                 temp = repmat(Sjk,1,NB,T);
                 Sjk_ext = permute(temp,[2 3 1]);        
                 Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Sjk));
-                Cijt_part = Sjk_ext.*Cikt_ext+(1-Sjk_ext).*(beta_C+se_C*randn(NB,T,length(Sjk)));
+%                 Cijt_part = Sjk_ext.*Cikt_ext+(1-Sjk_ext).*(beta_C+se_C*randn(NB,T,length(Sjk)));
+                Cijt_part = Sjk_ext.*Cikt_ext+(1-Sjk_ext).*(beta_C+se_C*(rand(1,1)*2-1).*randn(NB,T,length(Sjk)));
             %     row_indice = (ind+1):(ind+num_friends(i));
                 Cijt(:,:,row_indice)=Cijt_part;
                 ind = ind+num_friends(i);
@@ -181,11 +224,12 @@ for a = 1:length(beta_A_set)
             ind = 0;
             for i = 1:NM
                 row_indice = (ind+1):(ind+NN);
-                Snk = similarity_vec2(row_indice);
+                Snk = similarity_vec4(row_indice);
                 temp = repmat(Snk,1,NB,T);
                 Snk_ext = permute(temp,[2 3 1]);        
                 Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Snk));
-                Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*randn(NB,T,length(Snk)));
+%                 Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*randn(NB,T,length(Snk)));
+                Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*(rand(1,1)*2-1).*randn(NB,T,length(Snk)));
                 Cint(:,:,row_indice)=Cint_part;
                 ind = ind+NN;
             end
@@ -205,7 +249,7 @@ for a = 1:length(beta_A_set)
             Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
             for i = 1:NM
                 row_indice = (ind+1):(ind+num_friends(i));
-                Sjk = similarity_vec(row_indice);
+                Sjk = similarity_vec5(row_indice);
                 Sjk_ext = repmat(Sjk,1,NB);
                 Pik_ext = repmat(Pik(i,:),length(Sjk),1);
             %     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8+3*randn(length(Sjk),NB));
@@ -220,7 +264,7 @@ for a = 1:length(beta_A_set)
             Pin= zeros(NN*NM,NB);                  % simulate band preferences for neighbours
             for i = 1:NM
                 row_indice = (ind+1):(ind+NN);
-                Snk = similarity_vec2(row_indice);
+                Snk = similarity_vec6(row_indice);
                 Snk_ext = repmat(Snk,1,NB);
                 Pik_ext = repmat(Pik(i,:),length(Snk),1);
             %     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8+3*randn(length(Snk),NB));
@@ -253,8 +297,10 @@ for a = 1:length(beta_A_set)
             sum(sum(A1))/(NU*NB)
 
             % simulate band adoption t=2
-            Prob2 = exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P)./...
-                (1+exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P));
+%             Prob2 = exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P)./...
+%                 (1+exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P));
+            Prob2 = exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2)+P)./...         % use member filter to filter out all social influence to members' adoption decisions
+                (1+exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2)+P));
             A2 = Prob2>Draw_threshold(:,:,2);
             % A2 = A2+A1;
             % A2(A2>0)=1;
@@ -267,14 +313,18 @@ for a = 1:length(beta_A_set)
             A(:,:,1) = A1;
             for t = 2:T
                 if t <TI+1
-                    Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P)./...
-                        (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P));
+%                     Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P)./...
+%                         (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P));
+                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P)./...                       % use member filter to filter out all social influence to members' adoption decisions
+                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P));
                     A_t = Prob_t>Draw_threshold(:,:,t);
                     A_t(sum(A(:,:,1:t-1),3)>0)=0;
                     A(:,:,t) = A_t;
                 else
-                    Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)./...
-                        (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P));
+%                     Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)./...
+%                         (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P));
+                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)./...                    % use member filter to filter out all social influence to members' adoption decisions
+                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)); 
                     A_t = Prob_t>Draw_threshold(:,:,t);
                     A_t(sum(A(:,:,1:t-1),3)>0)=0;
                     A(:,:,t) = A_t;
@@ -465,3 +515,7 @@ toc
 
 % clear
 % load('test.mat')
+
+% w: change se_C values [0.1 1 5]
+% w: adoption always increases
+% w: when utility is already very low, only (large) positive shocks will have an impact on P (see oneNote)
