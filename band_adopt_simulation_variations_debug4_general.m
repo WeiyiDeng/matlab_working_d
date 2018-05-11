@@ -36,11 +36,11 @@ clear
 tic
 %% no overlaps among members and among friends
 sth = [];
-rep_times = 10;
+rep_times = 1;                                      % # of populations
 % rep_times = 2;
 % rep_times = 1;
 NM_set = [];
-NM_set = repmat(3,rep_times,1);
+NM_set = repmat(2,rep_times,1);                     % # of members
 % NM_set = [NM_set; repmat(12,rep_times,1)];
 % NM_set = [NM_set; repmat(20,rep_times,1)];
 % NM_set = [NM_set; repmat(40,rep_times,1)];
@@ -50,34 +50,35 @@ NM_set = repmat(3,rep_times,1);
 
 % CHUNKS = 50;
 % CHUNKS = 5;
-CHUNKS = 1;
+CHUNKS = 1;                                         % # of chunks (each population has # of members * # of chunks members)
 % combined_set = NM_set*CHUNKS;
 
 metrics_out_avg_set = zeros(length(NM_set),13);
 average_member_adopts = zeros(length(NM_set),1);
 
-beta_A_set = 0.5:0.5:5;
+beta_A_set = 10;                                     % social influence parameter values
+% beta_A_set = 0.5:0.5:5;
 % beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
 % beta_A_set = [1 1];
 
-alpha_R = -20;
+alpha_R = -30;
 se_R = 1;
-theta_P = 10;
-theta_C = 20;
-beta_C = -1;
+theta_P = 15;
+theta_C = 15;
+beta_C = 0;
 % beta_C = 0;
-se_C = 0;
-se_C_n = 10;
+se_C = 1;
+se_C_n = 1;
 % se_C = 0.01;
 % beta_P1_m = -0.3;
 % se_P1_m = 2;
 % beta_P2_m = -0.3;
 % se_P2_m = 3;
-se_P1_f = 2;
-se_P2_f = 2;
-se_P1_n = 20;
-se_P2_n = 20;
+se_P1_f = 1;
+se_P2_f = 1;
+se_P1_n = 2;
+se_P2_n = 2;
 beta_P1 = -1;
 se_P1 = 2;
 beta_P2 = -1;
@@ -98,7 +99,7 @@ for a = 1:length(beta_A_set)
         beta_A = beta_A_set(a);
         rng(1)
 
-        seed1 = 1;
+        seed1 = 3;
         
     for d = 1:length(NM_set)
         rng(100+seed1)
@@ -163,7 +164,7 @@ for a = 1:length(beta_A_set)
             ind = 0;
             for i = 1:NM
                 % w: for the line below if change the first part (eg. 0.999), remember to change the second part as well (eg. 0.001*rand(NN,1)) !!
-                similarity_kj = 0.999+0.001*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                similarity_kj = 0.7+0.3*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec2(row_indice) = similarity_kj;
                 ind = ind+NN;
@@ -183,6 +184,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec3(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec3 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec4 = zeros(NM*NN,1);
             ind = 0;
@@ -192,6 +194,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec4(row_indice) = similarity_kj;
                 ind = ind+NN;
             end
+            similarity_vec4 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             similarity_vec5 = zeros(sum(num_friends),1);
             ind = 0;
@@ -201,6 +204,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec5(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec5 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec6 = zeros(NM*NN,1);
             ind = 0;
@@ -209,7 +213,8 @@ for a = 1:length(beta_A_set)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec6(row_indice) = similarity_kj;
                 ind = ind+NN;
-            end            
+            end
+            similarity_vec6 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             % simulate temp shocks 
             T = 52;                                               % number of weeks
@@ -392,19 +397,49 @@ for a = 1:length(beta_A_set)
             adoption_mat_sparse = sparse(adoption_mat(:,1),adoption_mat(:,2),adoption_mat(:,3),NU,NB);
 
             metrics_store_cell = cell(NM,1);
+            f_shared_cell = cell(NM,1);
+            n_shared_cell = cell(NM,1);
+            non_f_shared_cell = cell(NM,1);
+            non_n_shared_cell = cell(NM,1);
             for m = 1:  NM
+                f_shared_adoption4weeks = zeros(num_friends(m),1);
+                n_shared_adoption4weeks = zeros(NN,1);
+                if m~=NM
+                    non_f_shared_adoption4weeks = zeros(num_friends(m+1),1);
+                else
+                    non_f_shared_adoption4weeks = zeros(num_friends(1),1);
+                end
+                non_n_shared_adoption4weeks = zeros(NN,1);
                 m_adoption = member_cells{m};
                 m_metrics_store = zeros(size(m_adoption,1),6);
                 for i = 1:size(m_adoption,1)
                     band_id = m_adoption(i,2);
                     week_id = m_adoption(i,3);
                     f_adoption = adoption_mat_sparse(friend_start(m):friend_end(m),band_id);
-                    within4Weeks_f = sum(f_adoption>week_id & f_adoption-week_id<=TI);
+                    if m~=NM
+                        non_f_adoption = adoption_mat_sparse(friend_start(m+1):friend_end(m+1),band_id);
+                    else
+                        non_f_adoption = adoption_mat_sparse(friend_start(1):friend_end(1),band_id);
+                    end
+                    f_ind = find(f_adoption>=week_id & f_adoption-week_id<=TI);
+                    f_shared_adoption4weeks(f_ind) = f_shared_adoption4weeks(f_ind)+1;
+                    non_f_ind = find(non_f_adoption>=week_id & non_f_adoption-week_id<=TI);
+                    non_f_shared_adoption4weeks(non_f_ind) = non_f_shared_adoption4weeks(non_f_ind)+1;
+                    within4Weeks_f = sum(f_adoption>=week_id & f_adoption-week_id<=TI);
                     random_week_id = datasample(1:T,1);
             %         random4Weeks_f = sum(f_adoption>random_week_id & f_adoption-random_week_id<=TI);
                     fixed_4Weeks_f = sum(f_adoption(:)>0)/52*4;
                     n_adoption = adoption_mat_sparse(neighbour_start(m):neighbour_end(m),band_id);
-                    within4Weeks_n = sum(n_adoption>week_id & n_adoption-week_id<=TI);
+                    if m~=NM
+                        non_n_adoption = adoption_mat_sparse(neighbour_start(m+1):neighbour_end(m+1),band_id);
+                    else
+                        non_n_adoption = adoption_mat_sparse(neighbour_start(1):neighbour_end(1),band_id);
+                    end
+                    n_ind = find(n_adoption>=week_id & n_adoption-week_id<=TI);
+                    n_shared_adoption4weeks(n_ind) = n_shared_adoption4weeks(n_ind)+1;
+                    non_n_ind = find(non_n_adoption>=week_id & non_n_adoption-week_id<=TI);
+                    non_n_shared_adoption4weeks(non_n_ind) = non_n_shared_adoption4weeks(non_n_ind)+1;
+                    within4Weeks_n = sum(n_adoption>=week_id & n_adoption-week_id<=TI);                     % w: change to >= includes the case when both individuals adopts at the same time period !!
             %         random4Weeks_n = sum(n_adoption>random_week_id & n_adoption-random_week_id<=TI);
                     fixed_4Weeks_n = sum(n_adoption(:)>0)/52*4;
                     m_metrics_store(i,1) = within4Weeks_f;
@@ -417,6 +452,10 @@ for a = 1:length(beta_A_set)
                 m_metrics_store(:,5) = num_friends(m);
                 m_metrics_store(:,6) = NN;
                 metrics_store_cell{m} = m_metrics_store;
+                f_shared_cell{m} = f_shared_adoption4weeks;
+                n_shared_cell{m} = n_shared_adoption4weeks;
+                non_f_shared_cell{m} = non_f_shared_adoption4weeks;
+                non_n_shared_cell{m} = non_n_shared_adoption4weeks;
             end
 
             metrics_chunks_cell(ind_c) = metrics_store_cell;
@@ -468,7 +507,7 @@ for a = 1:length(beta_A_set)
 
         sth = cat(3,sth,metrics_out_avg);
 
-        clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1 P1 C1 P10 C10 se_P1_f se_P2_f se_P1_n se_P2_n se_C_n theta_C theta_P
+%         clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1 P1 C1 P10 C10 se_P1_f se_P2_f se_P1_n se_P2_n se_C_n theta_C theta_P
         
 %         seed1 = seed1 +1;
 
@@ -476,107 +515,210 @@ for a = 1:length(beta_A_set)
 
 end
 
-% figure
-% subplot(3,2,1)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,1))
-% title('within4Weeks_f')
-% subplot(3,2,2)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,2))
-% % title('random4Weeks_f')
-% title('fixed4Weeks_f')
-% subplot(3,2,3)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,3))
-% title('within4Weeks_n')
-% subplot(3,2,4)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,4))
-% % title('random4Weeks_n')
-% title('fixed4Weeks_n')
-% subplot(3,2,5)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,5))
-% title('# of friends')
-% subplot(3,2,6)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,6))
-% title('# of neighbours')
+cosine_similarity_TF_IDF(Pik(1,:),Pij(1,:),1)
+cosine_similarity_TF_IDF(Pik(1,:),Pin(1,:),1)
+
+% test cosine similarity
+test_cosine_simi_f = [];
+for k = 1:num_friends(1)
+    cosine_simi_f = cosine_similarity_TF_IDF(Pik(1,:),Pij(k,:),1);
+    test_cosine_simi_f = [test_cosine_simi_f; cosine_simi_f];
+end
+mean(test_cosine_simi_f)
+corr(similarity_vec(1:num_friends(1)),test_cosine_simi_f)
+% test ends
+
+%
+cosine_simi_non_f = [];
+for k = 1:num_friends(2)
+    cosine_simi_f = cosine_similarity_TF_IDF(Pik(1,:),Pij(num_friends(1)+k,:),1);
+    cosine_simi_non_f = [cosine_simi_non_f; cosine_simi_f];
+end
+mean(cosine_simi_non_f)
+
+cosine_simi_non_n = [];
+for k = 1:NN
+    cosine_simi_n = cosine_similarity_TF_IDF(Pik(1,:),Pin(NN+k,:),1);
+    cosine_simi_non_n = [cosine_simi_non_n; cosine_simi_n];
+end
+mean(cosine_simi_non_n)
+
+figure
+% scatter(similarity_vec,[f_shared_cell{1};f_shared_cell{2}])
+scatter(similarity_vec(1:num_friends(1)),f_shared_cell{1})
+hold on
+scatter(similarity_vec2(1:NN),n_shared_cell{1})
+hold on
+scatter([cosine_simi_non_f; cosine_simi_non_n],[non_f_shared_cell{1};non_n_shared_cell{1}])
+hold off
+title('shared adoptions with members')
+xlabel('similarity to members')
+ylabel('shared adoptions')
+corr([cosine_simi_non_f; cosine_simi_non_n],[non_f_shared_cell{1};non_n_shared_cell{1}])
+corr(similarity_vec2(1:NN),n_shared_cell{1})
+
+figure
+scatter(similarity_vec2(1:NN),n_shared_cell{1})
+title('neighbours shared adoptions with members')
+xlabel('similarity to members')
+ylabel('shared adoptions')
+
+% w: why the neighbours similarity not correlated to similar behaviour?
+% w: try to make the neighbour similarity correlated with An(4)  !!
+% w: solved! change to >= includes the case when both individuals adopts at the same time period !!
+
+disp(['average member adoptions:    ' num2str(average_member_adopts_SI_variant) ''])
+
+%% only look at first member as focal member for analysis
+% use the slope of non_SI group shared adoption with members/similarities with members as control 
+b_friend_group = similarity_vec(1:num_friends(1))\f_shared_cell{1};
+mean(f_shared_cell{1})/mean(n_shared_cell{1})
+b_non_SI_group = [cosine_simi_non_f; cosine_simi_non_n]\[non_f_shared_cell{1};non_n_shared_cell{1}]
+control_sim_non_SI = similarity_vec(1:num_friends(1)).*b_non_SI_group;              % if non_SI group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
+mean(control_sim_non_SI)
+mean(f_shared_cell{1})/mean(control_sim_non_SI)
+disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
+disp(['average Af/An similarity adjusted using non-social group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_non_SI)) ''])
+
+% use the slope of neighbours shared adoption with members/similarities with members as control 
+mean(f_shared_cell{1})/mean(n_shared_cell{1})
+b_neighbour_group = similarity_vec2(1:NN)\n_shared_cell{1}
+control_sim_neighbour_SI = similarity_vec(1:num_friends(1)).*b_neighbour_group;      % if neighbour group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
+mean(control_sim_neighbour_SI)
+mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)
+disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
+disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
+
+disp(['slope Af/Similarity_f :    ' num2str(b_friend_group) ''])
+disp(['slope An/Similarity_n :    ' num2str(b_neighbour_group) ''])
+disp(['slope A_non/Similarity_non :    ' num2str(b_non_SI_group) ''])
+
+%%
+% % figure
+% % subplot(3,2,1)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,1))
+% % title('within4Weeks_f')
+% % subplot(3,2,2)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,2))
+% % % title('random4Weeks_f')
+% % title('fixed4Weeks_f')
+% % subplot(3,2,3)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,3))
+% % title('within4Weeks_n')
+% % subplot(3,2,4)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,4))
+% % % title('random4Weeks_n')
+% % title('fixed4Weeks_n')
+% % subplot(3,2,5)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,5))
+% % title('# of friends')
+% % subplot(3,2,6)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,6))
+% % title('# of neighbours')
+% % 
+% % figure
+% % subplot(3,2,1)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,7))
+% % title('A_f(TI)/N_f')
+% % subplot(3,2,2)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
+% % % title('A_f(R)/N_f')
+% % title('A_f(Fix)/N_f')
+% % subplot(3,2,3)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,9))
+% % title('A_n(TI)/N_n')
+% % subplot(3,2,4)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,10))
+% % % title('A_n(R)/N_n')
+% % title('A_n(Fix)/N_n')
+% % subplot(3,2,5)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,11))
+% % % title('A_f(TI)/N_f-A_f(R)/N_f')
+% % title('A_f(TI)/N_f-A_f(Fix)/N_f')
+% % subplot(3,2,6)
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,12))
+% % % title('A_n(TI)/N_n-A_n(R)/N_n')
+% % title('A_n(TI)/N_n-A_n(Fix)/N_n')
+% 
+% % figure
+% % scatter(NM_set*CHUNKS, average_member_adopts)
+% % title('average member adoptions')
+% 
+% % figure
+% % scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
+% % title('Fixed 4 weeks friend adoptions/# of friends')
 % 
 % figure
-% subplot(3,2,1)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,7))
-% title('A_f(TI)/N_f')
-% subplot(3,2,2)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
-% % title('A_f(R)/N_f')
-% title('A_f(Fix)/N_f')
-% subplot(3,2,3)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,9))
-% title('A_n(TI)/N_n')
-% subplot(3,2,4)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,10))
-% % title('A_n(R)/N_n')
-% title('A_n(Fix)/N_n')
-% subplot(3,2,5)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,11))
-% % title('A_f(TI)/N_f-A_f(R)/N_f')
-% title('A_f(TI)/N_f-A_f(Fix)/N_f')
-% subplot(3,2,6)
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,12))
-% % title('A_n(TI)/N_n-A_n(R)/N_n')
-% title('A_n(TI)/N_n-A_n(Fix)/N_n')
-
-% figure
-% scatter(NM_set*CHUNKS, average_member_adopts)
+% scatter(beta_A_set_disp, average_member_adopts_SI_variant)
 % title('average member adoptions')
-
+% 
+% % figure
+% % scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,8))
+% % title('Fixed 4 weeks friend adoptions/# of friends')
+% 
 % figure
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
-% title('Fixed 4 weeks friend adoptions/# of friends')
-
-figure
-scatter(beta_A_set_disp, average_member_adopts_SI_variant)
-title('average member adoptions')
-
+% scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
+% title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
+% 
+% toc
+% 
+% % save test.mat                             % NANs for NM>100 ??? 
+% 
+% % clear
+% % load('test.mat')
+% 
+% % w: change se_C values [0.1 1 5]
+% % w: adoption always increases
+% % w: when utility is already very low, only (large) positive shocks will have an impact on P (see oneNote)
+% 
 % figure
-% scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,8))
-% title('Fixed 4 weeks friend adoptions/# of friends')
-
-figure
-scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
-title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
-
-toc
-
-% save test.mat                             % NANs for NM>100 ??? 
-
-% clear
-% load('test.mat')
-
-% w: change se_C values [0.1 1 5]
-% w: adoption always increases
-% w: when utility is already very low, only (large) positive shocks will have an impact on P (see oneNote)
-
-figure
-y = metrics_out_avg_set_SI_variant(:,13);
-plot(reshape(y,10,10)')
-
-% % test (band attractiveness could all be low for some members' neighbours)
-% w = mean(Pin,2);
-% ww = reshape(w,50,30);
-% mean(ww)
-% ttest(ww(:,find(mean(ww)==min(mean(ww)))),ww(:,find(mean(ww)==max(mean(ww)))))
-
-% % test: try with this set of parameters
-% % vary alpha_R in range -8:1:-5
-% alpha_R = -5;
-% se_R = -1;
-% beta_C = 0;
-% se_C = 0.01;                             % social influence parameter
-% beta_P1 = 0;
-% se_P1 = 0.01;
-% beta_P2 = 0;
-% se_P2 = 0.01;
-
-% first find the max and min populations of column 13 of metrics_out_avg_set (eg. row 4 and row 7)
-% sth_max = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
-% sth_min = sth(:,:,[7 17 27 37 47 57 67 77 87 97]);
+% y = metrics_out_avg_set_SI_variant(:,13);
+% plot(reshape(y,10,10)')
+% 
+% % % test (band attractiveness could all be low for some members' neighbours)
+% % w = mean(Pin,2);
+% % ww = reshape(w,50,30);
+% % mean(ww)
+% % ttest(ww(:,find(mean(ww)==min(mean(ww)))),ww(:,find(mean(ww)==max(mean(ww)))))
+% 
+% % % test: try with this set of parameters
+% % % vary alpha_R in range -8:1:-5
+% % alpha_R = -5;
+% % se_R = -1;
+% % beta_C = 0;
+% % se_C = 0.01;                             % social influence parameter
+% % beta_P1 = 0;
+% % se_P1 = 0.01;
+% % beta_P2 = 0;
+% % se_P2 = 0.01;
+% 
+% % first find the max and min populations of column 13 of metrics_out_avg_set (eg. row 4 and row 7)
+% % sth_max = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
+% % sth_min = sth(:,:,[7 17 27 37 47 57 67 77 87 97]);
+% % f_temp = squeeze(sth_max(:,1,:));
+% % mean(f_temp)
+% % n_temp = squeeze(sth_max(:,3,:));
+% % mean(n_temp)
+% % f_temp2 = squeeze(sth_min(:,1,:));
+% % mean(f_temp2)
+% % n_temp2 = squeeze(sth_min(:,3,:));
+% % mean(n_temp2)
+% % figure
+% % plot(1:10,mean(f_temp),1:10,mean(f_temp2))
+% % figure
+% % plot(1:10,mean(f_temp)./mean(n_temp),1:10,mean(f_temp2)./mean(n_temp2))
+% % figure
+% % plot(1:10,mean(n_temp),1:10,mean(n_temp2))
+% 
+% % when rep_times = 10, NM_set = repmat(20,rep_times,1) and beta_A_set = 1:10;
+% % sth_max = sth(:,:,[1 11 21 31 41 51 61 71 81 91]);
+% % sth_min = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
+% max_ind = find(metrics_out_avg_set(:,13)==max(metrics_out_avg_set(:,13)));
+% min_ind = find(metrics_out_avg_set(:,13)==min(metrics_out_avg_set(:,13)));
+% sth_max = sth(:,:,(0:10:90)+max_ind);
+% sth_min = sth(:,:,(0:10:90)+min_ind);
+% mean(sth_min,1)                           % check last element
+% mean(sth_max,1)                           % check last element
 % f_temp = squeeze(sth_max(:,1,:));
 % mean(f_temp)
 % n_temp = squeeze(sth_max(:,3,:));
@@ -588,117 +730,93 @@ plot(reshape(y,10,10)')
 % figure
 % plot(1:10,mean(f_temp),1:10,mean(f_temp2))
 % figure
-% plot(1:10,mean(f_temp)./mean(n_temp),1:10,mean(f_temp2)./mean(n_temp2))
+% plot(1:10,mean(f_temp./n_temp./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))),1:10,mean(f_temp2./n_temp2./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))))           % w: not the same as in sth ??
 % figure
 % plot(1:10,mean(n_temp),1:10,mean(n_temp2))
-
-% when rep_times = 10, NM_set = repmat(20,rep_times,1) and beta_A_set = 1:10;
-% sth_max = sth(:,:,[1 11 21 31 41 51 61 71 81 91]);
-% sth_min = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
-max_ind = find(metrics_out_avg_set(:,13)==max(metrics_out_avg_set(:,13)));
-min_ind = find(metrics_out_avg_set(:,13)==min(metrics_out_avg_set(:,13)));
-sth_max = sth(:,:,(0:10:90)+max_ind);
-sth_min = sth(:,:,(0:10:90)+min_ind);
-mean(sth_min,1)                           % check last element
-mean(sth_max,1)                           % check last element
-f_temp = squeeze(sth_max(:,1,:));
-mean(f_temp)
-n_temp = squeeze(sth_max(:,3,:));
-mean(n_temp)
-f_temp2 = squeeze(sth_min(:,1,:));
-mean(f_temp2)
-n_temp2 = squeeze(sth_min(:,3,:));
-mean(n_temp2)
-figure
-plot(1:10,mean(f_temp),1:10,mean(f_temp2))
-figure
-plot(1:10,mean(f_temp./n_temp./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))),1:10,mean(f_temp2./n_temp2./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))))           % w: not the same as in sth ??
-figure
-plot(1:10,mean(n_temp),1:10,mean(n_temp2))
-
-[p,h,stats] = ranksum(n_temp(:,1),n_temp2(:,1))           % no significant differences in An(4) accross populations
-[p,h,stats] = ranksum(f_temp(:,1),f_temp2(:,1))           % no significant differences in Af(4) accross populations
-
-% % test whether avg attractiveness or temp shcoks of members differ between highest vs lowest populations
-% load('member_cells1.mat')
-% load('member_cells10.mat')
-% load('C1.mat')
-% load('C10.mat')
-% load('P10.mat')
-% load('P1.mat')
-% load('friend_start1.mat')
-% load('friend_end1.mat')
-% load('neighbour_start1.mat')
-% load('neighbour_end1.mat')
-% mc1 = [member_cells1{1,1};member_cells1{2,1};member_cells1{3,1}];
-% mc10 = [member_cells10{1,1};member_cells10{2,1};member_cells10{3,1}];
 % 
-% temp1 = zeros(size(mc1,1),1);
-% fp_avg1 = zeros(size(mc1,1),1);
-% np_avg1 = zeros(size(mc1,1),1);
-% for k = 1:size(mc1,1)
-%     temp1(k) = P1(mc1(k,1),mc1(k,2));
-%     fp_avg1(k) = mean(P1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
-%     np_avg1(k) = mean(P1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
-% end
+% [p,h,stats] = ranksum(n_temp(:,1),n_temp2(:,1))           % no significant differences in An(4) accross populations
+% [p,h,stats] = ranksum(f_temp(:,1),f_temp2(:,1))           % no significant differences in Af(4) accross populations
 % 
-% ctemp1 = zeros(size(mc1,1),1);
-% fc_avg1 = zeros(size(mc1,1),1);
-% nc_avg1 = zeros(size(mc1,1),1);
-% for k = 1:size(mc1,1)
-%     ctemp1(k) = C1(mc1(k,1),mc1(k,2),mc1(k,3));
-%     fc_avg1(k) = mean(C1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
-%     nc_avg1(k) = mean(C1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
-% end
+% % % test whether avg attractiveness or temp shcoks of members differ between highest vs lowest populations
+% % load('member_cells1.mat')
+% % load('member_cells10.mat')
+% % load('C1.mat')
+% % load('C10.mat')
+% % load('P10.mat')
+% % load('P1.mat')
+% % load('friend_start1.mat')
+% % load('friend_end1.mat')
+% % load('neighbour_start1.mat')
+% % load('neighbour_end1.mat')
+% % mc1 = [member_cells1{1,1};member_cells1{2,1};member_cells1{3,1}];
+% % mc10 = [member_cells10{1,1};member_cells10{2,1};member_cells10{3,1}];
+% % 
+% % temp1 = zeros(size(mc1,1),1);
+% % fp_avg1 = zeros(size(mc1,1),1);
+% % np_avg1 = zeros(size(mc1,1),1);
+% % for k = 1:size(mc1,1)
+% %     temp1(k) = P1(mc1(k,1),mc1(k,2));
+% %     fp_avg1(k) = mean(P1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
+% %     np_avg1(k) = mean(P1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
+% % end
+% % 
+% % ctemp1 = zeros(size(mc1,1),1);
+% % fc_avg1 = zeros(size(mc1,1),1);
+% % nc_avg1 = zeros(size(mc1,1),1);
+% % for k = 1:size(mc1,1)
+% %     ctemp1(k) = C1(mc1(k,1),mc1(k,2),mc1(k,3));
+% %     fc_avg1(k) = mean(C1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
+% %     nc_avg1(k) = mean(C1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
+% % end
+% % 
+% % load('friend_start10.mat')
+% % load('friend_end10.mat')
+% % load('neighbour_start10.mat')
+% % load('neighbour_end10.mat')
+% % 
+% % temp10 = zeros(size(mc10,1),1);
+% % fp_avg10 = zeros(size(mc10,1),1);
+% % np_avg10 = zeros(size(mc10,1),1);
+% % for k = 1:size(mc10,1)
+% %     temp10(k) = P10(mc10(k,1),mc10(k,2));
+% %     fp_avg10(k) = mean(P10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
+% %     np_avg10(k) = mean(P10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
+% % end
+% % 
+% % mean(temp1)                                     
+% % mean(temp10)                                      % in this population members like the bands better An(4) larger and Af(4)/An(4) smaller
+% % 
+% % ctemp10 = zeros(size(mc10,1),1);
+% % fc_avg10 = zeros(size(mc10,1),1);
+% % nc_avg10 = zeros(size(mc10,1),1);
+% % for k = 1:size(mc10,1)
+% %     ctemp10(k) = C10(mc10(k,1),mc10(k,2),mc10(k,3));
+% %     fc_avg10(k) = mean(C10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
+% %     nc_avg10(k) = mean(C10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
+% % end
+% % 
+% % mean(ctemp1)
+% % mean(ctemp10)
+% % 
+% % mean(np_avg1)
+% % mean(np_avg10)
+% % 
+% % mean(nc_avg1)
+% % mean(nc_avg10)
+% % 
+% % mean(fp_avg1)                                   % friend also P1<P10 ??
+% % mean(fp_avg10)
+% % 
+% % mean(fc_avg1)
+% % mean(fc_avg10)
+% % 
+% % mean(fp_avg1)/mean(np_avg1)                                   
+% % mean(fp_avg10)/mean(np_avg10)
+% % 
+% % [p,h,stats] = ranksum(fp_avg1./np_avg1,fp_avg10./np_avg10)
+% % [p,h,stats] = ranksum(fc_avg1./nc_avg1,fc_avg10./nc_avg10)
+% % [p,h,stats] = ranksum(fp_avg1,fp_avg10)
+% % [p,h,stats] = ranksum(np_avg1,np_avg10)
+% % [p,h,stats] = ranksum(nc_avg1,nc_avg10)
+% % [p,h,stats] = ranksum(fc_avg1,fc_avg10)
 % 
-% load('friend_start10.mat')
-% load('friend_end10.mat')
-% load('neighbour_start10.mat')
-% load('neighbour_end10.mat')
-% 
-% temp10 = zeros(size(mc10,1),1);
-% fp_avg10 = zeros(size(mc10,1),1);
-% np_avg10 = zeros(size(mc10,1),1);
-% for k = 1:size(mc10,1)
-%     temp10(k) = P10(mc10(k,1),mc10(k,2));
-%     fp_avg10(k) = mean(P10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
-%     np_avg10(k) = mean(P10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
-% end
-% 
-% mean(temp1)                                     
-% mean(temp10)                                      % in this population members like the bands better An(4) larger and Af(4)/An(4) smaller
-% 
-% ctemp10 = zeros(size(mc10,1),1);
-% fc_avg10 = zeros(size(mc10,1),1);
-% nc_avg10 = zeros(size(mc10,1),1);
-% for k = 1:size(mc10,1)
-%     ctemp10(k) = C10(mc10(k,1),mc10(k,2),mc10(k,3));
-%     fc_avg10(k) = mean(C10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
-%     nc_avg10(k) = mean(C10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
-% end
-% 
-% mean(ctemp1)
-% mean(ctemp10)
-% 
-% mean(np_avg1)
-% mean(np_avg10)
-% 
-% mean(nc_avg1)
-% mean(nc_avg10)
-% 
-% mean(fp_avg1)                                   % friend also P1<P10 ??
-% mean(fp_avg10)
-% 
-% mean(fc_avg1)
-% mean(fc_avg10)
-% 
-% mean(fp_avg1)/mean(np_avg1)                                   
-% mean(fp_avg10)/mean(np_avg10)
-% 
-% [p,h,stats] = ranksum(fp_avg1./np_avg1,fp_avg10./np_avg10)
-% [p,h,stats] = ranksum(fc_avg1./nc_avg1,fc_avg10./nc_avg10)
-% [p,h,stats] = ranksum(fp_avg1,fp_avg10)
-% [p,h,stats] = ranksum(np_avg1,np_avg10)
-% [p,h,stats] = ranksum(nc_avg1,nc_avg10)
-% [p,h,stats] = ranksum(fc_avg1,fc_avg10)
-

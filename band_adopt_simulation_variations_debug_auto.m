@@ -56,37 +56,25 @@ CHUNKS = 1;
 metrics_out_avg_set = zeros(length(NM_set),13);
 average_member_adopts = zeros(length(NM_set),1);
 
-beta_A_set = 0.5:0.5:5;
+beta_A_set = 1:10;
 % beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
 % beta_A_set = [1 1];
 
-alpha_R = -20;
-se_R = 1;
-theta_P = 10;
-theta_C = 20;
-beta_C = -1;
-% beta_C = 0;
-se_C = 0;
-se_C_n = 10;
-% se_C = 0.01;
-% beta_P1_m = -0.3;
-% se_P1_m = 2;
-% beta_P2_m = -0.3;
-% se_P2_m = 3;
-se_P1_f = 2;
-se_P2_f = 2;
-se_P1_n = 20;
-se_P2_n = 20;
-beta_P1 = -1;
+se_C_set = 0.1:1:3.1;
+for q = 1:length(se_C_set)
+    se_C = se_C_set(q);
+
+alpha_R = -12;
+se_R = -1;
+% beta_C = 1;
+beta_C = 0;
+% se_C = 1;
+beta_P1 = -0.3;
 se_P1 = 2;
-beta_P2 = -1;
+beta_P2 = -0.3;
 se_P2 = 3;
 % beta_A = 10;                               % social influence parameter
-% beta_P1 = 0;
-% se_P1 = 0;
-% beta_P2 = 0;
-% se_P2 = 0;
 
 beta_A_set_disp = repmat(beta_A_set,rep_times,1);
 beta_A_set_disp = beta_A_set_disp(:);
@@ -162,8 +150,7 @@ for a = 1:length(beta_A_set)
             similarity_vec2 = zeros(NM*NN,1);
             ind = 0;
             for i = 1:NM
-                % w: for the line below if change the first part (eg. 0.999), remember to change the second part as well (eg. 0.001*rand(NN,1)) !!
-                similarity_kj = 0.999+0.001*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec2(row_indice) = similarity_kj;
                 ind = ind+NN;
@@ -246,7 +233,7 @@ for a = 1:length(beta_A_set)
                 Snk_ext = permute(temp,[2 3 1]);        
                 Cikt_ext = repmat(Cikt(:,:,i),1,1,length(Snk));
 %                 Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*randn(NB,T,length(Snk)));
-                Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C_n*(rand(1,1)*2-1).*randn(NB,T,length(Snk)));
+                Cint_part = Snk_ext.*Cikt_ext+(1-Snk_ext).*(beta_C+se_C*(rand(1,1)*2-1).*randn(NB,T,length(Snk)));
                 Cint(:,:,row_indice)=Cint_part;
                 ind = ind+NN;
             end
@@ -261,7 +248,6 @@ for a = 1:length(beta_A_set)
             % Pik = -8+3*randn(NM,NB);
             bandPref = @(beta1,sigma1, beta2, sigma2, nrow, ncol) repmat(beta1+sigma1*randn(1,ncol),nrow,1)+ (beta2+sigma2*randn(nrow,ncol));            % this approach also gives different means for different band and different draws for different users as well
             Pik = bandPref(beta_P1,se_P1,beta_P2,se_P2,NM,NB);
-%             Pik = bandPref(beta_P1_m,se_P1_m,beta_P2_m,se_P2_m,NM,NB);
 %             disp(sum(sum(Pik)))                                      % debug
             ind = 0;
             Pij = zeros(sum(num_friends),NB);                  % simulate band preferences for friends
@@ -272,7 +258,7 @@ for a = 1:length(beta_A_set)
                 Pik_ext = repmat(Pik(i,:),length(Sjk),1);
             %     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8+3*randn(length(Sjk),NB));
             %     Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*(-8*repmat(band_attractiveness_mean,length(Sjk),1)+3*randn(length(Sjk),NB));
-                Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*bandPref(beta_P1,se_P1_f,beta_P2,se_P2_f,length(Sjk),NB);
+                Pij_part = Sjk_ext.*Pik_ext+(1-Sjk_ext).*bandPref(beta_P1,se_P1,beta_P2,se_P2,length(Sjk),NB);
                 Pij(row_indice,:) = Pij_part;
                 ind = ind+num_friends(i);
             end
@@ -287,7 +273,7 @@ for a = 1:length(beta_A_set)
                 Pik_ext = repmat(Pik(i,:),length(Snk),1);
             %     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8+3*randn(length(Snk),NB));
             %     Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*(-8*repmat(band_attractiveness_mean,length(Snk),1)+3*randn(length(Snk),NB));
-                Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*bandPref(beta_P1,se_P1_n,beta_P2,se_P2_n,length(Snk),NB);
+                Pin_part = Snk_ext.*Pik_ext+(1-Snk_ext).*bandPref(beta_P1,se_P1,beta_P2,se_P2,length(Snk),NB);
                 Pin(row_indice,:) = Pin_part;
                 ind = ind+NN;
             end
@@ -307,8 +293,7 @@ for a = 1:length(beta_A_set)
             % Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB);                                           % NU*NB
             % Draw_threshold = repmat(Draw_threshold,1,1,T);                      % keep the same draws across different T                % NU*NB*t
 %             disp(sum(sum(sum(Draw_threshold))))                                         % debug
-            Prob1 = exp(R(:,:,1)+theta_C*C(:,:,1)+theta_P*P)./(1+exp(R(:,:,1)+theta_C*C(:,:,1)+theta_P*P));
-%             Prob1 = exp(R(:,:,1)+C(:,:,1))./(1+exp(R(:,:,1)+C(:,:,1)));
+            Prob1 = exp(R(:,:,1)+C(:,:,1)+P)./(1+exp(R(:,:,1)+C(:,:,1)+P));
             A1 = Prob1>Draw_threshold(:,:,1);
             % sth = R(:,:,1)+C(:,:,1)+P;
             % hist(sth(:))
@@ -318,10 +303,8 @@ for a = 1:length(beta_A_set)
             % simulate band adoption t=2
 %             Prob2 = exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P)./...
 %                 (1+exp(R(:,:,2)+beta_A*F.*S*A1+C(:,:,2)+P));
-            Prob2 = exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+theta_C*C(:,:,2)+theta_P*P)./...         % use member filter to filter out all social influence to members' adoption decisions
-                (1+exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+theta_C*C(:,:,2)+theta_P*P));
-%             Prob2 = exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2))./...         % use member filter to filter out all social influence to members' adoption decisions
-%                 (1+exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2)));
+            Prob2 = exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2)+P)./...         % use member filter to filter out all social influence to members' adoption decisions
+                (1+exp(R(:,:,2)+beta_A*F.*M_filter.*S*A1+C(:,:,2)+P));
             A2 = Prob2>Draw_threshold(:,:,2);
             % A2 = A2+A1;
             % A2(A2>0)=1;
@@ -336,20 +319,16 @@ for a = 1:length(beta_A_set)
                 if t <TI+1
 %                     Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P)./...
 %                         (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P));
-                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+theta_C*C(:,:,t)+theta_P*P)./...                       % use member filter to filter out all social influence to members' adoption decisions
-                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+theta_C*C(:,:,t)+theta_P*P));
-%                     Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t))./...                       % use member filter to filter out all social influence to members' adoption decisions
-%                         (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)));
+                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P)./...                       % use member filter to filter out all social influence to members' adoption decisions
+                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,1:t-1),3)+C(:,:,t)+P));
                     A_t = Prob_t>Draw_threshold(:,:,t);
                     A_t(sum(A(:,:,1:t-1),3)>0)=0;
                     A(:,:,t) = A_t;
                 else
 %                     Prob_t = exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)./...
 %                         (1+exp(R(:,:,t)+beta_A*F.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P));
-                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+theta_C*C(:,:,t)+theta_P*P)./...                    % use member filter to filter out all social influence to members' adoption decisions
-                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+theta_C*C(:,:,t)+theta_P*P)); 
-%                     Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t))./...                    % use member filter to filter out all social influence to members' adoption decisions
-%                         (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t))); 
+                    Prob_t = exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)./...                    % use member filter to filter out all social influence to members' adoption decisions
+                        (1+exp(R(:,:,t)+beta_A*F.*M_filter.*S*sum(A(:,:,t-TI:t-1),3)+C(:,:,t)+P)); 
                     A_t = Prob_t>Draw_threshold(:,:,t);
                     A_t(sum(A(:,:,1:t-1),3)>0)=0;
                     A(:,:,t) = A_t;
@@ -450,7 +429,6 @@ for a = 1:length(beta_A_set)
             m_out(:,7) = m_metrics(:,1)./m_metrics(:,3)./m_metrics(:,5).*m_metrics(:,6);
             metrics_out_avg(m,1:6) = mean(m_metrics,1);         % average across bands
             m_out(find(m_out==Inf))=NaN;
-            m_out(find(isnan(m_out(:,7))),:)=[];                % remove NaN observations (in fact remove observations with An4 = 0)
             metrics_out_avg(m,7:13) = nanmean(m_out,1);            % average across bands (remove NaNs)
             metrics_out_avg(isnan(metrics_out_avg))=0;
             metrics_out_cell{m} = m_out;
@@ -468,7 +446,7 @@ for a = 1:length(beta_A_set)
 
         sth = cat(3,sth,metrics_out_avg);
 
-        clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1 P1 C1 P10 C10 se_P1_f se_P2_f se_P1_n se_P2_n se_C_n theta_C theta_P
+        clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1 se_C_set q
         
 %         seed1 = seed1 +1;
 
@@ -542,7 +520,7 @@ figure
 scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
 title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
 
-toc
+% toc
 
 % save test.mat                             % NANs for NM>100 ??? 
 
@@ -553,152 +531,9 @@ toc
 % w: adoption always increases
 % w: when utility is already very low, only (large) positive shocks will have an impact on P (see oneNote)
 
-figure
 y = metrics_out_avg_set_SI_variant(:,13);
 plot(reshape(y,10,10)')
 
-% % test (band attractiveness could all be low for some members' neighbours)
-% w = mean(Pin,2);
-% ww = reshape(w,50,30);
-% mean(ww)
-% ttest(ww(:,find(mean(ww)==min(mean(ww)))),ww(:,find(mean(ww)==max(mean(ww)))))
+end
 
-% % test: try with this set of parameters
-% % vary alpha_R in range -8:1:-5
-% alpha_R = -5;
-% se_R = -1;
-% beta_C = 0;
-% se_C = 0.01;                             % social influence parameter
-% beta_P1 = 0;
-% se_P1 = 0.01;
-% beta_P2 = 0;
-% se_P2 = 0.01;
-
-% first find the max and min populations of column 13 of metrics_out_avg_set (eg. row 4 and row 7)
-% sth_max = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
-% sth_min = sth(:,:,[7 17 27 37 47 57 67 77 87 97]);
-% f_temp = squeeze(sth_max(:,1,:));
-% mean(f_temp)
-% n_temp = squeeze(sth_max(:,3,:));
-% mean(n_temp)
-% f_temp2 = squeeze(sth_min(:,1,:));
-% mean(f_temp2)
-% n_temp2 = squeeze(sth_min(:,3,:));
-% mean(n_temp2)
-% figure
-% plot(1:10,mean(f_temp),1:10,mean(f_temp2))
-% figure
-% plot(1:10,mean(f_temp)./mean(n_temp),1:10,mean(f_temp2)./mean(n_temp2))
-% figure
-% plot(1:10,mean(n_temp),1:10,mean(n_temp2))
-
-% when rep_times = 10, NM_set = repmat(20,rep_times,1) and beta_A_set = 1:10;
-% sth_max = sth(:,:,[1 11 21 31 41 51 61 71 81 91]);
-% sth_min = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
-max_ind = find(metrics_out_avg_set(:,13)==max(metrics_out_avg_set(:,13)));
-min_ind = find(metrics_out_avg_set(:,13)==min(metrics_out_avg_set(:,13)));
-sth_max = sth(:,:,(0:10:90)+max_ind);
-sth_min = sth(:,:,(0:10:90)+min_ind);
-mean(sth_min,1)                           % check last element
-mean(sth_max,1)                           % check last element
-f_temp = squeeze(sth_max(:,1,:));
-mean(f_temp)
-n_temp = squeeze(sth_max(:,3,:));
-mean(n_temp)
-f_temp2 = squeeze(sth_min(:,1,:));
-mean(f_temp2)
-n_temp2 = squeeze(sth_min(:,3,:));
-mean(n_temp2)
-figure
-plot(1:10,mean(f_temp),1:10,mean(f_temp2))
-figure
-plot(1:10,mean(f_temp./n_temp./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))),1:10,mean(f_temp2./n_temp2./squeeze(sth_max(:,5,:)).*squeeze(sth_max(:,6,:))))           % w: not the same as in sth ??
-figure
-plot(1:10,mean(n_temp),1:10,mean(n_temp2))
-
-[p,h,stats] = ranksum(n_temp(:,1),n_temp2(:,1))           % no significant differences in An(4) accross populations
-[p,h,stats] = ranksum(f_temp(:,1),f_temp2(:,1))           % no significant differences in Af(4) accross populations
-
-% % test whether avg attractiveness or temp shcoks of members differ between highest vs lowest populations
-% load('member_cells1.mat')
-% load('member_cells10.mat')
-% load('C1.mat')
-% load('C10.mat')
-% load('P10.mat')
-% load('P1.mat')
-% load('friend_start1.mat')
-% load('friend_end1.mat')
-% load('neighbour_start1.mat')
-% load('neighbour_end1.mat')
-% mc1 = [member_cells1{1,1};member_cells1{2,1};member_cells1{3,1}];
-% mc10 = [member_cells10{1,1};member_cells10{2,1};member_cells10{3,1}];
-% 
-% temp1 = zeros(size(mc1,1),1);
-% fp_avg1 = zeros(size(mc1,1),1);
-% np_avg1 = zeros(size(mc1,1),1);
-% for k = 1:size(mc1,1)
-%     temp1(k) = P1(mc1(k,1),mc1(k,2));
-%     fp_avg1(k) = mean(P1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
-%     np_avg1(k) = mean(P1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
-% end
-% 
-% ctemp1 = zeros(size(mc1,1),1);
-% fc_avg1 = zeros(size(mc1,1),1);
-% nc_avg1 = zeros(size(mc1,1),1);
-% for k = 1:size(mc1,1)
-%     ctemp1(k) = C1(mc1(k,1),mc1(k,2),mc1(k,3));
-%     fc_avg1(k) = mean(C1(friend_start(mc1(k,1)):friend_end(mc1(k,1)),mc1(k,2)));
-%     nc_avg1(k) = mean(C1(neighbour_start(mc1(k,1)):neighbour_end(mc1(k,1)),mc1(k,2)));
-% end
-% 
-% load('friend_start10.mat')
-% load('friend_end10.mat')
-% load('neighbour_start10.mat')
-% load('neighbour_end10.mat')
-% 
-% temp10 = zeros(size(mc10,1),1);
-% fp_avg10 = zeros(size(mc10,1),1);
-% np_avg10 = zeros(size(mc10,1),1);
-% for k = 1:size(mc10,1)
-%     temp10(k) = P10(mc10(k,1),mc10(k,2));
-%     fp_avg10(k) = mean(P10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
-%     np_avg10(k) = mean(P10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
-% end
-% 
-% mean(temp1)                                     
-% mean(temp10)                                      % in this population members like the bands better An(4) larger and Af(4)/An(4) smaller
-% 
-% ctemp10 = zeros(size(mc10,1),1);
-% fc_avg10 = zeros(size(mc10,1),1);
-% nc_avg10 = zeros(size(mc10,1),1);
-% for k = 1:size(mc10,1)
-%     ctemp10(k) = C10(mc10(k,1),mc10(k,2),mc10(k,3));
-%     fc_avg10(k) = mean(C10(friend_start(mc10(k,1)):friend_end(mc10(k,1)),mc10(k,2)));
-%     nc_avg10(k) = mean(C10(neighbour_start(mc10(k,1)):neighbour_end(mc10(k,1)),mc10(k,2)));
-% end
-% 
-% mean(ctemp1)
-% mean(ctemp10)
-% 
-% mean(np_avg1)
-% mean(np_avg10)
-% 
-% mean(nc_avg1)
-% mean(nc_avg10)
-% 
-% mean(fp_avg1)                                   % friend also P1<P10 ??
-% mean(fp_avg10)
-% 
-% mean(fc_avg1)
-% mean(fc_avg10)
-% 
-% mean(fp_avg1)/mean(np_avg1)                                   
-% mean(fp_avg10)/mean(np_avg10)
-% 
-% [p,h,stats] = ranksum(fp_avg1./np_avg1,fp_avg10./np_avg10)
-% [p,h,stats] = ranksum(fc_avg1./nc_avg1,fc_avg10./nc_avg10)
-% [p,h,stats] = ranksum(fp_avg1,fp_avg10)
-% [p,h,stats] = ranksum(np_avg1,np_avg10)
-% [p,h,stats] = ranksum(nc_avg1,nc_avg10)
-% [p,h,stats] = ranksum(fc_avg1,fc_avg10)
-
+toc

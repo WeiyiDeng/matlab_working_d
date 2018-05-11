@@ -40,7 +40,7 @@ rep_times = 10;
 % rep_times = 2;
 % rep_times = 1;
 NM_set = [];
-NM_set = repmat(1,rep_times,1);
+NM_set = repmat(30,rep_times,1);
 % NM_set = [NM_set; repmat(12,rep_times,1)];
 % NM_set = [NM_set; repmat(20,rep_times,1)];
 % NM_set = [NM_set; repmat(40,rep_times,1)];
@@ -53,7 +53,7 @@ NM_set = repmat(1,rep_times,1);
 CHUNKS = 1;
 % combined_set = NM_set*CHUNKS;
 
-metrics_out_avg_set = zeros(length(NM_set),12);
+metrics_out_avg_set = zeros(length(NM_set),13);
 average_member_adopts = zeros(length(NM_set),1);
 
 beta_A_set = 1:10;
@@ -65,7 +65,7 @@ alpha_R = -12;
 se_R = -1;
 % beta_C = 1;
 beta_C = 0;
-se_C = 10;
+se_C = 1;
 beta_P1 = -0.3;
 se_P1 = 2;
 beta_P2 = -0.3;
@@ -75,7 +75,7 @@ se_P2 = 3;
 beta_A_set_disp = repmat(beta_A_set,rep_times,1);
 beta_A_set_disp = beta_A_set_disp(:);
 
-metrics_out_avg_set_SI_variant = zeros(length(beta_A_set_disp),12);
+metrics_out_avg_set_SI_variant = zeros(length(beta_A_set_disp),13);
 average_member_adopts_SI_variant = zeros(length(beta_A_set_disp),1);
 a_ind = 1;
 for a = 1:length(beta_A_set)
@@ -408,7 +408,7 @@ for a = 1:length(beta_A_set)
         end
 
         metrics_out_cell = cell(NM*CHUNKS,1);
-        metrics_out_avg = zeros(NM*CHUNKS,12);
+        metrics_out_avg = zeros(NM*CHUNKS,13);
         for m = 1:(NM*CHUNKS)
             m_metrics = metrics_chunks_cell{m};
             m_out = zeros(size(m_metrics,1),6);
@@ -422,8 +422,11 @@ for a = 1:length(beta_A_set)
             m_out(:,4) = m_metrics(:,4)./m_metrics(:,6);        % Adoption by neighbours in random 4 weeks/# of friends
             m_out(:,5) = m_out(:,1)-m_out(:,2);
             m_out(:,6) = m_out(:,3)-m_out(:,4);
-            metrics_out_avg(m,1:6) = mean(m_metrics,1);
-            metrics_out_avg(m,7:12) = mean(m_out,1);
+            m_out(:,7) = m_metrics(:,1)./m_metrics(:,3)./m_metrics(:,5).*m_metrics(:,6);
+            metrics_out_avg(m,1:6) = mean(m_metrics,1);         % average across bands
+            m_out(find(m_out==Inf))=NaN;
+            metrics_out_avg(m,7:13) = nanmean(m_out,1);            % average across bands (remove NaNs)
+            metrics_out_avg(isnan(metrics_out_avg))=0;
             metrics_out_cell{m} = m_out;
             end
         end
@@ -431,7 +434,7 @@ for a = 1:length(beta_A_set)
         % run Wilcoxon rank sum test (equivalent to Mann-Whitney U-test)
         [p,h,stats] = ranksum(metrics_out_avg(:,11),metrics_out_avg(:,12))
 
-        metrics_out_avg_set(d,:) = mean(metrics_out_avg,1);
+        metrics_out_avg_set(d,:) = mean(metrics_out_avg,1);                 % average across members
 
         metrics_out_avg_set_SI_variant(a_ind,:) = metrics_out_avg_set(d,:);
         average_member_adopts_SI_variant(a_ind) = average_member_adopts(d);
@@ -505,9 +508,13 @@ figure
 scatter(beta_A_set_disp, average_member_adopts_SI_variant)
 title('average member adoptions')
 
+% figure
+% scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,8))
+% title('Fixed 4 weeks friend adoptions/# of friends')
+
 figure
-scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,8))
-title('Fixed 4 weeks friend adoptions/# of friends')
+scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
+title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
 
 toc
 
@@ -519,3 +526,28 @@ toc
 % w: change se_C values [0.1 1 5]
 % w: adoption always increases
 % w: when utility is already very low, only (large) positive shocks will have an impact on P (see oneNote)
+
+figure
+y = metrics_out_avg_set_SI_variant(:,13);
+plot(reshape(y,10,10)')
+
+% % test
+% w = mean(Pin,2);
+% ww = reshape(w,50,30);
+% mean(ww)
+% ttest(ww(:,find(mean(ww)==min(mean(ww)))),ww(:,find(mean(ww)==max(mean(ww)))))
+
+% % first find the max and min populations of column 13 of metrics_out_avg_set (eg. row 4 and row 7)
+% sth_max = sth(:,:,[4 14 24 34 44 54 64 74 84 94]);
+% sth_min = sth(:,:,[7 17 27 37 47 57 67 77 87 97]);
+% f_temp = squeeze(sth_max(:,1,:));
+% mean(f_temp)
+% n_temp = squeeze(sth_max(:,3,:));
+% mean(n_temp)
+% f_temp2 = squeeze(sth_min(:,1,:));
+% mean(f_temp2)
+% n_temp2 = squeeze(sth_min(:,3,:));
+% mean(n_temp2)
+% plot(1:10,mean(f_temp),1:10,mean(f_temp2))
+% plot(1:10,mean(f_temp)./mean(n_temp),1:10,mean(f_temp2)./mean(n_temp2))
+% plot(1:10,mean(n_temp),1:10,mean(n_temp2))

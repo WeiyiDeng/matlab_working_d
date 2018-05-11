@@ -56,32 +56,37 @@ CHUNKS = 1;
 metrics_out_avg_set = zeros(length(NM_set),13);
 average_member_adopts = zeros(length(NM_set),1);
 
-beta_A_set = 0.5:0.5:5;
+beta_A_set = 1:1:10;
 % beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
 % beta_A_set = [1 1];
+% beta_A_set = zeros(1,10);
 
 alpha_R = -20;
 se_R = 1;
 theta_P = 10;
-theta_C = 20;
+theta_C = 10;
 beta_C = -1;
 % beta_C = 0;
-se_C = 0;
-se_C_n = 10;
+se_C = 1;
+se_C_n = se_C;
 % se_C = 0.01;
 % beta_P1_m = -0.3;
 % se_P1_m = 2;
 % beta_P2_m = -0.3;
 % se_P2_m = 3;
-se_P1_f = 2;
-se_P2_f = 2;
-se_P1_n = 20;
-se_P2_n = 20;
+% se_P1_f = 2;
+% se_P2_f = 2;
+% se_P1_n = 0.01;
+% se_P2_n = 0.01;
 beta_P1 = -1;
 se_P1 = 2;
 beta_P2 = -1;
 se_P2 = 3;
+se_P1_f = se_P1;
+se_P2_f = se_P2;
+se_P1_n = se_P1;
+se_P2_n = se_P2;
 % beta_A = 10;                               % social influence parameter
 % beta_P1 = 0;
 % se_P1 = 0;
@@ -163,7 +168,7 @@ for a = 1:length(beta_A_set)
             ind = 0;
             for i = 1:NM
                 % w: for the line below if change the first part (eg. 0.999), remember to change the second part as well (eg. 0.001*rand(NN,1)) !!
-                similarity_kj = 0.999+0.001*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec2(row_indice) = similarity_kj;
                 ind = ind+NN;
@@ -183,6 +188,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec3(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec3 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec4 = zeros(NM*NN,1);
             ind = 0;
@@ -192,6 +198,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec4(row_indice) = similarity_kj;
                 ind = ind+NN;
             end
+            similarity_vec4 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             similarity_vec5 = zeros(sum(num_friends),1);
             ind = 0;
@@ -201,15 +208,17 @@ for a = 1:length(beta_A_set)
                 similarity_vec5(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec5 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec6 = zeros(NM*NN,1);
             ind = 0;
             for i = 1:NM
-                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                similarity_kj = 0.999+0.001*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec6(row_indice) = similarity_kj;
                 ind = ind+NN;
-            end            
+            end
+            similarity_vec6 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             % simulate temp shocks 
             T = 52;                                               % number of weeks
@@ -299,11 +308,17 @@ for a = 1:length(beta_A_set)
             % simulate baseline adoption tendency
             R = alpha_R+se_R*randn(NM+sum(num_friends)+NM*NN,NB,T);                                                   % NU*NB*t
 %             disp(sum(sum(sum(R))))
-
+            % save('Pin9.mat','Pin','-v7.3');
+%             P999 = Pin;
+%             load('Pin9.mat')
+%             sum(sum(Pin~=P999))
 
             % simulate band adoption t=1
             % betaP = 0.5;
             Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB,T);                                       % NU*NB*t
+%             Draw_threshold = 0.5*ones(NM+sum(num_friends)+NM*NN,NB,T);
+            %             Draw_threshold_temp = rand(1,NB,T);
+%             Draw_threshold = repmat(Draw_threshold_temp,NM+sum(num_friends)+NM*NN,1,1);
             % Draw_threshold = rand(NM+sum(num_friends)+NM*NN,NB);                                           % NU*NB
             % Draw_threshold = repmat(Draw_threshold,1,1,T);                      % keep the same draws across different T                % NU*NB*t
 %             disp(sum(sum(sum(Draw_threshold))))                                         % debug
@@ -399,12 +414,14 @@ for a = 1:length(beta_A_set)
                     band_id = m_adoption(i,2);
                     week_id = m_adoption(i,3);
                     f_adoption = adoption_mat_sparse(friend_start(m):friend_end(m),band_id);
-                    within4Weeks_f = sum(f_adoption>week_id & f_adoption-week_id<=TI);
+%                     within4Weeks_f = sum(f_adoption>week_id & f_adoption-week_id<=TI);
+                    within4Weeks_f = sum(f_adoption>=week_id & f_adoption-week_id<=TI);        % w: change to >= includes the case when both individuals adopts at the same time period !!
                     random_week_id = datasample(1:T,1);
             %         random4Weeks_f = sum(f_adoption>random_week_id & f_adoption-random_week_id<=TI);
                     fixed_4Weeks_f = sum(f_adoption(:)>0)/52*4;
                     n_adoption = adoption_mat_sparse(neighbour_start(m):neighbour_end(m),band_id);
-                    within4Weeks_n = sum(n_adoption>week_id & n_adoption-week_id<=TI);
+%                     within4Weeks_n = sum(n_adoption>week_id & n_adoption-week_id<=TI);
+                    within4Weeks_n = sum(n_adoption>=week_id & n_adoption-week_id<=TI)
             %         random4Weeks_n = sum(n_adoption>random_week_id & n_adoption-random_week_id<=TI);
                     fixed_4Weeks_n = sum(n_adoption(:)>0)/52*4;
                     m_metrics_store(i,1) = within4Weeks_f;
@@ -526,9 +543,9 @@ end
 % scatter(NM_set*CHUNKS, average_member_adopts)
 % title('average member adoptions')
 
-% figure
-% scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
-% title('Fixed 4 weeks friend adoptions/# of friends')
+figure
+scatter(NM_set*CHUNKS, metrics_out_avg_set(:,8))
+title('Fixed 4 weeks friend adoptions/# of friends')
 
 figure
 scatter(beta_A_set_disp, average_member_adopts_SI_variant)
@@ -538,9 +555,9 @@ title('average member adoptions')
 % scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,8))
 % title('Fixed 4 weeks friend adoptions/# of friends')
 
-figure
-scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
-title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
+% figure
+% scatter(beta_A_set_disp, metrics_out_avg_set_SI_variant(:,13))
+% title('after 4 weeks friend adoptions/after 4 weeks neighbour adoptions')
 
 toc
 
@@ -618,6 +635,9 @@ plot(1:10,mean(n_temp),1:10,mean(n_temp2))
 
 [p,h,stats] = ranksum(n_temp(:,1),n_temp2(:,1))           % no significant differences in An(4) accross populations
 [p,h,stats] = ranksum(f_temp(:,1),f_temp2(:,1))           % no significant differences in Af(4) accross populations
+
+disp(['average neighbour adoptions:    ' num2str(mean(metrics_out_avg_set(:,3))) ''])
+disp(['average Af(4)/An(4) metric:    ' num2str(mean(metrics_out_avg_set(:,13))) ''])
 
 % % test whether avg attractiveness or temp shcoks of members differ between highest vs lowest populations
 % load('member_cells1.mat')

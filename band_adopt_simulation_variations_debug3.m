@@ -68,7 +68,7 @@ theta_C = 20;
 beta_C = -1;
 % beta_C = 0;
 se_C = 0;
-se_C_n = 10;
+se_C_n = 0.01;
 % se_C = 0.01;
 % beta_P1_m = -0.3;
 % se_P1_m = 2;
@@ -76,8 +76,8 @@ se_C_n = 10;
 % se_P2_m = 3;
 se_P1_f = 2;
 se_P2_f = 2;
-se_P1_n = 20;
-se_P2_n = 20;
+se_P1_n = 0.01;
+se_P2_n = 0.01;
 beta_P1 = -1;
 se_P1 = 2;
 beta_P2 = -1;
@@ -163,7 +163,7 @@ for a = 1:length(beta_A_set)
             ind = 0;
             for i = 1:NM
                 % w: for the line below if change the first part (eg. 0.999), remember to change the second part as well (eg. 0.001*rand(NN,1)) !!
-                similarity_kj = 0.999+0.001*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
+                similarity_kj = 0.9+0.1*rand(NN,1);               % simulate similarity scores between each member and neighbours (similarity within 0.9-1 range)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec2(row_indice) = similarity_kj;
                 ind = ind+NN;
@@ -183,6 +183,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec3(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec3 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec4 = zeros(NM*NN,1);
             ind = 0;
@@ -192,6 +193,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec4(row_indice) = similarity_kj;
                 ind = ind+NN;
             end
+            similarity_vec4 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             similarity_vec5 = zeros(sum(num_friends),1);
             ind = 0;
@@ -201,6 +203,7 @@ for a = 1:length(beta_A_set)
                 similarity_vec5(row_indice) = similarity_kj;
                 ind = ind+num_friends(i);
             end
+            similarity_vec5 = similarity_vec;                     % for now use the same similarity matrix for all comuptations
 
             similarity_vec6 = zeros(NM*NN,1);
             ind = 0;
@@ -209,7 +212,8 @@ for a = 1:length(beta_A_set)
                 row_indice = (ind+1):(ind+NN);
                 similarity_vec6(row_indice) = similarity_kj;
                 ind = ind+NN;
-            end            
+            end
+            similarity_vec6 = similarity_vec2;                     % for now use the same similarity matrix for all comuptations
             
             % simulate temp shocks 
             T = 52;                                               % number of weeks
