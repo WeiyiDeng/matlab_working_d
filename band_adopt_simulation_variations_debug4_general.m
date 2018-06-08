@@ -35,7 +35,7 @@ clear
 
 tic
 %% no overlaps among members and among friends
-sth = [];
+testvec1 = [];
 rep_times = 1;                                      % # of populations
 % rep_times = 2;
 % rep_times = 1;
@@ -57,6 +57,7 @@ metrics_out_avg_set = zeros(length(NM_set),13);
 average_member_adopts = zeros(length(NM_set),1);
 
 beta_A_set = 10;                                     % social influence parameter values
+% beta_A_set = 30;
 % beta_A_set = 0.5:0.5:5;
 % beta_A_set = 1:2;
 % beta_A_set = [1 5 10];
@@ -505,7 +506,7 @@ for a = 1:length(beta_A_set)
         average_member_adopts_SI_variant(a_ind) = average_member_adopts(d);
         a_ind = a_ind+1;
 
-        sth = cat(3,sth,metrics_out_avg);
+        testvec1 = cat(3,testvec1,metrics_out_avg);
 
 %         clearvars -EXCEPT NM_set metrics_out_avg_set average_member_adopts d alpha_R se_R beta_C se_C beta_P1 se_P1 beta_P2 se_P2 beta_A CHUNKS metrics_out_avg_set_SI_variant a_ind beta_A_set_disp beta_A_set beta_A a average_member_adopts_SI_variant seed1 sth R1 A1 C1 P1 S1 F1 D1 MSC1 P1 C1 P10 C10 se_P1_f se_P2_f se_P1_n se_P2_n se_C_n theta_C theta_P
         
@@ -526,6 +527,18 @@ for k = 1:num_friends(1)
 end
 mean(test_cosine_simi_f)
 corr(similarity_vec(1:num_friends(1)),test_cosine_simi_f)
+hist(test_cosine_simi_f)
+hist(similarity_vec(1:num_friends(1)))
+
+test_cosine_simi_n = [];
+for k = 1:NN
+    cosine_simi_n = cosine_similarity_TF_IDF(Pik(1,:),Pin(k,:),1);
+    test_cosine_simi_n = [test_cosine_simi_n; cosine_simi_n];
+end
+mean(test_cosine_simi_n)
+corr(similarity_vec2(1:NN),test_cosine_simi_n)
+% hist(test_cosine_simi_n)
+% hist(similarity_vec2(1:NN))
 % test ends
 
 %
@@ -571,7 +584,7 @@ disp(['average member adoptions:    ' num2str(average_member_adopts_SI_variant) 
 
 %% only look at first member as focal member for analysis
 % use the slope of non_SI group shared adoption with members/similarities with members as control 
-b_friend_group = similarity_vec(1:num_friends(1))\f_shared_cell{1};
+b_friend_group = similarity_vec(1:num_friends(1))\f_shared_cell{1}
 mean(f_shared_cell{1})/mean(n_shared_cell{1})
 b_non_SI_group = [cosine_simi_non_f; cosine_simi_non_n]\[non_f_shared_cell{1};non_n_shared_cell{1}]
 control_sim_non_SI = similarity_vec(1:num_friends(1)).*b_non_SI_group;              % if non_SI group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
@@ -586,12 +599,23 @@ b_neighbour_group = similarity_vec2(1:NN)\n_shared_cell{1}
 control_sim_neighbour_SI = similarity_vec(1:num_friends(1)).*b_neighbour_group;      % if neighbour group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
 mean(control_sim_neighbour_SI)
 mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)
-disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
-disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
+% disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
+% disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
 
+% slopes of different groups
 disp(['slope Af/Similarity_f :    ' num2str(b_friend_group) ''])
 disp(['slope An/Similarity_n :    ' num2str(b_neighbour_group) ''])
 disp(['slope A_non/Similarity_non :    ' num2str(b_non_SI_group) ''])
+
+% test if slopes are the same across groups
+testvec1 = f_shared_cell{1}./similarity_vec(1:num_friends(1));
+testvec2 = n_shared_cell{1}./similarity_vec2(1:NN);
+[h,p,ci,stats] = ttest2(testvec1,testvec2)
+[p,h,stats] = ranksum(testvec1,testvec2)
+
+% display
+disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
+disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
 
 %%
 % % figure

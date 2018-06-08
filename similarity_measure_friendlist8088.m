@@ -6,7 +6,8 @@
 clc
 clear all
 
-listens = csvread('listen_times.csv');             
+listens = csvread('listen_times.csv'); 
+listens(:,3) = 1; %
 
 I = 8320                                              
 J = 6046
@@ -14,12 +15,14 @@ user_band_listen_mat = sparse(listens(:,1),listens(:,2),listens(:,3),I,J);
 
 % user_dyad = combntns(1:I,2);
 % save('user_dyad_8320.mat','user_dyad', '-v7.3');           % #user 8320
-load('user_dyad_8320.mat')
+% load('user_dyad_8320.mat')
+user_dyad = csvread('new_friendlist_8088.csv',1,0); 
 
 document_frequency = sum(user_band_listen_mat>0,1)/size(user_band_listen_mat,1);
 IDF = 1-log(document_frequency);
 % IDF_weight_matrix = diag(IDF.^2);
-IDF_weight_matrix = 1;
+IDF_weight_matrix = sparse(1:J,1:J,IDF,J,J);
+% IDF_weight_matrix = 1;
 
 tic
 
@@ -63,9 +66,9 @@ cosine_user_uv_ind = user_dyad(cosine_similarity_scores_ind,:);
 
 toc
 
-save('cosine_similarity_scores_ind_8320.mat','cosine_similarity_scores_ind', '-v7.3');
-save('cosine_similarity_scores_8320.mat','cosine_similarity_scores', '-v7.3');
-save('cosine_user_uv_ind_8320.mat','cosine_user_uv_ind', '-v7.3');
+save('cosine_similarity_scores_ind_friends8088_listen1.mat','cosine_similarity_scores_ind', '-v7.3');
+save('cosine_similarity_scores_friends8088_listen1.mat','cosine_similarity_scores', '-v7.3');
+save('cosine_user_uv_ind_friends8088_listen1.mat','cosine_user_uv_ind', '-v7.3');
 
 % load('cosine_user_uv_ind_8320.mat')
 % load('cosine_similarity_scores_ind_8320.mat')
@@ -73,3 +76,14 @@ save('cosine_user_uv_ind_8320.mat','cosine_user_uv_ind', '-v7.3');
 
 hist(cosine_similarity_scores)
 mean(cosine_similarity_scores)
+
+%% listens
+% ans =
+
+%     0.1283
+
+%% listen 1
+% ans =
+
+%    0.1120
+
