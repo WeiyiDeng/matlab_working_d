@@ -6,27 +6,49 @@
 clc
 clear all
 
-% friend_listens = csvread('listen_times.csv');
-friend_listens = csvread('test_fm_id.csv',1,0);
-neigh_listens = [];
-listens = [friend_listens; neigh_listens];
-% listens(:,3) = 1;
-
-% I = 8320
-I = max(listens(:,1))
-J = max(listens(:,2))
-user_band_listen_mat = sparse(listens(:,1),listens(:,2),listens(:,3),I,J);
-
 % user_dyad = combntns(1:I,2);
 % save('user_dyad_8320.mat','user_dyad', '-v7.3');           % #user 8320
 % load('user_dyad_8320.mat')
-user_dyad_match = csvread('test_dt2.csv',1,0);
-users_in_listens = unique(listens(:,1));
-temp = ismember(user_dyad_match(:,1),users_in_listens) & ismember(user_dyad_match(:,2),users_in_listens);
-sum(temp)
-user_dyad_match = user_dyad_match(find(temp),:);             % remove users not in listens data
+friendlist = csvread('new_friendlist_8088.csv',1,0);
+neighbourlist = csvread('neighbourlist_6585.csv',1,0);
+memberlist = unique(neighbourlist(:,1));
+all_userlist = unique([neighbourlist(:); friendlist(:)]);
 
-user_dyad = user_dyad_match(:,1:2);
+i_friend_neighbour_cell = cell(length(memberlist),1);
+i_non_friend_non_neighbour_cell = cell(length(memberlist),1);
+for i = 1:length(memberlist)
+    i_friend = friendlist(find(friendlist(:,1)==memberlist(i)),2);
+    i_neighbour = friendlist(find(neighbourlist(:,1)==memberlist(i)),2);
+    i_friend_neighbour_cell{i} = [i_friend; i_neighbour];
+    i_non_friend_non_neighbour_cell{i} = all_userlist(find(~ismember(all_userlist,[i_friend; i_neighbour; memberlist(i)])));
+end
+
+non_f_n_ind = zeros(length(memberlist),1);
+for j = 1:length(memberlist)
+    non_f_n_ind(j) = length(i_non_friend_non_neighbour_cell{j});
+end
+cum_non_f_n_ind = cumsum(non_f_n_ind);
+
+non_friend_neighbour_list = zeros(cum_non_f_n_ind(end),2);
+non_friend_neighbour_list(1:non_f_n_ind(1),2) = i_non_friend_non_neighbour_cell{1};
+non_friend_neighbour_list(1:non_f_n_ind(1),1) = memberlist(1);
+for k = 2:length(memberlist)
+    non_friend_neighbour_list((cum_non_f_n_ind(k-1)+1):cum_non_f_n_ind(k),2) = i_non_friend_non_neighbour_cell{k};
+    non_friend_neighbour_list((cum_non_f_n_ind(k-1)+1):cum_non_f_n_ind(k),1) = memberlist(k);
+end
+
+user_dyad = non_friend_neighbour_list;
+
+%%
+friend_listens = csvread('listen_times.csv');
+neigh_listens = csvread('listen_neighbours.csv',1,0);
+listens = [friend_listens; neigh_listens];
+% listens(:,3) = 1; %
+
+% I = 8320
+I = max(listens(:,1))
+J = 6046
+user_band_listen_mat = sparse(listens(:,1),listens(:,2),listens(:,3),I,J);
 
 document_frequency = sum(user_band_listen_mat>0,1)/size(user_band_listen_mat,1);
 IDF = 1-log(document_frequency);
@@ -78,9 +100,9 @@ Cosine_user_uv_ind = user_dyad(Cosine_similarity_scores_ind,:);
 
 toc
 
-save('Cosine_similarity_scores_ind_friend_new_listens_TFIDF.mat','Cosine_similarity_scores_ind', '-v7.3');
-save('Cosine_similarity_scores_friend_new_listens_TFIDF.mat','Cosine_similarity_scores', '-v7.3');
-save('Cosine_user_uv_ind_friend_new_listens_TFIDF.mat','Cosine_user_uv_ind', '-v7.3');
+save('Cosine_similarity_scores_ind_non_f_n_listens.mat','Cosine_similarity_scores_ind', '-v7.3');
+save('Cosine_similarity_scores_non_f_n_listens.mat','Cosine_similarity_scores', '-v7.3');
+save('Cosine_user_uv_ind_non_f_n_listens.mat','Cosine_user_uv_ind', '-v7.3');
 
 % load('Jaccard_user_uv_ind_8320.mat')
 % load('Jaccard_similarity_scores_ind_8320.mat')
@@ -91,17 +113,26 @@ mean(Cosine_similarity_scores)
 
 % lastfm_neighbours_match_scores = csvread('neighbourlist_6585_match.csv',1,0);
 % match_neighbours = lastfm_neighbours_match_scores(:,3);
-% match_neighbours = user_dyad_match(:,3);
-% hist(match_neighbours)
+% 
+% corr(Cosine_similarity_scores(1:50),match_neighbours(1:50))
 
-% corr(Cosine_similarity_scores, match_neighbours)
+%% listens
+% ans =
+
+%    0.1617
+
+
+% ans =
+
+%    0.3665
 
 %% listen 1
 % ans =
 
-%     0.0451
+%     0.1256
 
-%% listen
+
 % ans =
 
-%    0.6685
+%    -0.1613
+

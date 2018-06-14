@@ -21,7 +21,7 @@ for k = 1:size(friendlist,1)
     v = friendlist(k,2);
     u_adopt = user_band_adoption_mat(u,:);
     v_adopt = user_band_adoption_mat(v,:);
-    shared_bands = u_adopt.*v_adopt > 0; % & v_adopt-u_adopt >= 0 & v_adopt-u_adopt <= 52;
+    shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt >= 0; % & v_adopt-u_adopt <= 52;
     count_shared_fbands(k) = sum(shared_bands);
     temp = temp+sum(u_adopt>0);
     temp2 = temp2+sum(v_adopt>0);
@@ -37,7 +37,7 @@ for n = 1:size(neighbourlist,1)
     v = neighbourlist(n,2);
     u_adopt = user_band_adoption_mat(u,:);
     v_adopt = user_band_adoption_mat(v,:);
-    shared_bands = u_adopt.*v_adopt > 0; % & v_adopt-u_adopt >= 0 & v_adopt-u_adopt <= 52;
+    shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt >= 0; % & v_adopt-u_adopt <= 52;
     count_shared_nbands(n) = sum(shared_bands);
     temp3(n) = sum(u_adopt>0);
     temp4(n) = sum(v_adopt>0);
@@ -61,13 +61,23 @@ neighbour_translist = csvread('new_old_nlist.csv',1,0);
 % new_friendlist = Cosine_user_uv_ind;
 % cosine_similarity_score_fm = Cosine_similarity_scores;
 
-load('Cosine_similarity_scores_new_neighbours_withTFIDF.mat')
-load('Cosine_user_uv_ind_new_neighbours_withTFIDF.mat');
+% load('Cosine_similarity_scores_neighbours_new_listens_TFIDF.mat')
+% load('Cosine_user_uv_ind_neighbours_new_listens_TFIDF.mat');
+% new_neighbourlist = Cosine_user_uv_ind;
+% cosine_similarity_score_nm = Cosine_similarity_scores;
+% 
+% load('Cosine_similarity_scores_friend_new_listens_TFIDF.mat')
+% load('Cosine_user_uv_ind_friend_new_listens_TFIDF.mat');
+% new_friendlist = Cosine_user_uv_ind;
+% cosine_similarity_score_fm = Cosine_similarity_scores;
+
+load('Cosine_similarity_scores_neighbour_new_listen1_TFIDF.mat')
+load('Cosine_user_uv_ind_neighbours_new_listens_TFIDF.mat');
 new_neighbourlist = Cosine_user_uv_ind;
 cosine_similarity_score_nm = Cosine_similarity_scores;
 
-load('Cosine_similarity_scores_new_friends_withTFIDF.mat')
-load('Cosine_user_uv_ind_new_friends_withTFIDF.mat');
+load('Cosine_similarity_scores_friend_new_listen1_TFIDF.mat')
+load('Cosine_user_uv_ind_friend_new_listen1_TFIDF.mat');
 new_friendlist = Cosine_user_uv_ind;
 cosine_similarity_score_fm = Cosine_similarity_scores;
 
@@ -124,6 +134,8 @@ for i = 1:length(uni_nlist)
 end
 
 metric = zeros(size(uni_nlist));
+% beta_n_vec = zeros(size(uni_nlist));
+% beta_f_vec = zeros(size(uni_nlist));
 for d = 1:length(uni_nlist)
     n_ind = nlist_index{d};
     f_ind = flist_index{d};
@@ -134,16 +146,50 @@ for d = 1:length(uni_nlist)
     beta_n = Sn\An;
     An_hat = beta_n.*Sf;
     metric(d) = mean(Af./An_hat);
+%     beta_f_vec(d) = Sf\Af;
+%     beta_n_vec(d) = beta_n;
 end
-    
+
+% nanmean(beta_f_vec)
+% nanmean(beta_n_vec)
+
 mean(metric(~isnan(metric)))    
-    
+% scatter(similarity_fm, count_shared_fbands)
+% hold on
+% scatter(similarity_nm, count_shared_nbands)
+% hold off
+
+index_f = find(~isnan(similarity_fm) & ~isnan(count_shared_fbands));
+beta_f = similarity_fm(index_f)\count_shared_fbands(index_f)
+
+index_n = find(~isnan(similarity_nm) & ~isnan(count_shared_nbands));
+beta_n = similarity_nm(index_n)\count_shared_nbands(index_n)
+
+figure
+plot(similarity_fm, similarity_fm*beta_f)
+hold on
+scatter(similarity_fm, count_shared_fbands)
+hold on
+plot(similarity_nm, similarity_nm*beta_n)
+hold on
+scatter(similarity_nm, count_shared_nbands)
+hold off
+
+corr(similarity_fm(index_f),count_shared_fbands(index_f))
+corr(similarity_nm(index_n),count_shared_nbands(index_n))
+
 % %% 6046 artists    
-% load('Cosine_similarity_scores_neighbours6585_listens.mat')
+% % load('Cosine_similarity_scores_neighbours6585_listens.mat')
+% % cosine_similarity_score_6046nm = Cosine_similarity_scores;
+% % 
+% % load('cosine_similarity_scores_friends8088_listens.mat')
+% % cosine_similarity_score_6046fm = cosine_similarity_scores;   
+% 
+% load('Cosine_similarity_scores_neighbours6585_listen1.mat')
 % cosine_similarity_score_6046nm = Cosine_similarity_scores;
 % 
-% load('cosine_similarity_scores_friends8088_listens.mat')
-% cosine_similarity_score_6046fm = cosine_similarity_scores;   
+% load('cosine_similarity_scores_friends8088_listen1.mat')
+% cosine_similarity_score_6046fm = cosine_similarity_scores; 
 % 
 % uni_nlist = unique(neighbourlist(:,1));
 % nlist_row = zeros(length(uni_nlist),2);
@@ -170,7 +216,8 @@ mean(metric(~isnan(metric)))
 % max(max(flist_row))
 % 
 % metric6046 = zeros(size(uni_nlist));
-% sth = 0;
+% % beta_n_vec = zeros(size(uni_nlist));
+% % beta_f_vec = zeros(size(uni_nlist));
 % for d = 1:length(uni_nlist)
 %     n_ind = nlist_index{d};
 %     f_ind = flist_index{d};
@@ -184,6 +231,8 @@ mean(metric(~isnan(metric)))
 %         beta_n = Sn\An;
 %         An_hat = beta_n.*Sf;
 %         metric6046(d) = nanmean(Af./An_hat);
+% %         beta_f_vec(d) = Sf\Af;
+% %         beta_n_vec(d) = beta_n;
 %     else
 %         An = count_shared_nbands(n_ind);
 %         Sn = cosine_similarity_score_6046nm(nlist_row(d,1):nlist_row(d,2));
@@ -192,8 +241,31 @@ mean(metric(~isnan(metric)))
 %         beta_n = Sn\An;
 %         An_hat = beta_n.*Sf;
 %         metric6046(d) = nanmean(Af./An_hat);
+% %         beta_f_vec(d) = Sf\Af;
+% %         beta_n_vec(d) = beta_n;
 %     end
 % end
-%     
-% mean(metric6046(~isnan(metric6046)))  
-%     
+% 
+% % nanmean(beta_f_vec)
+% % nanmean(beta_n_vec)
+% 
+% nanmean(metric6046(find(~isinf(metric6046))))
+% % scatter(cosine_similarity_score_6046fm, count_shared_fbands)
+% % hold on
+% % scatter(cosine_similarity_score_6046nm, count_shared_nbands)
+% % hold off
+% 
+% index_f = find(~isnan(cosine_similarity_score_6046fm) & ~isnan(count_shared_fbands));
+% beta_f = cosine_similarity_score_6046fm(index_f)\count_shared_fbands(index_f)
+% 
+% index_n = find(~isnan(cosine_similarity_score_6046nm) & ~isnan(count_shared_nbands));
+% beta_n = cosine_similarity_score_6046nm(index_n)\count_shared_nbands(index_n)
+% 
+% plot(cosine_similarity_score_6046fm, cosine_similarity_score_6046fm*beta_f)
+% hold on
+% scatter(cosine_similarity_score_6046fm, count_shared_fbands)
+% hold on
+% plot(cosine_similarity_score_6046nm, cosine_similarity_score_6046nm*beta_n)
+% hold on
+% scatter(cosine_similarity_score_6046nm, count_shared_nbands)
+% hold off
