@@ -78,9 +78,9 @@ Cosine_user_uv_ind = user_dyad(Cosine_similarity_scores_ind,:);
 
 toc
 
-save('Cosine_similarity_scores_ind_friend_new_listens_TFIDF.mat','Cosine_similarity_scores_ind', '-v7.3');
-save('Cosine_similarity_scores_friend_new_listens_TFIDF.mat','Cosine_similarity_scores', '-v7.3');
-save('Cosine_user_uv_ind_friend_new_listens_TFIDF.mat','Cosine_user_uv_ind', '-v7.3');
+% save('Cosine_similarity_scores_ind_friend_new_listens_TFIDF.mat','Cosine_similarity_scores_ind', '-v7.3');
+% save('Cosine_similarity_scores_friend_new_listens_TFIDF.mat','Cosine_similarity_scores', '-v7.3');
+% save('Cosine_user_uv_ind_friend_new_listens_TFIDF.mat','Cosine_user_uv_ind', '-v7.3');
 
 % load('Jaccard_user_uv_ind_8320.mat')
 % load('Jaccard_similarity_scores_ind_8320.mat')

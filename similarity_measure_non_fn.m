@@ -1,3 +1,5 @@
+%% using only 6046 new bands (comparable to similarity_measure_neighbours/friends.m)
+
 % see Onenote Similarity measure literature_User-Based Neighborhood Models_C.C.Aggarwal
 % use listen times as ratings, cosine based method
 % combi = combntns(1:3,2);

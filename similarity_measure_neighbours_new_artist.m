@@ -10,7 +10,7 @@ clear all
 friend_listens = [];
 neigh_listens = csvread('test_nm_artist_id.csv',1,0);
 listens = [friend_listens; neigh_listens];
-listens(:,3) = 1; % 
+% listens(:,3) = 1; % 
 
 % I = 8320
 I = max(listens(:,1))
@@ -78,9 +78,9 @@ Cosine_user_uv_ind = user_dyad(Cosine_similarity_scores_ind,:);
 
 toc
 
-% save('Cosine_similarity_scores_ind_neighbour_new_artist_listen1_TFIDF.mat','Cosine_similarity_scores_ind', '-v7.3');
-% save('Cosine_similarity_scores_neighbour_new_artist_listen1_TFIDF.mat','Cosine_similarity_scores', '-v7.3');
-% save('Cosine_user_uv_ind_neighbour_new_artist_listen1_TFIDF.mat','Cosine_user_uv_ind', '-v7.3');
+save('Cosine_similarity_scores_ind_neighbour_new_artist_listens_TFIDF.mat','Cosine_similarity_scores_ind', '-v7.3');
+save('Cosine_similarity_scores_neighbour_new_artist_listens_TFIDF.mat','Cosine_similarity_scores', '-v7.3');
+save('Cosine_user_uv_ind_neighbour_new_artist_listens_TFIDF.mat','Cosine_user_uv_ind', '-v7.3');
 
 % load('Jaccard_user_uv_ind_8320.mat')
 % load('Jaccard_similarity_scores_ind_8320.mat')

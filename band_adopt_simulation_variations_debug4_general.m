@@ -599,6 +599,11 @@ b_neighbour_group = similarity_vec2(1:NN)\n_shared_cell{1}
 control_sim_neighbour_SI = similarity_vec(1:num_friends(1)).*b_neighbour_group;      % if neighbour group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
 mean(control_sim_neighbour_SI)
 mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)
+
+b_friend_group = similarity_vec(1:num_friends(1))\f_shared_cell{1}
+control_sim_friend_SI = similarity_vec2(1:NN).*b_friend_group;      % if neighbour group has the same similarity vs memebers as friends vs members, what will be their shared adoptions with members
+mean(control_sim_friend_SI)
+mean(n_shared_cell{1})/mean(control_sim_friend_SI)
 % disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
 % disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
 
@@ -616,6 +621,8 @@ testvec2 = n_shared_cell{1}./similarity_vec2(1:NN);
 % display
 disp(['average Af/An :    ' num2str(mean(f_shared_cell{1})/mean(n_shared_cell{1})) ''])
 disp(['average Af/An similarity adjusted using neighbour group:    ' num2str(mean(f_shared_cell{1})/mean(control_sim_neighbour_SI)) ''])
+disp(['average An/Af similarity adjusted using friend group:    ' num2str(mean(n_shared_cell{1})/mean(control_sim_friend_SI)) ''])
+
 
 %%
 % % figure
