@@ -82,13 +82,43 @@ neighbour_translist = csvread('new_old_nlist.csv',1,0);
 % new_friendlist = Cosine_user_uv_ind;
 % cosine_similarity_score_fm = Cosine_similarity_scores;
 
-load('New_adoption_neighbour_scores_all_bands.mat')
-load('New_adoption_neighbour_user_uv_ind_all_bands.mat');
+% load('New_adoption_neighbour_scores_all_bands.mat')
+% load('New_adoption_neighbour_user_uv_ind_all_bands.mat');
+% new_neighbourlist = New_adoption_neighbour_user_uv_ind;
+% cosine_similarity_score_nm = New_adoption_neighbour_scores;
+% 
+% load('New_adoption_friend_scores_all_bands.mat')
+% load('New_adoption_friend_user_uv_ind_all_bands.mat');
+% new_friendlist = New_adoption_friend_user_uv_ind;
+% cosine_similarity_score_fm = New_adoption_friend_scores;
+
+% load('New_adoption_neighbour_scores_all_bands_52.mat')
+% load('New_adoption_neighbour_user_uv_ind_all_bands_52.mat');
+% new_neighbourlist = New_adoption_neighbour_user_uv_ind;
+% cosine_similarity_score_nm = New_adoption_neighbour_scores;
+% 
+% load('New_adoption_friend_scores_all_bands_52.mat')
+% load('New_adoption_friend_user_uv_ind_all_bands_52.mat');
+% new_friendlist = New_adoption_friend_user_uv_ind;
+% cosine_similarity_score_fm = New_adoption_friend_scores;
+ 
+% load('New_adoption_neighbour_scores_all_bands_12.mat')
+% load('New_adoption_neighbour_user_uv_ind_all_bands_12.mat');
+% new_neighbourlist = New_adoption_neighbour_user_uv_ind;
+% cosine_similarity_score_nm = New_adoption_neighbour_scores;
+% 
+% load('New_adoption_friend_scores_all_bands_12.mat')
+% load('New_adoption_friend_user_uv_ind_all_bands_12.mat');
+% new_friendlist = New_adoption_friend_user_uv_ind;
+% cosine_similarity_score_fm = New_adoption_friend_scores;
+ 
+load('New_adoption_neighbour_scores_all_bands_4.mat')
+load('New_adoption_neighbour_user_uv_ind_all_bands_4.mat');
 new_neighbourlist = New_adoption_neighbour_user_uv_ind;
 cosine_similarity_score_nm = New_adoption_neighbour_scores;
 
-load('New_adoption_friend_scores_all_bands.mat')
-load('New_adoption_friend_user_uv_ind_all_bands.mat');
+load('New_adoption_friend_scores_all_bands_4.mat')
+load('New_adoption_friend_user_uv_ind_all_bands_4.mat');
 new_friendlist = New_adoption_friend_user_uv_ind;
 cosine_similarity_score_fm = New_adoption_friend_scores;
 
@@ -180,6 +210,8 @@ nanmean(An_new_avg_vec)
 
 mean(New_adoption_friend_scores)
 mean(New_adoption_neighbour_scores)
+
+disp(['average(Afi/Ani) :    ' num2str(nanmean(Af_new_avg_vec./An_new_avg_vec)) ''])
 
 % save('Af_new_avg_vec.mat','Af_new_avg_vec','-v7.3');
 % save('An_new_avg_vec.mat','An_new_avg_vec','-v7.3');

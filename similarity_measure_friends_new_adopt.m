@@ -6,6 +6,8 @@
 clc
 clear all
 
+tic
+
 % friend_listens = csvread('listen_times.csv');
 friend_listens = csvread('test_fm_artist_id_adopt.csv',1,0);
 neigh_listens = [];
@@ -46,7 +48,8 @@ for k = 1:size(user_dyad,1)
     listen_u = user_band_listen_mat(u,:);                  
     listen_v = user_band_listen_mat(v,:);
 %     New_adoption(k) = sum(listen_u.*listen_v>0 & listen_u<listen_v);
-    New_adoption(k) = sum(listen_u.*listen_v>0);
+%     New_adoption(k) = sum(listen_u.*listen_v>0);
+    New_adoption(k) = sum(listen_u.*listen_v>0 & abs(listen_u-listen_v)<12);
 %     norm_listen_u = listen_u/(sum(listen_u));              
 %     norm_listen_v = listen_v/(sum(listen_v));              
 %     co_rated_item_ind = find(user_band_listen_mat(u,:).*user_band_listen_mat(v,:));        % two vectors !!
@@ -84,12 +87,26 @@ toc
 % save('New_adoption_friend_scores_all_bands.mat','New_adoption_friend_scores', '-v7.3');
 % save('New_adoption_friend_user_uv_ind_all_bands.mat','New_adoption_friend_user_uv_ind', '-v7.3');
 
+% save('New_adoption_friend_scores_ind_all_bands_52.mat','New_adoption_friend_scores_ind', '-v7.3');
+% save('New_adoption_friend_scores_all_bands_52.mat','New_adoption_friend_scores', '-v7.3');
+% save('New_adoption_friend_user_uv_ind_all_bands_52.mat','New_adoption_friend_user_uv_ind', '-v7.3');
+
+% save('New_adoption_friend_scores_ind_all_bands_4.mat','New_adoption_friend_scores_ind', '-v7.3');
+% save('New_adoption_friend_scores_all_bands_4.mat','New_adoption_friend_scores', '-v7.3');
+% save('New_adoption_friend_user_uv_ind_all_bands_4.mat','New_adoption_friend_user_uv_ind', '-v7.3');
+
+save('New_adoption_friend_scores_ind_all_bands_12.mat','New_adoption_friend_scores_ind', '-v7.3');
+save('New_adoption_friend_scores_all_bands_12.mat','New_adoption_friend_scores', '-v7.3');
+save('New_adoption_friend_user_uv_ind_all_bands_12.mat','New_adoption_friend_user_uv_ind', '-v7.3');
+
 % load('Jaccard_user_uv_ind_8320.mat')
 % load('Jaccard_similarity_scores_ind_8320.mat')
 % load('Jaccard_similarity_scores_8320.mat')
 
 hist(New_adoption_friend_scores)
 mean(New_adoption_friend_scores)
+
+toc
 
 % lastfm_neighbours_match_scores = csvread('neighbourlist_6585_match.csv',1,0);
 % match_neighbours = lastfm_neighbours_match_scores(:,3);

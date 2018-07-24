@@ -23,7 +23,7 @@ for k = 1:size(friendlist,1)
     u_adopt = user_band_adoption_mat(u,:);
     v_adopt = user_band_adoption_mat(v,:);
 %     shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt >= 0 & v_adopt-u_adopt <= 12;
-    shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt <= 52;        % notice NOT to impose m adopt before f restrictions !!
+    shared_bands = u_adopt.*v_adopt > 0 & abs(v_adopt-u_adopt) <= 52;        % notice NOT to impose m adopt before f restrictions !!
     count_shared_fbands(k) = sum(shared_bands);
     temp = temp+sum(u_adopt>0);
     temp2 = temp2+sum(v_adopt>0);
@@ -40,7 +40,7 @@ for n = 1:size(neighbourlist,1)
     u_adopt = user_band_adoption_mat(u,:);
     v_adopt = user_band_adoption_mat(v,:);
 %     shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt >= 0 & v_adopt-u_adopt <= 12;
-    shared_bands = u_adopt.*v_adopt > 0 & v_adopt-u_adopt <= 52;         % notice NOT to impose m adopt before f restrictions !!
+    shared_bands = u_adopt.*v_adopt > 0 & abs(v_adopt-u_adopt) <= 52;         % notice NOT to impose m adopt before f restrictions !!
     count_shared_nbands(n) = sum(shared_bands);
     temp3(n) = sum(u_adopt>0);
     temp4(n) = sum(v_adopt>0);
@@ -224,7 +224,7 @@ all_avg_metric_n = nanmean(An_avg_vec)/(beta_f*nanmean(Sn_vec))
 % metric_new_temp = Af_new_avg_vec./(beta_n*Sf_vec);
 % Af_new_AnPri_metric = nanmean(metric_new_temp(find(~isinf(metric_new_temp))))
 
-figure
+% figure
 plot(similarity_fm, similarity_fm*beta_f)
 hold on
 scatter(similarity_fm, count_shared_fbands)
@@ -237,17 +237,17 @@ hold off
 mod_f = fitlm(similarity_fm(index_f),count_shared_fbands(index_f))
 mod_n = fitlm(similarity_nm(index_n),count_shared_nbands(index_n))
 
-figure
+% figure
 plot(mod_f)
 
-figure
+% figure
 plot(mod_n)
 
 % similarity scores with member (Sf v.s. Sn)
 disp(['mean(Sf_i) :    ' num2str(nanmean(Sf_vec)) ''])
 disp(['mean(Sn_i) :    ' num2str(nanmean(Sn_vec)) ''])
 
-figure
+% figure
 plot(0:0.01:1,0:0.01:1)
 hold on
 scatter(Sf_vec,Sn_vec)
@@ -264,17 +264,17 @@ disp(['corr_f :    ' num2str(corr(similarity_fm(index_f),count_shared_fbands(ind
 disp(['corr_n :    ' num2str(corr(similarity_nm(index_n),count_shared_nbands(index_n))) ''])
 
 %% similarity computed based on 6046 artists    
-% load('Cosine_similarity_scores_neighbours6585_listens.mat')
-% cosine_similarity_score_6046nm = Cosine_similarity_scores;
-% 
-% load('cosine_similarity_scores_friends8088_listens.mat')
-% cosine_similarity_score_6046fm = cosine_similarity_scores;   
-
-load('Cosine_similarity_scores_neighbours6585_listen1.mat')
+load('Cosine_similarity_scores_neighbours6585_listens.mat')
 cosine_similarity_score_6046nm = Cosine_similarity_scores;
 
-load('cosine_similarity_scores_friends8088_listen1.mat')
-cosine_similarity_score_6046fm = cosine_similarity_scores; 
+load('cosine_similarity_scores_friends8088_listens.mat')
+cosine_similarity_score_6046fm = cosine_similarity_scores;   
+
+% load('Cosine_similarity_scores_neighbours6585_listen1.mat')
+% cosine_similarity_score_6046nm = Cosine_similarity_scores;
+% 
+% load('cosine_similarity_scores_friends8088_listen1.mat')
+% cosine_similarity_score_6046fm = cosine_similarity_scores; 
 
 uni_nlist = unique(neighbourlist(:,1));
 nlist_row = zeros(length(uni_nlist),2);
@@ -405,7 +405,7 @@ all_avg_metric_n = nanmean(An_avg_vec)/(beta_f*nanmean(Sn_vec))
 % metric_new_temp = Af_new_avg_vec./(beta_n*Sf_vec);
 % Af_new_AnPri_metric = nanmean(metric_new_temp(find(~isinf(metric_new_temp))))
 
-figure
+% figure
 plot(cosine_similarity_score_6046fm, cosine_similarity_score_6046fm*beta_f)
 hold on
 scatter(cosine_similarity_score_6046fm, count_shared_fbands)
@@ -418,17 +418,17 @@ hold off
 mod_f = fitlm(cosine_similarity_score_6046fm(index_f),count_shared_fbands(index_f))
 mod_n = fitlm(cosine_similarity_score_6046nm(index_n),count_shared_nbands(index_n))
 
-figure
+% figure
 plot(mod_f)
 
-figure
+% figure
 plot(mod_n)
 
 % similarity scores with member (Sf v.s. Sn)
 disp(['mean(Sf_i) :    ' num2str(nanmean(Sf_vec)) ''])
 disp(['mean(Sn_i) :    ' num2str(nanmean(Sn_vec)) ''])
 
-figure
+% figure
 plot(0:0.01:1,0:0.01:1)
 hold on
 scatter(Sf_vec,Sn_vec)

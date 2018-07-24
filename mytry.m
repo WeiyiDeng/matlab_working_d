@@ -1,33 +1,14 @@
-% % rng(1)
-% for t = 1:4
-% %     seed1 = 1; 
-%     seed2 = 1;
-%     for d = 1:2
-% %         rng(100000+seed1)
-%         for c = 1:3
-%             rng(1000+seed2)
-%             sth = rand(1,1);
-%             seed2 = seed2+1;
-%             disp(sth)
-%         end
-%     end
-% end
-% 
-% % clearvars -EXCEPT rng
-
-NB = 10;
-T  = 52;
-NM = 10;
-beta_C = 0.3;
-se_C = 10;
-
-store = [];
-for w=1:100
-    sth = beta_C+se_C*randn(NB,T,NM);
-    temp = mean(mean(mean(sth)));
-    disp(temp)
-    store = [store temp];
+DV_IJ_sparse_combine = [];
+for i = 1:size(position_IadoptJ_in_rows,1)
+    for j = 1:size(position_IadoptJ_in_rows,2)
+        if number_rows_for_DV(i,j)~= 0
+            if position_IadoptJ_in_rows(i,j)~=0
+                DV_IJ_sparse = sparse(position_IadoptJ_in_rows(i,j),1,1,number_rows_for_DV(i,j),1);
+            else
+                DV_IJ_sparse = sparse(number_rows_for_DV(i,j),1);
+            end
+            DV_IJ_sparse_combine = [DV_IJ_sparse_combine; DV_IJ_sparse];
+        else
+        end
+    end
 end
-
-hist(store)
-disp(mean(store))
