@@ -168,7 +168,7 @@ m_neighbour_adoption_multiply_similarity_cells = cell(size(member_start_end,1),1
 m_neighbour_adoption_multiply_similarity_cells_Tij = cell(size(member_start_end,1),1);
 for m = 1:size(member_start_end,1)
     m_neighbours_ID = Cosine_user_uv_ind_nm(find(Cosine_user_uv_ind_nm(:,1)==member_start_end(m,1)),2);
-    similarity_m_neighbour_cells{m} = Cosine_similarity_score_fm(find(Cosine_user_uv_ind_nm(:,1)==member_start_end(m,1)));
+    similarity_m_neighbour_cells{m} = Cosine_similarity_score_nm(find(Cosine_user_uv_ind_nm(:,1)==member_start_end(m,1)));
 %     m_neighbour_cells{m} = cell(size(artist_start,1),1);
     m_neighbour_adoption_multiply_similarity_cells{m} = cell(size(artist_start,1),1);
     m_neighbour_adoption_multiply_similarity_cells_Tij{m} = cell(size(artist_start,1),1);
@@ -177,7 +177,7 @@ for m = 1:size(member_start_end,1)
         m_neighbour_cells_mj = nm_adopt_6046cells{j}(m_neighbours_ID,:);
         temp = similarity_m_neighbour_cells{m}'*m_neighbour_cells_mj;
         m_neighbour_adoption_multiply_similarity_cells{m}{j} = sparse(1,find(temp),temp(find(temp)),1,MAX_T);
-        if matrix_IJ_week_start(m,j)>matrix_IJ_week_end(m,j)              % for the bands appear after member becomes inactive do not include
+        if matrix_IJ_week_start(m,j)>matrix_IJ_week_end(m,j)              % for the bands appear after member becomes inactive, do not include
             m_neighbour_adoption_multiply_similarity_cells_Tij{m}{j} = [];
         elseif matrix_IadoptJ_week(m,j)>0                                 % if not truncated
             m_neighbour_adoption_multiply_similarity_cells_Tij{m}{j} = ...
@@ -189,14 +189,14 @@ for m = 1:size(member_start_end,1)
     end
 end
 
-% save('m_neighbour_cells.mat','m_neighbour_cells','-v7.3');
+% % save('m_neighbour_cells.mat','m_neighbour_cells','-v7.3');
 % save('similarity_m_neighbour_cells.mat','similarity_m_neighbour_cells','-v7.3');
 % save('m_neighbour_adoption_multiply_similarity_cells.mat','m_neighbour_adoption_multiply_similarity_cells','-v7.3');
-save('m_neighbour_adoption_multiply_similarity_cells_Tij.mat','m_neighbour_adoption_multiply_similarity_cells_Tij','-v7.3');
-clear m_neighbour_cells
-clear similarity_m_neighbour_cells
-clear m_neighbour_adoption_multiply_similarity_cells
-clear m_neighbour_adoption_multiply_similarity_cells_Tij
+% save('m_neighbour_adoption_multiply_similarity_cells_Tij.mat','m_neighbour_adoption_multiply_similarity_cells_Tij','-v7.3');
+% % clear m_neighbour_cells
+% clear similarity_m_neighbour_cells
+% clear m_neighbour_adoption_multiply_similarity_cells
+% clear m_neighbour_adoption_multiply_similarity_cells_Tij
 
 
 % load('m_neighbour_cells.mat')
@@ -219,6 +219,103 @@ end
 % save('X_m_neighbour_adoption_times_similarity_combine.mat','X_m_neighbour_adoption_times_similarity_combine','-v7.3');
 load('X_m_neighbour_adoption_times_similarity_combine.mat');
 
+% get the adoption times similarity with friends for each member M (M cells {J cells{all M's friends I*all time period Tij}})
+% m_neighbour_cells = cell(size(member_start_end,1),1);
+similarity_m_friend_cells = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cells = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cellsD1 = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cellsD4 = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cells_Tij = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cells_TijD1 = cell(size(member_start_end,1),1);
+m_friend_adoption_multiply_similarity_cells_TijD4 = cell(size(member_start_end,1),1);
+for m = 1:size(member_start_end,1)
+    m_friend_ID = Cosine_user_uv_ind_fm(find(Cosine_user_uv_ind_fm(:,1)==member_start_end(m,2)),2);
+    similarity_m_friend_cells{m} = Cosine_similarity_score_fm(find(Cosine_user_uv_ind_fm(:,1)==member_start_end(m,2)));
+%     m_neighbour_cells{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cells{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cellsD1{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cellsD4{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cells_Tij{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cells_TijD1{m} = cell(size(artist_start,1),1);
+    m_friend_adoption_multiply_similarity_cells_TijD4{m} = cell(size(artist_start,1),1);
+    for j = 1:size(artist_start,1)
+%         m_neighbour_cells{m}{j} = nm_adopt_6046cells{j}(m_neighbours_ID,:);
+        m_friend_cells_mj = fm_adopt_6046cells{j}(m_friend_ID,:);
+        temp = similarity_m_friend_cells{m}'*m_friend_cells_mj;
+        m_friend_adoption_multiply_similarity_cells{m}{j} = sparse(1,find(temp),temp(find(temp)),1,MAX_T);
+        m_friend_adoption_multiply_similarity_cellsD1{m}{j} = [sparse(0,[],[],1,1) m_friend_adoption_multiply_similarity_cells{m}{j}(1:end-1)];         % adopted 1 week ago
+        m_friend_adoption_multiply_similarity_cellsD4{m}{j} = [sparse(0,[],[],1,4) m_friend_adoption_multiply_similarity_cells{m}{j}(1:end-4)];         % adopted 4 week ago
+        if matrix_IJ_week_start(m,j)>matrix_IJ_week_end(m,j)              % for the bands appear after member becomes inactive, do not include
+            m_friend_adoption_multiply_similarity_cells_Tij{m}{j} = [];
+            m_friend_adoption_multiply_similarity_cells_TijD1{m}{j} = [];
+            m_friend_adoption_multiply_similarity_cells_TijD4{m}{j} = [];
+        elseif matrix_IadoptJ_week(m,j)>0                                 % if not truncated
+            m_friend_adoption_multiply_similarity_cells_Tij{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cells{m}{j}(matrix_IJ_week_start(m,j):min(matrix_IJ_week_end(m,j),matrix_IadoptJ_week(m,j)));
+            m_friend_adoption_multiply_similarity_cells_TijD1{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cellsD1{m}{j}(matrix_IJ_week_start(m,j):min(matrix_IJ_week_end(m,j),matrix_IadoptJ_week(m,j)));
+            m_friend_adoption_multiply_similarity_cells_TijD4{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cellsD4{m}{j}(matrix_IJ_week_start(m,j):min(matrix_IJ_week_end(m,j),matrix_IadoptJ_week(m,j)));
+        else
+            m_friend_adoption_multiply_similarity_cells_Tij{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cells{m}{j}(matrix_IJ_week_start(m,j):matrix_IJ_week_end(m,j));
+            m_friend_adoption_multiply_similarity_cells_TijD1{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cellsD1{m}{j}(matrix_IJ_week_start(m,j):matrix_IJ_week_end(m,j));
+            m_friend_adoption_multiply_similarity_cells_TijD4{m}{j} = ...
+                m_friend_adoption_multiply_similarity_cellsD4{m}{j}(matrix_IJ_week_start(m,j):matrix_IJ_week_end(m,j));
+        end
+    end
+end
+
+% save('similarity_m_friend_cells.mat','similarity_m_friend_cells','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cells.mat','m_friend_adoption_multiply_similarity_cells','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cells_Tij.mat','m_friend_adoption_multiply_similarity_cells_Tij','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cellsD1.mat','m_friend_adoption_multiply_similarity_cellsD1','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cells_TijD1.mat','m_friend_adoption_multiply_similarity_cells_TijD1','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cellsD4.mat','m_friend_adoption_multiply_similarity_cellsD4','-v7.3');
+% save('m_friend_adoption_multiply_similarity_cells_TijD4.mat','m_friend_adoption_multiply_similarity_cells_TijD4','-v7.3');
+
+clear similarity_m_friend_cells
+clear m_friend_adoption_multiply_similarity_cells
+clear m_friend_adoption_multiply_similarity_cells_Tij
+clear m_friend_adoption_multiply_similarity_cellsD1
+clear m_friend_adoption_multiply_similarity_cells_TijD1
+clear m_friend_adoption_multiply_similarity_cellsD4
+clear m_friend_adoption_multiply_similarity_cells_TijD4
+
+load('similarity_m_friend_cells.mat');
+load('m_friend_adoption_multiply_similarity_cells_Tij.mat');
+load('m_friend_adoption_multiply_similarity_cells_TijD1.mat');
+load('m_friend_adoption_multiply_similarity_cells_TijD4.mat');
+
+X_m_friend_adoption_times_similarity_combine = [];
+X_m_friend_adoption_times_similarity_combineD1 = [];
+X_m_friend_adoption_times_similarity_combineD4 = [];
+for m = 1:size(matrix_IadoptJ_week,1)
+    for j = 1:size(matrix_IadoptJ_week,2)
+        if number_rows_for_DV(m,j)~= 0
+            X_m_friend_adoption_times_similarity_sparse = m_friend_adoption_multiply_similarity_cells_Tij{m}{j}';
+            X_m_friend_adoption_times_similarity_sparseD1 = m_friend_adoption_multiply_similarity_cells_TijD1{m}{j}';
+            X_m_friend_adoption_times_similarity_sparseD4 = m_friend_adoption_multiply_similarity_cells_TijD4{m}{j}';
+            X_m_friend_adoption_times_similarity_combine = ...
+                [X_m_friend_adoption_times_similarity_combine; X_m_friend_adoption_times_similarity_sparse];
+            X_m_friend_adoption_times_similarity_combineD1 = ...
+                [X_m_friend_adoption_times_similarity_combineD1; X_m_friend_adoption_times_similarity_sparseD1];
+            X_m_friend_adoption_times_similarity_combineD4 = ...
+                [X_m_friend_adoption_times_similarity_combineD4; X_m_friend_adoption_times_similarity_sparseD4];
+        else
+        end
+    end
+end
+
+% save('X_m_friend_adoption_times_similarity_combine.mat','X_m_friend_adoption_times_similarity_combine','-v7.3');
+% save('X_m_friend_adoption_times_similarity_combineD1.mat','X_m_friend_adoption_times_similarity_combineD1','-v7.3');
+% save('X_m_friend_adoption_times_similarity_combineD4.mat','X_m_friend_adoption_times_similarity_combineD4','-v7.3');
+load('X_m_friend_adoption_times_similarity_combine.mat');
+load('X_m_friend_adoption_times_similarity_combineD1.mat');
+load('X_m_friend_adoption_times_similarity_combineD4.mat');
+
+%%
 % include baseline probabilities and google trends variables
 % baseline probabilities computed based on all listens and adoptions from lastfm dataset 
 baselineProbListens = csvread('dt7_member_plus_friend_neighbour_names_fix_weeks_artist6046ID_union_week_listens.csv',1,0);
