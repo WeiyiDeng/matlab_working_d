@@ -1,55 +1,37 @@
-clear all
-global x y r i overlap                           % 设置全局变量，这样在function里面也可以调用这些变量
-
-rand('twister', sum(100*clock))  
-axis([0,130,0,240])
-daspect([1,1,1]) 
-k=1;d=1;df=0;r(k)=0;x(k)=0;y(k)=0;i=0;
-interarrival_day = round(exprnd(8))              % 第一个火头的发生时间服从指数分布
-
-for d =1:200         
-    if d == df + interarrival_day                
-      %if d == df+10
-           df=d;
-           x_new = unifrnd(0,130,1)
-           y_new = unifrnd(0,240,1)
-           interarrival_day = round(exprnd(8))    % 下一个火头的发生时间服从指数分布,见fire04try2里的注释
-           if i > 1
-               judge_overlap(x_new,y_new)       %调用 function judge_overlap 判断新火头的坐标是否与任意旧火范围重合
-               if any(overlap)==0               %当与所有旧火都没有重合时，产生新火,见fire04try2里的注释            
-                   i=i+1;
-                   x(i)=x_new                                
-                   y(i)=y_new
-                   r(i)=0.4
-                   rectangle('Position',[x(i)-r(i),y(i)-r(i),2*r(i),2*r(i)],'Curvature',[1,1],...
-     'FaceColor','r') 
-               else
-               end
-           else                                 % 对第一个火头(i=1)无需判断是否重合
-               i=i+1;
-               x(i)=unifrnd(0,130,1) 
-               y(i)=unifrnd(0,240,1)
-               r(i)=0.4
-           end
-      end
-      for k=1:i
-      x(k)=x(k)-1+2*rand 
-      y(k)=y(k)-1+2*rand
-      r(k)=r(k)+0.4
-
-   rectangle('Position',[x(k)-r(k),y(k)-r(k),2*r(k),2*r(k)],'Curvature',[1,1],...
-     'FaceColor','r')            
-      end
-      
-       pause(0.05)
-       
-
-end
-
-day = d                                              %输出在第几天着火面积大于设定比例
-      
- 
-   
-
-  
-
+clearvars member_cube_cells N_prep_for_matp
+test_store = [];
+not_exist_m = [];
+N_id_cells = cell(max(prep_reverse_indices(:,7)),1);
+N_similarity_cells = cell(max(prep_reverse_indices(:,7)),1);
+N_prep_for_matp = sparse(prep_reverse_indices(end,6),6222);           % sum(count_N)
+for i = 1:size(prep_reverse_indices,1)
+% for i = 165517:165518
+% for i = 1:1
+    m = prep_reverse_indices(i,7);
+    m_new = ALL_NEW_OLD_ID(prep_reverse_indices(i,1),2);
+    if ismember(m_new,memberlistNM)
+        m_new_row = find(memberlistNM==m_new);
+        N_id_list = ALL_USERS_NM(m_r_start(m_new_row):m_r_end(m_new_row),2);
+        N_id_cells{m} = N_id_list;
+        N_similarity_cells{m} = ALL_USERS_NM_similarity_scores(m_r_start(m_new_row):m_r_end(m_new_row));
+        j = prep_reverse_indices(i,2);
+        week_interval = prep_reverse_indices(i,3):prep_reverse_indices(i,4);
+        temp = all_adopt_cells{j}(:,week_interval);
+        member_cube_cells{m}{j} = temp(N_id_list,:);
+        [row, col] = find(member_cube_cells{m}{j});
+        if ~isempty(row)
+            test_store = [test_store; length(unique(row))];
+        end
+        col = flip(col);
+        row = flip(row);
+        for r = 1:length(row)
+            member_cube_cells{m}{j}(row(r),:) = abs(week_interval-col(r)-week_interval(1));
+        end
+        row_interval = prep_reverse_indices(i,5):prep_reverse_indices(i,6);
+        N_prep_for_matp(row_interval,count_N_start(m):count_N_end(m))...
+            = (member_cube_cells{m}{j})';
+    else
+        not_exist_m = [not_exist_m m];
+    end
+end       
+not_exist_m = unique(not_exist_m);

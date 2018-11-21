@@ -1,5 +1,5 @@
 % function [LL, gr, H] = band_bi_ll_i2(b,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip)
-function [LL, gr, H] = band_bi_ll_trend(b,IVs,choice_dv, innov_X, explor_X)
+function [LL, gr, H] = band_bi_ll_trend_test(b,IVs,choice_dv, innov_X, explor_X)
 global dummies se
 
 % b = (diag([1e-1,1e-1,1e2])*b')';    % w: this does not yield the right result

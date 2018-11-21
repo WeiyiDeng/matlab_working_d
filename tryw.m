@@ -50,7 +50,7 @@ sum_ww = 0;
 for i = 1:165
     ww = 0;
     for j = 1:6046
-        ww = ww + length(find(m_friend_adoption_multiply_similarity_cells_Tij{i}{j}));
+        ww = ww + length(find(m_friend_adoption_multiply_similarity_cells_TijD4{i}{j}));
 %         if ww>0
 %             disp(j)
 %         end

@@ -29,22 +29,25 @@ clearvars -EXCEPT X y
 
 load('X_m_friend_adoption_times_similarity_combine.mat');
 load('X_m_friend_adoption_times_similarity_combineD1.mat');
-load('X_m_friend_adoption_times_similarity_combineD4.mat');
+load('X_m_friend_adoption_times_similarity_combineD2.mat');
+load('X_m_friend_adoption_times_similarity_combineD3.mat');
+% load('X_m_friend_adoption_times_similarity_combineD4.mat');
 
-% X = [X X_m_friend_adoption_times_similarity_combine X_m_friend_adoption_times_similarity_combineD1 X_m_friend_adoption_times_similarity_combineD4];
+X = [X X_m_friend_adoption_times_similarity_combine X_m_friend_adoption_times_similarity_combineD1...
+    X_m_friend_adoption_times_similarity_combineD2 X_m_friend_adoption_times_similarity_combineD3];
 % X = [X X_m_friend_adoption_times_similarity_combine(1:100000) X_m_friend_adoption_times_similarity_combineD1(1:100000) X_m_friend_adoption_times_similarity_combineD4(1:100000)];
-X = [X X_m_friend_adoption_times_similarity_combine];
+% X = [X X_m_friend_adoption_times_similarity_combine];
 % X = [X X_m_friend_adoption_times_similarity_combine(1:100000) X_m_friend_adoption_times_similarity_combineD4(1:100000)];
 
 clearvars X_m_friend_adoption_times_similarity_combine X_m_friend_adoption_times_similarity_combineD1 X_m_friend_adoption_times_similarity_combineD4
 
-beta_0 = [-8.9801    0.1   0.1  0.1  0.1]
+beta_0 = [-8.9801    0.1   0.1  0.1  0.1  2]
 % beta_0 = [-9.2778    0.1021   -0.0004    0.0538    0.3893     0.1    0.1    0.1]
 % beta_0 = [-10    0.1   0.1  0.1    0.1     0.1]
 
 disp(size(X))
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_try3(X, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_try5_1(X, y, beta_0);
 
 save('b.mat','b')
 save('standard_error.mat','standard_error')
