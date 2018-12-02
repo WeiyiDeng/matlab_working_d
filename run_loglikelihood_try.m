@@ -38,7 +38,7 @@ IV2 = features;
 
 b0 = [0 0 0 0 0]
 
-options = optimset('LargeScale','on','GradObj','on','Hessian','on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
+options = optimset('LargeScale','on','GradObj','on','Hessian','on','DerivativeCheck', 'on','Jacobian', 'on','TolFun',1e-6, 'MaxIter',1e4, 'MaxFunEvals', 1e5)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on')
 
 [b, fval,exitflag,output] = fminunc(@log_likelihood_try,b0,options);

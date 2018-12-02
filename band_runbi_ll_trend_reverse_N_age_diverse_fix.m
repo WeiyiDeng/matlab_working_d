@@ -1,5 +1,5 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse(X, trend_hat, X_N, None0s_X_N, S, y, beta_0)
+function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse_fix(X, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, y, beta_0, beta_fix)
 global I J dummies se T
 
 IVs = X;
@@ -13,7 +13,7 @@ beta0 = beta_0;
 options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-14, 'MaxIter',1e3, 'MaxFunEvals', 1e5, 'PlotFcns',@optimplotfirstorderopt);  % ,'OutputFcn', @showJ_history);   %, 'FinDiffType', 'central');
 
 % [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_i2,beta0,options,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip);
-[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_trend_reverse_N_test,beta0,options,IVs, trend_hat, X_N, None0s_X_N, S, choice_dv);
+[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_trend_reverse_N_age_diverse_fix,beta0,options,IVs, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, choice_dv, beta_fix);
 
 % disp(['constant ' num2str(b(1)) '']);
 % disp(['coefficients ' num2str(b(2:end)) '']);
@@ -24,6 +24,7 @@ standard_error = sqrt(diag(inv(hessian)));
 % w: why is the case ??
 
 covariance_matrix = inv(hessian);
+assert(det(hessian)==0, 'Hessian is singular');
 
 t_stat = b./standard_error';
 % disp(['t statistics ' num2str(t_stat) '']);

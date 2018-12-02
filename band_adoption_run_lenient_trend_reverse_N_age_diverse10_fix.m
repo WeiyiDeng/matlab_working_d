@@ -22,7 +22,7 @@ for r = 1:length(trend_hat)
 end
 % matp(:,6) = trend_hat;
 
-band_topics = csvread('band_count_topics20.csv',1,0);
+band_topics = csvread('band_count_topics10.csv',1,0);
 band_topics_mat = sparse(band_topics(:,1),1,band_topics(:,2),max(band_topics(:,1)),1);
 topics_count = zeros(size(matp,1),1);
 for r = 1:length(topics_count)
@@ -82,15 +82,19 @@ clearvars N_prep_for_matp_jobs_organize combi_similarities
 % X = [X baseline_prob_store];
 % clearvars baseline_prob_store
 
-%         intercept gamma1     gamma2  baseline_prob   gtrend     new_week_diff
-beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1            0.0454    0.1    1    1];
+%         intercept gamma1    gamma2  baseline_prob gtrend(5)  new_week_diff  band_age  topics_count  Age*new_week_diff     Diversity*new_week_diff(10)     Diversity*Age    Diversity*Age*new_week_diff     week_diff_coef_n  normal_sd   similarity_coef
+% beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1      0.0454          0.1         0.1           0.1                     0.1                              0.1                       0.1                      0.1            1          1];
+beta_fix = [-5.0956    0.1766    2.0276    0.0401      0.0671    0.0176       -0.0065      -0.2234       0.0153         1.0260      1.0120]
+% Age*new_week_diff     Diversity*new_week_diff(10)     Diversity*Age    Diversity*Age*new_week_diff
+beta_0 = [0.1   0.1   0.1  0.1]
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_test(X, trend_hat, X_N, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse_fix(X, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, y, beta_0, beta_fix);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
 save('t_stat.mat','t_stat') ;
 save('exit_flag.mat','exit_flag') ;
+save('hessian.mat','hessian');
 
 display(b)
 % display(standard_error)

@@ -82,10 +82,12 @@ clearvars N_prep_for_matp_jobs_organize combi_similarities
 % X = [X baseline_prob_store];
 % clearvars baseline_prob_store
 
-%         intercept gamma1     gamma2  baseline_prob   gtrend     new_week_diff
-beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1            0.0454    0.1    1    1];
+%         intercept gamma1    gamma2  baseline_prob gtrend(5)  new_week_diff  band_age  topics_count  Age*new_week_diff     Diversity*new_week_diff(10)     Diversity*Age    Diversity*Age*new_week_diff     week_diff_coef_n  normal_sd   similarity_coef
+beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1      0.0454          0.1         0.1           0.1                     0.1                              0.1                       0.1                      0.1            1          1];
+%         intercept gamma1    gamma2  baseline_prob gtrend(5)  new_week_diff  band_age  topics_count  week_diff_coef_n  normal_sd   similarity_coef
+% beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1      0.0454          0.1         0.1             0.1            1          1];
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_test(X, trend_hat, X_N, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse(X, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, y, beta_0);
 
 save('b.mat','b') ;
 save('standard_error.mat','standard_error') ;
