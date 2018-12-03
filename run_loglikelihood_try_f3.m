@@ -11,12 +11,14 @@ features = randn(I,P-1);
 features=[ones(I,1) features-mean(mean(features))];
 features(:,3) = features(:,3)-2;
 
-weeks = randi([-30 30],I,1);
+% weeks = randi([-30 30],I,1);
+weeks = randi([0 60],I,1);
 spaces_empty = randi([1 I],4000,1);
 weeks(spaces_empty) = 0;
 
 features(:,5) = weeks;
-norm_weeks = normpdf(weeks,0,8);
+% norm_weeks = normpdf(weeks,0,8);
+norm_weeks = gampdf(weeks,1,8);
 
 % b1 = rand(I,1);
 % b2 = rand(I,1).*2+1;
@@ -37,15 +39,21 @@ IV = features;
 
 b0 = [0 3 0 0 5 3]
 
-options = optimset('disp','iter','LargeScale','off','GradObj','off','Hessian','off','DerivativeCheck','off', 'Jacobian', 'on','TolFun',1e-9, 'MaxIter',1e4, 'MaxFunEvals', 1, 'TolX',1e-14)         % LargeScale off is quasi-Newton method in optimset
+options = optimset('disp','iter','LargeScale','on','GradObj','on','Hessian','off','DerivativeCheck','off', 'Jacobian', 'on','TolFun',1e-9, 'MaxIter',1e4, 'MaxFunEvals', 1e6, 'TolX',1e-14)         % LargeScale off is quasi-Newton method in optimset
 % options = optimset('LargeScale','on','GradObj','on','Hessian','on')
 
 % options = optimoptions(@fmincon,'Algorithm','interior-point',...
 %     'CheckGradients',true,'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true);
 
-[b, fval,exitflag,output, grad,hessian] = fminunc(@log_likelihood_try_f,b0,options,DV,IV,I,P);
+[b, fval,exitflag,output, grad,hessian] = fminunc(@log_likelihood_try_f3,b0,options,DV,IV,I,P);
 
 disp(grad)
 disp(full(hessian))
 disp(['constants ' num2str(b(1:5)) ''])
 disp(['coefficients ' num2str(b(6)) ''])
+
+ww = @(x) 2*exp(-2*x);
+plot(gampdf(0.1:0.1:100,1,2))
+hold on
+plot(ww(0.1:0.1:100))
+hold off
