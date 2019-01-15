@@ -54,6 +54,13 @@ options = optimset('disp','iter','LargeScale','on','GradObj','on','Hessian','off
 
 [b, fval,exitflag,output, grad,hessian] = fminunc(@log_likelihood_try_f4,b0,options,DV,IV,I,P);
 
+
+
+% opts = optimoptions(@fminunc,'Algorithm','quasi-newton','MaxIterations',1500, 'Display','iter')     % 'trust-region'
+% problem = createOptimProblem('fminunc','objective',@log_likelihood_try_f4,'x0',b0);
+%  ms = MultiStart;
+% [x,f] = run(ms,problem,20)
+
 disp(grad)
 disp(full(hessian))
 % disp(['constants ' num2str(b(1:5)) ''])

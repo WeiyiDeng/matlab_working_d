@@ -87,16 +87,16 @@ clearvars N_prep_for_matp_jobs_organize combi_similarities
 
 %         intercept gamma1    gamma2  baseline_prob gtrend(5)  new_week_diff  band_age  topics_count  Age*new_week_diff     Diversity*new_week_diff(10)     Diversity*Age    Diversity*Age*new_week_diff     week_diff_coef_n  normal_sd   similarity_coef
 % beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1      0.0454          0.1         0.1           0.1                     0.1                              0.1                       0.1                      0.1            1          1];
-%         intercept gamma1    gamma2  baseline_prob gtrend(5)  new_week_diff  band_age  topics_count  week_diff_coef_n  normal_sd(10)   similarity_coef
+%         intercept gamma1    gamma2  baseline_prob gtrend(5)   new_week_diff  band_age  topics_count  week_diff_coef_n  normal_sd(10)   similarity_coef    Age*new_week_diff
 % beta_0 = [-5.0318    0.1763    2.0272    0.3235       0.1      0.0454          0.1         0.1             0.1            1              1];
-beta_0 = [-7.5284    0.2218    2.1392    0.0423    0.3321    0.0582     -0.0065      -0.2234    0.0339    2.0197    2.0455]
+beta_0 = [-7.5284    0.2218    2.1392    0.0423    0.3321    0.0582     -0.0065      -0.2234    0.0339    2.0197    2.0455    0.1]
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse_try(X, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_N_age_diverse_try_12(X, trend_hat, band_age, topics_count, X_N, None0s_X_N, S, y, beta_0);
 
-save('b_fix11.mat','b') ;
-save('standard_error_fix11.mat','standard_error') ;
-save('t_stat_fix11.mat','t_stat') ;
-save('exit_flag_fix11.mat','exit_flag') ;
+save('b.mat','b') ;
+save('standard_error.mat','standard_error') ;
+save('t_stat.mat','t_stat') ;
+save('exit_flag.mat','exit_flag') ;
 
 display(b)
 % display(standard_error)
