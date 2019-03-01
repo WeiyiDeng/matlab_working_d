@@ -8,30 +8,34 @@ index = find(ismember(matp(:,3),predict_trend(:,1)));
 
 matp = matp(index,:);
 
-load('dummies40.mat');
-% size(dummies40)
-dummies40 = dummies40(index,:);
-dummies_prep = dummies40.*repmat(matp(:,8),1,4);
-clearvars dummies40
-dummy_prep = dummies_prep(:,1) | dummies_prep(:,2);         % 1-20
-
-% matp = [member_p friend_p band_p timeobs DV prob_adopt_week new_week_diff A_week_ijt];
-
-mat_export = [matp(:,1:6) dummy_prep];
-csvwrite('mat_export.csv',mat_export)
-
-prep_matp = matp(:,[1 3 4]);
-
-% remove duplicte commas in EMeditor
-dummy_mat = csvread('dummy_SI_mat.csv');
-dum_mat_prep = dummy_mat(:,1:3);
-
-X = dummy_mat(:, [5 6]);
-y = dummy_mat(:,4);
-
-[~,indx]=ismember(dum_mat_prep,prep_matp,'rows');
+% load('dummies40.mat');
+% % size(dummies40)
+% dummies40 = dummies40(index,:);
+% dummies_prep = dummies40.*repmat(matp(:,8),1,4);
+% clearvars dummies40
+% dummy_prep = dummies_prep(:,1) | dummies_prep(:,2);         % 1-20
+% 
+% % mat_export = [matp(:,1:6) dummy_prep];
+% % csvwrite('mat_export.csv',mat_export)
+% 
+% prep_matp = matp(:,[1 3 4]);
+% 
+% % remove duplicte commas in EMeditor
+% dummy_mat = csvread('dummy_SI_mat.csv');
+% dum_mat_prep = dummy_mat(:,1:3);
+% 
+% [~,indx]=ismember(dum_mat_prep,prep_matp,'rows');
+% 
+% save('indx.mat','indx') ;
+% save('dummy_mat.mat','dummy_mat') ;
+load('indx.mat');
+load('dummy_mat.mat');
 
 matp = matp(indx,:);
+
+X = dummy_mat(:, 5);
+y = dummy_mat(:,4);
+dummy_agg_SI = dummy_mat(:, 6);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 predict_trend_mat = sparse(predict_trend(:,1),predict_trend(:,2),predict_trend(:,3),...
@@ -57,6 +61,13 @@ for r = 1:length(band_age)
     band_age(r) = matp(r,4)-band_birth_mat(matp(r,3));
 end
 sum(band_age<0)
+
+band_count_tracks = csvread('BAND_count_TRACKS.csv',1,0);
+band_tracks_mat = sparse(band_count_tracks(:,1),1,band_count_tracks(:,2),max(band_count_tracks(:,1)),1);
+tracks_count = zeros(size(matp,1),1);
+for r = 1:length(tracks_count)
+    tracks_count(r) = matp(r,4)-band_tracks_mat(matp(r,3));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load('N_prep_for_matp_jobs_organize.mat');
@@ -92,15 +103,15 @@ S = combi_similarities;
 clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 
 %%
-beta_0 = [-6.9490       0.0366    0.3435       0.3486      -0.0033     -0.0104         -0.0005                0.001                      0.0337            2.0827       1.9961]
+beta_0 = [-7.7250    0.0443    0.3302    0.0686   -0.0019   -0.0001    0.01   0.0002   -0.0044    0.01   0.0341    2.1842   0.7598]
 clearvars b
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_dummiesSI_main_plus2(X, trend_hat, band_age, topics_count, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_trend_reverse_agg_dummy_SI_tracks(X, trend_hat, band_age, topics_count, tracks_count, dummy_agg_SI, None0s_X_N, S, y, beta_0);
 
-save('b_dummy30_mainplus2.mat','b') ;
-save('standard_error_dummy30_mainplus2.mat','standard_error') ;
-save('t_stat_dummy30_mainplus2.mat','t_stat') ;
-save('exit_flag_dummy30_mainplus2.mat','exit_flag') ;
+save('b_agg_dummy.mat','b') ;
+save('standard_error_agg_dummy.mat','standard_error') ;
+save('t_stat_agg_dummy.mat','t_stat') ;
+save('exit_flag_agg_dummy.mat','exit_flag') ;
 
 display(b)
 % display(standard_error)
