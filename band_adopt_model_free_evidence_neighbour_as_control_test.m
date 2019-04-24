@@ -332,6 +332,7 @@ avg_X_NF = avg_X_NF';
 
 % visualize in histogram
 a = avg_X_MF-avg_X_NF;
+figure
 hist(a(a<1000))
 
 
