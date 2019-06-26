@@ -113,18 +113,18 @@ S = combi_similarities;
 clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 
 %%
-% load('b_agg_dummy_pop.mat')
-% beta_0 = b
-beta_0 = [-7.7250    0.3302    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
+load('b_agg_dummy_pop3.mat')
+beta_0 = b
+% beta_0 = [-7.7250    0.3302    0.0686   0.01    0.0341    2.1842   0.7598]
 clearvars b
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_x6_pop_y_noBP(X, trend_hat, pop, dummy_agg_SI, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_x6_pop_y_noBP_rmSI_addPOP(X, trend_hat, pop, dummy_agg_SI, None0s_X_N, S, y, beta_0);
 
-save('b_agg_dummy_pop3_full.mat','b') ;
-save('standard_error_agg_dummy_pop3_full.mat','standard_error') ;
-save('t_stat_agg_dummy_pop3_full.mat','t_stat') ;
-save('exit_flag_agg_dummy_pop3_full.mat','exit_flag') ;
-save('hessian_pop3_full.mat','hessian') ;
+save('b_agg_dummy_pop3.mat','b') ;
+save('standard_error_agg_dummy_pop3.mat','standard_error') ;
+save('t_stat_agg_dummy_pop3.mat','t_stat') ;
+save('exit_flag_agg_dummy_pop3.mat','exit_flag') ;
+save('hessian_pop3.mat','hessian') ;
 
 display(b)
 % display(standard_error)
