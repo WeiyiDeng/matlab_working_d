@@ -1,5 +1,5 @@
 % function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_p(X, y, dummy_X, beta_0)
-function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_paper2_innov_IiIk(X, trend_hat, pop, dummy_agg_SI, dummy_agg_SI_innov, None0s_X_N, S, y, beta_0)
+function [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_paper2_innov_IiIk5_2(X, trend_hat, pop, dummy_agg_SI, mat_sparse_8088, m_innov, f_innov, Im_17617085, Ik_17617085, cosine_similarity_scores, None0s_X_N, S, y, beta_0)
 global I J dummies se T
 
 IVs = X;
@@ -13,7 +13,7 @@ beta0 = beta_0;
 options = optimset('Display','iter','LargeScale','off','GradObj','off','Hessian','off','TolFun',1e-6, 'TolX',1e-14, 'MaxIter',1e4, 'MaxFunEvals', 1e6, 'PlotFcns',@optimplotfirstorderopt);     % , 'HessUpdate', 'dfp');  % ,'OutputFcn', @showJ_history);   %, 'FinDiffType', 'central');
 
 % [b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_i2,beta0,options,IVs,choice_dv, innov_X, explor_X, week_IV, innov_WD_multip, explor_WD_multip);
-[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_paper2_try_innov,beta0,options,IVs, trend_hat, pop, dummy_agg_SI, dummy_agg_SI_innov, None0s_X_N, S, choice_dv);
+[b, fval,exitflag,output,grad,hessian] = fminunc(@band_bi_ll_paper2_innov_IiIk5_2,beta0,options,IVs, trend_hat, pop, dummy_agg_SI, mat_sparse_8088, m_innov, f_innov, Im_17617085, Ik_17617085, cosine_similarity_scores, None0s_X_N, S, choice_dv);
 
 % disp(['constant ' num2str(b(1)) '']);
 % disp(['coefficients ' num2str(b(2:end)) '']);

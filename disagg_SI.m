@@ -26,9 +26,12 @@ end
 
 innov_diff = innov_m-innov_f;            % abs?
 
-mat_export_innov = [mat_export innov_diff];
+% mat_export_innov = [mat_export innov_diff];
 
-csvwrite('mat_export_innov.csv',mat_export_innov);
+mat_export_innov_mf = [mat_export innov_m innov_f];
+
+% csvwrite('mat_export_innov.csv',mat_export_innov);
+csvwrite('mat_export_innov_mf.csv',mat_export_innov_mf);
 
 %% remove duplicate double quotes in emEditor
 dummy_innov_mat = csvread('dummy_SI_innov_mat.csv');
