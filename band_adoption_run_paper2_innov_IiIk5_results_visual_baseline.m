@@ -1,9 +1,9 @@
 clc
 clear
 
-date_=clock;
-resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
-diary(resultsfilename);
+% date_=clock;
+% resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
+% diary(resultsfilename);
 
 mfilename
 p = mfilename('fullpath')
@@ -175,7 +175,8 @@ Ik_percent = m_innov_percent./100;
 val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(9));
 X_N = sparse(None0s_X_N(:,1),None0s_X_N(:,2),val_pdf,17617085,6222);
 IV_N_S = X_N*S.^exp(b(10));
-N_percent = quantile(IV_N_S,[0.33 0.97 0.99])
+% N_percent = quantile(IV_N_S,[0.33 0.97 0.99])
+% N_percent = 0;
 % N_percent = mean(IV_N_S)
 
 % Ik_percent = Ik_percent*10;
@@ -184,13 +185,22 @@ Aijkt = Aijkt*10;
 
 % Sik_power = Sik.^exp(b(11)/1000);
 Sik_power = Sik;
-SI_percent = quantile(Aijkt*Sik_power,[0.33 0.8 0.99])
+% SI_percent = quantile(Aijkt*Sik_power,[0.33 0.8 0.99])
+% SI_percent = 0;
 % SI_percent = mean(Aijkt*Sik_power);
 
 const = b(1);
 b_basic = b(2:8)';
 
-ind = 3
+temp = Aijkt*Sik_power;
+v1 = IV_N_S(find(IV_N_S));
+v2 = temp(find(temp));
+% N_percent = quantile(v1,[0.33 0.66 0.99]);
+% SI_percent = quantile(v2,[0.33 0.66 0.99]);
+N_percent = quantile(v1,0.5);                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SI_percent = quantile(v2,0.5);
+
+ind = 1
 bar = length(f_innov_percent);
 prob = zeros(bar,bar);
 for m = 1:bar
@@ -199,6 +209,7 @@ for m = 1:bar
         ind_k = k;
         % FV = [Im_percent(ind)    Ik_percent(ind)     SI_percent(ind)    SI_percent(ind)*m_innov_percent(ind)    SI_percent(ind)*f_innov_percent(ind)    SI_percent(ind)*m_innov_percent(ind)*f_innov_percent(ind)     N_percent(ind)]*b_basic;
         FV = [Im_percent(ind_m)    Ik_percent(ind_k)     SI_percent(ind)    SI_percent(ind)*m_innov_percent(ind_m)    SI_percent(ind)*f_innov_percent(ind_k)    SI_percent(ind)*m_innov_percent(ind_m)*f_innov_percent(ind_k)     N_percent(ind)]*b_basic;
+%         FV = [Im_percent(ind_m)    Ik_percent(ind_k)     0    0    0    0     N_percent(ind)]*b_basic;
         exp_util = exp(-(const+FV));         % this is now the utility of the external good
         prob(m,k)=1./(1+exp_util)                % this is still the probability of choosing the product
     end
@@ -241,7 +252,7 @@ zlabel('P')
 %     band_age.*week_IV  topics_count.*week_IV   band_age.*topics_count...
 %     band_age.*topics_count.*week_IV    IV_N_S]*b_basic;          % with both trend and BP as controls
 % FV = [trend_hat  week_IV  week_IV.^2   pop   week_IV.*pop      week_IV.^2.*pop     week_IV_innov    IV_N_S]*b_basic;          % with both trend and BP as controls
-FV = [Im_17617085    Ik_17617085     Aijkt*Sik_power    Aijkt*(m_innov.*Sik_power)    Aijkt*(f_innov.*Sik_power)    Aijkt*(f_innov.*m_innov.*Sik_power)     IV_N_S]*b_basic;
+% FV = [Im_17617085    Ik_17617085     Aijkt*Sik_power    Aijkt*(m_innov.*Sik_power)    Aijkt*(f_innov.*Sik_power)    Aijkt*(f_innov.*m_innov.*Sik_power)     IV_N_S]*b_basic;
 
 % week_IV.^2*pop
 
@@ -255,7 +266,7 @@ FV = [Im_17617085    Ik_17617085     Aijkt*Sik_power    Aijkt*(m_innov.*Sik_powe
 % LL = -sum(log(p));                                                % 1*1
 
 %%
-clearvars b
+% clearvars b
 
 % [b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_paper2_innov_IiIk5(X, trend_hat, pop, dummy_agg_SI, mat_sparse_8088, m_innov, f_innov, Im_17617085, Ik_17617085, cosine_similarity_scores, None0s_X_N, S, y, beta_0);
 % 
@@ -271,9 +282,22 @@ clearvars b
 % display(grad)
 % display(output)
 
-diary off
+% diary off
 
-
+x1 = prob(1,:);
+x2 = prob(2,:);
+x3 = prob(3,:);
+y = [0.16	0.5	   0.84]
+plot(y,x1,'-.o','color','k')
+hold on
+plot(y,x2,'--o','color','k')
+hold on
+plot(y,x3,':o','color','k')
+hold off
+xticks([0.16 0.5 0.84])
+legend('Influencee Innovativeness percentile 16%','Influencee Innovativeness percentile 50%','Influencee Innovativeness percentile 84%','Location','northwest')
+ylabel('band sampling probability') 
+xlabel('Influencer Innovativeness percentile (16%, 50%, 84%)')
 
 
 
