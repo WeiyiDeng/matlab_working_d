@@ -29,7 +29,7 @@ matp = matp(index,:);
 % save('indx.mat','indx') ;
 % save('dummy_mat.mat','dummy_mat') ;
 load('indx.mat');
-load('dummy_mat.mat');
+load('dummy_mat_fix.mat');
 
 matp = matp(indx,:);
 
@@ -115,9 +115,9 @@ matp_mjt = matp(:,[1 3 4]);
 clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 
 %%
-% load('b_agg_dummy_pop.mat')
+load('b_agg_dummy_pop3_full_fix.mat')
 % beta_0 = b
-b = [-8.0906    0.3280    0.2663   -0.0070    0.8637    -0.1342    0.0048   0.0391    2.1956   0.7717]
+% b = [-8.0906    0.3280    0.2663   -0.0070    0.8637    -0.1342    0.0048   0.0391    2.1956   0.7717]
 % clearvars b
 
 b_basic = b(2:8)';
@@ -138,8 +138,10 @@ FV = [trend_hat  week_IV  week_IV.^2   pop   week_IV.*pop      week_IV.^2.*pop  
 prep_SI_pop_paper3 = [week_IV.*b(3)  week_IV.^2.*b(4)   pop.*b(5)   week_IV.*pop.*b(6)      week_IV.^2.*pop.*b(7)];
 
 prep_paper3 = [matp_mjt prep_SI_pop_paper3];
-save('prep_paper3.mat','prep_paper3') 
-csvwrite('prep_paper3.csv',prep_paper3)
+prep_paper3_fix = [matp_mjt prep_SI_pop_paper3 DV_paper1]; 
+% save('prep_paper3.mat','prep_paper3') 
+% csvwrite('prep_paper3.csv',prep_paper3)
+% csvwrite('prep_paper3_fix.csv',prep_paper3_fix)
 
 %%
 
@@ -172,7 +174,7 @@ for i = 1:size(m_t_agg,1)
         paper3_DV(i) = m_t_usage(ind,3);
     end
 end
-    
+
 sum(paper3_DV>0)
 % corr(m_t_agg,paper3_DV)
 inds = paper3_DV>0;
@@ -193,8 +195,8 @@ b = inv(X'*X)*X'*y
 Var = 1/(size(X,1)-size(X,2)+1)*sum((y-X*b).^2)*inv(X'*X)
 t = b./sqrt(diag(Var))
 
-csvwrite('paper3_X.csv',X);
-csvwrite('paper3_y.csv',y);
+% csvwrite('paper3_X.csv',X);
+% csvwrite('paper3_y.csv',y);
 
 X = [ones(size(m_t_agg,1),1) m_t_agg(:,[3 5])];
 y = paper3_DV;
@@ -231,6 +233,78 @@ m_end = [m_end; i];
     
 sum(m_end - m_start >2)
 
+member_fix = prep_paper3_fix(1,1);
+m_end_fix = [];
+m_start_fix = 1;
+m_list_fix = [];
+for i = 2:size(prep_paper3_fix,1)
+    prev_m = member_fix;
+    member_fix = prep_paper3_fix(i,1);
+    if prev_m ~=member_fix
+        m_end_fix = [m_end_fix; i-1];
+        m_start_fix = [m_start_fix; i];
+        m_list_fix = [m_list_fix; prev_m];
+    else
+    end
+end
+m_list_fix = [m_list_fix; member_fix];    
+m_end_fix = [m_end_fix; i];    
+    
+sum(m_end_fix - m_start_fix >2)
+
+%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% prep_paper3_fix_cut = [];
+% prep_paper3_fix_paper1_DV_cut = [];
+% for i = 1:length(m_list_fix)
+%     prep_paper3_fix_paper1_DV_cut = [prep_paper3_fix_paper1_DV_cut; prep_paper3_fix(m_start_fix(i)+1:m_end_fix(i),9)];
+%     prep_paper3_fix_cut = [prep_paper3_fix_cut; prep_paper3_fix(m_start_fix(i):m_end_fix(i)-1,1:8)];
+% end
+% 
+% prep_paper3_fix_move = [prep_paper3_fix_cut  prep_paper3_fix_paper1_DV_cut];
+% % csvwrite('prep_paper3_fix_move.csv',prep_paper3_fix_move)
+
+%% try
+prep_paper3_fix_cut = [];
+prep_paper3_fix_paper1_DV_cut = [];
+prep_paper3_fix_paper1_DV_cut2 = [];
+prep_paper3_fix_paper1_DV_cut3 = [];
+prep_paper3_fix_paper1_DV_cut4 = [];
+prep_paper3_fix_paper1_DV_cut5 = [];
+prep_paper3_fix_paper1_DV_cut6 = [];
+prep_paper3_fix_paper1_DV_cut7 = [];
+prep_paper3_fix_paper1_DV_cut8 = [];
+prep_paper3_fix_paper1_DV_cut9 = [];
+prep_paper3_fix_paper1_DV_cut10 = [];
+for i = 1:length(m_list_fix)
+    prep_paper3_fix_paper1_DV_cut = [prep_paper3_fix_paper1_DV_cut; prep_paper3_fix(m_start_fix(i)+1:m_end_fix(i)-9,9)];
+    prep_paper3_fix_paper1_DV_cut2 = [prep_paper3_fix_paper1_DV_cut2; prep_paper3_fix(m_start_fix(i)+2:m_end_fix(i)-8,9)];
+    prep_paper3_fix_paper1_DV_cut3 = [prep_paper3_fix_paper1_DV_cut3; prep_paper3_fix(m_start_fix(i)+3:m_end_fix(i)-7,9)];
+    prep_paper3_fix_paper1_DV_cut4 = [prep_paper3_fix_paper1_DV_cut4; prep_paper3_fix(m_start_fix(i)+4:m_end_fix(i)-6,9)];
+    prep_paper3_fix_paper1_DV_cut5 = [prep_paper3_fix_paper1_DV_cut5; prep_paper3_fix(m_start_fix(i)+5:m_end_fix(i)-5,9)];
+    prep_paper3_fix_paper1_DV_cut6 = [prep_paper3_fix_paper1_DV_cut6; prep_paper3_fix(m_start_fix(i)+6:m_end_fix(i)-4,9)];
+    prep_paper3_fix_paper1_DV_cut7 = [prep_paper3_fix_paper1_DV_cut7; prep_paper3_fix(m_start_fix(i)+7:m_end_fix(i)-3,9)];
+    prep_paper3_fix_paper1_DV_cut8 = [prep_paper3_fix_paper1_DV_cut8; prep_paper3_fix(m_start_fix(i)+8:m_end_fix(i)-2,9)];
+    prep_paper3_fix_paper1_DV_cut9 = [prep_paper3_fix_paper1_DV_cut9; prep_paper3_fix(m_start_fix(i)+9:m_end_fix(i)-1,9)];
+    prep_paper3_fix_paper1_DV_cut10 = [prep_paper3_fix_paper1_DV_cut10; prep_paper3_fix(m_start_fix(i)+10:m_end_fix(i),9)];
+    prep_paper3_fix_cut = [prep_paper3_fix_cut; prep_paper3_fix(m_start_fix(i):m_end_fix(i)-10,1:8)];
+end
+
+prep_paper3_fix_move_agg10 = [(1:length(prep_paper3_fix_paper1_DV_cut))'  prep_paper3_fix_cut];
+prep_paper3_fix_paper1_DV_cut10 = [(1:length(prep_paper3_fix_paper1_DV_cut))'  prep_paper3_fix_paper1_DV_cut  prep_paper3_fix_paper1_DV_cut2...
+    prep_paper3_fix_paper1_DV_cut3  prep_paper3_fix_paper1_DV_cut4  prep_paper3_fix_paper1_DV_cut5...  
+    prep_paper3_fix_paper1_DV_cut6  prep_paper3_fix_paper1_DV_cut7...
+    prep_paper3_fix_paper1_DV_cut8  prep_paper3_fix_paper1_DV_cut9  prep_paper3_fix_paper1_DV_cut10];
+
+% clearvars -EXCEPT prep_paper3_fix_move_agg10 prep_paper3_fix_paper1_DV_cut10
+% 
+% csvwrite('prep_paper3_fix_move_agg10.csv',prep_paper3_fix_move_agg10)
+% csvwrite('prep_paper3_fix_paper1_DV_cut10.csv',prep_paper3_fix_paper1_DV_cut10)
+% 
+% csvwrite('prep_paper3_fix_move_agg10_test.csv',prep_paper3_fix_move_agg10(1:100,:))
+% csvwrite('prep_paper3_fix_paper1_DV_cut10_test.csv',prep_paper3_fix_paper1_DV_cut10(1:100,:))
+
+%%
 % SI_lag_2 = [];
 % pop_lag_2 = [];
 % DV_lag_1 = [];
@@ -247,19 +321,25 @@ pop_lag_2cut = [];
 DV_lag_1cut = [];
 DV_cut = [];
 paper1_DV_lag1cut = [];
+m_cut = [];
+t_cut = [];
 for i = 1:length(m_list)
     SI_lag_2cut = [SI_lag_2cut; mt_merge(m_start(i):(m_end(i)-2),3)];
     pop_lag_2cut = [pop_lag_2cut; mt_merge(m_start(i):(m_end(i)-2),5)];
     DV_lag_1cut = [DV_lag_1cut; mt_merge((m_start(i)+1):(m_end(i)-1),8)];
     DV_cut = [DV_cut; mt_merge((m_start(i)+2):m_end(i),8)];
+    m_cut = [m_cut; mt_merge((m_start(i)+2):m_end(i),1)];
+    t_cut = [t_cut; mt_merge((m_start(i)+2):m_end(i),2)];
     paper1_DV_lag1cut = [paper1_DV_lag1cut; paper1_DV(m_start(i)+1:m_end(i)-1)];
 end
 
 paper3_prep = [SI_lag_2cut pop_lag_2cut DV_lag_1cut DV_cut paper1_DV_lag1cut];
 paper3_met_lags = [SI_lag_2cut.*paper1_DV_lag1cut pop_lag_2cut.*paper1_DV_lag1cut DV_lag_1cut DV_cut];
+paper3_lags_check = [m_cut  t_cut  SI_lag_2cut  pop_lag_2cut   DV_lag_1cut   DV_cut  paper1_DV_lag1cut];
 % paper3_met_lags = [SI_lag_2cut pop_lag_2cut DV_lag_1cut DV_cut];
 
-csvwrite('paper3_met_lags.csv',paper3_met_lags);
+% csvwrite('paper3_met_lags.csv',paper3_met_lags);
+paper3_met_lags = csvread('paper3_met_lags.csv');
 
 corr(paper3_met_lags)
 
@@ -269,6 +349,119 @@ b = inv(X'*X)*X'*y
 Var = 1/(size(X,1)-size(X,2)+1)*sum((y-X*b).^2)*inv(X'*X)
 t = b./sqrt(diag(Var))
 
-R_squared = corr(DV_cut, X*b)^2
+R_squared = corr(paper3_met_lags(:,end), X*b)^2
 
+% X = paper3_met_lags(:,1:3);
+% y = paper3_met_lags(:,4);
 % mdl = fitlm(X,y)
+
+%%
+mt_fix_agg = csvread('prep_paper3_fix_mat.csv');
+% mt_fix_mv_agg = csvread('prep_paper3_fix_move_mat.csv');
+
+max(mt_fix_agg(:,2))
+% max(mt_fix_mv_agg(:,2))
+
+paper3_DV_fix = zeros(size(mt_fix_agg,1),1);
+for i = 1:size(mt_fix_agg,1)
+    ind = find(m_t_usage(:,1)==mt_fix_agg(i,1) & m_t_usage(:,2)==mt_fix_agg(i,2));
+    if length(ind)>1
+        disp(i)
+    elseif isempty(ind)
+        paper3_DV_fix(i) = 0;
+    else
+        paper3_DV_fix(i) = m_t_usage(ind,3);
+    end
+end
+
+mt_merge_fix = [mt_fix_agg paper3_DV_fix];
+
+% paper3_DV_mv_fix = zeros(size(mt_fix_mv_agg,1),1);
+% for i = 1:size(mt_fix_mv_agg,1)
+%     ind = find(m_t_usage(:,1)==mt_fix_mv_agg(i,1) & m_t_usage(:,2)==mt_fix_mv_agg(i,2));
+%     if length(ind)>1
+%         disp(i)
+%     elseif isempty(ind)
+%         paper3_DV_mv_fix(i) = 0;
+%     else
+%         paper3_DV_mv_fix(i) = m_t_usage(ind,3);
+%     end
+% end
+% 
+% mt_merge_mv_fix = [mt_fix_mv_agg paper3_DV_mv_fix];
+% mt_merge_fix = mt_merge_mv_fix;
+
+member_fix = mt_merge_fix(1,1);
+m_end_fix = [];
+m_start_fix = 1;
+m_list_fix = [];
+for i = 2:size(mt_merge_fix,1)
+    prev_m = member_fix;
+    member_fix = mt_merge_fix(i,1);
+    if prev_m ~=member_fix
+        m_end_fix = [m_end_fix; i-1];
+        m_start_fix = [m_start_fix; i];
+        m_list_fix = [m_list_fix; prev_m];
+    else
+    end
+end
+m_list_fix = [m_list_fix; member_fix];    
+m_end_fix = [m_end_fix; i];    
+    
+sum(m_end_fix - m_start_fix >2)
+
+SI_lag_2cut_fix = [];
+pop_lag_2cut_fix = [];
+DV_lag_1cut_fix = [];
+DV_cut_fix = [];
+m_cut_fix = [];
+t_cut_fix = [];
+for i = 1:length(m_list_fix)
+    SI_lag_2cut_fix = [SI_lag_2cut_fix; mt_merge_fix(m_start_fix(i):(m_end_fix(i)-2),3)];
+    pop_lag_2cut_fix = [pop_lag_2cut_fix; mt_merge_fix(m_start_fix(i):(m_end_fix(i)-2),5)];
+    DV_lag_1cut_fix = [DV_lag_1cut_fix; mt_merge_fix((m_start_fix(i)+1):(m_end_fix(i)-1),8)];
+    DV_cut_fix = [DV_cut_fix; mt_merge_fix((m_start_fix(i)+2):m_end_fix(i),8)];
+    m_cut_fix = [m_cut_fix;mt_merge_fix((m_start_fix(i)+2):m_end_fix(i),1)];
+    t_cut_fix = [t_cut_fix; mt_merge_fix((m_start_fix(i)+2):m_end_fix(i),2)];
+end
+
+paper3_prep_fix = [SI_lag_2cut_fix pop_lag_2cut_fix DV_lag_1cut_fix DV_cut_fix];
+paper3_met_lags_fix = [SI_lag_2cut_fix pop_lag_2cut_fix DV_lag_1cut_fix DV_cut_fix];
+paper3_lags_check_fix = [m_cut_fix  t_cut_fix  SI_lag_2cut_fix  pop_lag_2cut_fix   DV_lag_1cut_fix   DV_cut_fix];
+
+% csvwrite('paper3_met_lags_fix.csv',paper3_met_lags_fix);
+% csvwrite('paper3_met_lags_mv_fix.csv',paper3_met_lags_fix);
+
+paper3_met_lags_fix = csvread('paper3_met_lags_fix.csv');
+% paper3_met_lags_fix = csvread('paper3_met_lags_mv_fix.csv');
+
+X = [ones(size(paper3_met_lags_fix,1),1) paper3_met_lags_fix(:,1:3)];
+y = paper3_met_lags_fix(:,4);
+
+b = inv(X'*X)*X'*y
+Var = 1/(size(X,1)-size(X,2)+1)*sum((y-X*b).^2)*inv(X'*X)
+t = b./sqrt(diag(Var))
+
+R_squared = corr(y, X*b)^2
+
+% check_mv_fix = [m_cut_fix t_cut_fix paper3_met_lags_fix];
+
+%%
+mt_fix_mv_agg2 = csvread('prep_paper3_fix_move_mat_2.csv');
+paper1_NA = mt_fix_mv_agg2(:,8);
+paper1_NA = paper1_NA';
+
+paper1_NA_store = [];
+for i = 1:length(m_list_fix)
+    paper1_NA_store = [paper1_NA_store; paper1_NA((m_start_fix(i)+1):(m_end_fix(i)-1))];
+end
+
+X = [ones(size(paper3_met_lags_fix,1),1) paper3_met_lags_fix(:,1:3) paper1_NA_store];
+y = paper3_met_lags_fix(:,4);
+
+b = inv(X'*X)*X'*y
+Var = 1/(size(X,1)-size(X,2)+1)*sum((y-X*b).^2)*inv(X'*X)
+t = b./sqrt(diag(Var))
+
+R_squared = corr(y, X*b)^2
+

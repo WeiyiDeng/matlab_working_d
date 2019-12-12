@@ -1,43 +1,66 @@
 clc
 clear
 
+date_=clock;
+resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
+diary(resultsfilename);
+
+mfilename
+p = mfilename('fullpath')
+
 load('matp_friend_reverse.mat');
 predict_trend = csvread('predict_trend_log4061_lenient.csv',1,0);
 
 index = find(ismember(matp(:,3),predict_trend(:,1)));
-
 matp = matp(index,:);
 
-% load('dummies40.mat');
-% % size(dummies40)
-% dummies40 = dummies40(index,:);
-% dummies_prep = dummies40.*repmat(matp(:,8),1,4);
-% clearvars dummies40
-% dummy_prep = dummies_prep(:,1) | dummies_prep(:,2);         % 1-20
-% 
-% % mat_export = [matp(:,1:6) dummy_prep];
-% % csvwrite('mat_export.csv',mat_export)
-% 
 % prep_matp = matp(:,[1 3 4]);
 % 
-% % remove duplicte commas in EMeditor
-% dummy_mat = csvread('dummy_SI_mat.csv');
-% dum_mat_prep = dummy_mat(:,1:3);
+% dummy_innov_mat = csvread('dummy_SI_innov_mat.csv');
+% temp = dummy_innov_mat(end,:);
+% dummy_innov_mat = [temp; dummy_innov_mat];
+% dummy_innov_mat(end,:) = [];
+% dum_mat_innov_prep = dummy_innov_mat(:,1:3);
 % 
-% [~,indx]=ismember(dum_mat_prep,prep_matp,'rows');
+% [~,indx]=ismember(dum_mat_innov_prep,prep_matp,'rows');
 % 
-% save('indx.mat','indx') ;
-% save('dummy_mat.mat','dummy_mat') ;
+% save('indx_innov.mat','indx') ;
+% save('dummy_innov_mat.mat','dummy_innov_mat') ;
+
+%
 load('indx.mat');
-load('dummy_mat.mat');
+% load('dummy_mat.mat');
+load('dummy_mat_fix.mat');
 
 matp = matp(indx,:);
 
 X = dummy_mat(:, 5);
 y = dummy_mat(:,4);
-dummy_agg_SI = dummy_mat(:, 6);
+dummy_agg_SI = dummy_mat(:,6);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+load('mat_sparse_8088_fix.mat');
+load('m_innov.mat');
+load('f_innov.mat');
+load('cosine_similarity_scores_friends8088_listen1.mat');
+
+load('Im_17617085.mat');
+load('Ik_17617085.mat');
+
+% X = dummy_innov_mat(:, 5);
+% y = dummy_innov_mat(:,4);
+% dummy_agg_SI = dummy_innov_mat(:, 6);
+% dummy_agg_SI_innov = dummy_innov_mat(:, 8);
+
+% load('PI_member.mat');
+
+% temp_memberPI = sparse(1,PI_member(:,1),PI_member(:,2),1,8320);
+
+% memberPI_vec = zeros(size(matp(:,1),1),1);
+% for i = 1:length(memberPI_vec)
+%     memberPI_vec(i) = temp_memberPI(matp(i,1));
+% end
+
+%%
 band_pop = csvread('POP_counts_year_final.csv',1,0);
 band_pop(:,2) = band_pop(:,2)-104;
 band_pop_mat = sparse(band_pop(:,1),band_pop(:,2),band_pop(:,4),max(band_pop(:,1)),max(band_pop(:,2)));
@@ -113,24 +136,29 @@ S = combi_similarities;
 clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 
 %%
-load('b_agg_dummy_pop3_full.mat')
-beta_0 = b
-% beta_0 = [-7.7250    0.3302    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
+% load('b_agg_dummy_pop.mat')
+% beta_0 = b
+% beta_0 = [-7.7250    0    0    0.01    0.01    0.01    0.01    0    2.1842   0.7598   0]
+beta_0 = [-7.7250    0    0    0.01    0.01    0.01    0.01    0    2.1842   0.7598]
+% beta_0 = [-7.7250    0.01    0.01    0.01    0    0    2.1842   0.7598]
 clearvars b
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_x6_pop_y_noBP(X, trend_hat, pop, dummy_agg_SI, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_paper2_innov_IiIk4(X, trend_hat, pop, dummy_agg_SI, mat_sparse_8088, m_innov, f_innov, Im_17617085, Ik_17617085, cosine_similarity_scores, None0s_X_N, S, y, beta_0);
 
-% save('b_agg_dummy_pop3_full.mat','b') ;
-% save('standard_error_agg_dummy_pop3_full.mat','standard_error') ;
-% save('t_stat_agg_dummy_pop3_full.mat','t_stat') ;
-% save('exit_flag_agg_dummy_pop3_full.mat','exit_flag') ;
-% save('hessian_pop3_full.mat','hessian') ;
+save('b_peper2_fix.mat','b') ;
+save('standard_error_peper2_fix.mat','standard_error') ;
+save('t_stat_peper2_fix.mat','t_stat') ;
+save('exit_flag_peper2_fix.mat','exit_flag') ;
+save('hessian_peper2_fix.mat','hessian') ;
 
 display(b)
 % display(standard_error)
 display(t_stat)
 display(grad)
 display(output)
+
+diary off
+
 
 
 

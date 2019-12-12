@@ -1,6 +1,12 @@
 clc
 clear
 
+date_=clock;
+resultsfilename=['Results/r_Results_' num2str(date_(1)) '_' num2str(date_(2)) '_' num2str(date_(3)) '-' num2str(date_(4))  '_' num2str(date_(5)) '.txt'];
+diary(resultsfilename);
+
+mfilename('fullpath')                           % print filename of currently running script
+
 load('matp_friend_reverse.mat');
 predict_trend = csvread('predict_trend_log4061_lenient.csv',1,0);
 
@@ -113,18 +119,33 @@ S = combi_similarities;
 clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 
 %%
-load('b_agg_dummy_pop3_full.mat')
-beta_0 = b
-% beta_0 = [-7.7250    0.3302    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
+% load('b_agg_dummy_pop.mat')
+% beta_0 = b
+beta_0 = [-7.7250    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.01    0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.0341    2.1842   0.7598]
+
 clearvars b
 
-[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_x6_pop_y_noBP(X, trend_hat, pop, dummy_agg_SI, None0s_X_N, S, y, beta_0);
+[b, hessian, grad, standard_error, covariance_matrix, t_stat, exit_flag, output] = band_runbi_ll_paper3_stage1(X, trend_hat, pop, dummy_agg_SI, None0s_X_N, S, y, beta_0);
 
-% save('b_agg_dummy_pop3_full.mat','b') ;
-% save('standard_error_agg_dummy_pop3_full.mat','standard_error') ;
-% save('t_stat_agg_dummy_pop3_full.mat','t_stat') ;
-% save('exit_flag_agg_dummy_pop3_full.mat','exit_flag') ;
-% save('hessian_pop3_full.mat','hessian') ;
+% save('b_paper3_stage1_noGT.mat','b') ;
+% save('standard_error_paper3_stage1_noGT.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT.mat','hessian') ;
+
+% save('b_paper3_stage1_noGT_noInteract.mat','b') ;
+% save('standard_error_paper3_stage1_noGT_noInteract.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT_noInteract.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT_noInteract.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT_noInteract.mat','hessian') ;
+
+% save('b_paper3_stage1_noGT_noInteract_noQrad.mat','b') ;
+% save('standard_error_paper3_stage1_noGT_noInteract_noQrad.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT_noInteract_noQrad.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT_noInteract_noQrad.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT_noInteract_noQrad.mat','hessian') ;
 
 display(b)
 % display(standard_error)
@@ -132,7 +153,6 @@ display(t_stat)
 display(grad)
 display(output)
 
-
-
+diary off 
 
 

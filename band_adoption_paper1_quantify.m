@@ -22,8 +22,16 @@ end
 
 plot(test,store)
 
+load('b_agg_dummy_pop3_full.mat')
+const = b(1);
+b_basic = b(2:8)';
 % FV = [mean(trend_hat)  mean(week_IV)+std(week_IV)  (mean(week_IV)+std(week_IV)).^2  mean(IV_N_S)]*b_basic;
 FV = [mean(trend_hat)  mean(week_IV)  mean(week_IV).^2   mean(pop)+100*std(pop)   mean(week_IV).*(mean(pop)+100*std(pop))      mean(week_IV).^2.*(mean(pop)+100*std(pop))    mean(IV_N_S)]*b_basic;
+% FV = [mean(trend_hat)  mean(week_IV)  mean(week_IV).^2   mean(pop)   mean(week_IV).*mean(pop)      mean(week_IV).^2.*mean(pop)    mean(IV_N_S)]*b_basic;
+% FV = [median(trend_hat)  median(week_IV)  median(week_IV).^2   median(pop)+1*std(pop)   median(week_IV).*(median(pop)+1*std(pop))      median(week_IV).^2.*(median(pop)+1*std(pop))    median(IV_N_S)]*b_basic;
+% FV = [median(trend_hat)  median(week_IV)  median(week_IV).^2   median(pop)+100*std(pop)   median(week_IV).*(median(pop)+100*std(pop))      median(week_IV).^2.*(median(pop)+100*std(pop))    median(IV_N_S)]*b_basic;
+% FV = [mean(trend_hat)  mean(week_IV)  mean(week_IV).^2   mean(pop)-100*std(pop)   0    0   mean(IV_N_S)]*b_basic;
+% FV = [mean(trend_hat)  mean(week_IV)  mean(week_IV).^2   mean(pop)   0      0    mean(IV_N_S)]*b_basic;
 exp_util = exp(-(const+FV));
 prob=1./(1+exp_util)
 
