@@ -84,14 +84,17 @@ end
 count_shared_week_differences_vec_FM = [];
 for i = 1:size(count_shared_week_differences_FM)
     temp = count_shared_week_differences_FM{i};
-    within_40_weeks = temp(abs(temp)<=40);
-    count_shared_week_differences_vec_FM = [count_shared_week_differences_vec_FM within_40_weeks];
+%     within_40_weeks = temp(abs(temp)<=40);
+    within_100_weeks = temp(abs(temp)<=100);
+%     count_shared_week_differences_vec_FM = [count_shared_week_differences_vec_FM within_40_weeks];
+    count_shared_week_differences_vec_FM = [count_shared_week_differences_vec_FM within_100_weeks];
 end
 figure
 hist(count_shared_week_differences_vec_FM)
 
-csvwrite('count_shared_week_differences_vec_FM.csv', full(count_shared_week_differences_vec_FM))   % plot 1
-csvwrite('count_shared_week_differences_vec_NM.csv', full(count_shared_week_differences_vec_NM))   % plot 3
+csvwrite('count_shared_week_differences_vec_FM100.csv', full(count_shared_week_differences_vec_FM))
+% csvwrite('count_shared_week_differences_vec_FM.csv', full(count_shared_week_differences_vec_FM))   % plot 1
+% csvwrite('count_shared_week_differences_vec_NM.csv', full(count_shared_week_differences_vec_NM))   % plot 3
 
 load('All_Cosine_user_uv_ind.mat')
 load('All_Cosine_similarity_scores.mat')

@@ -8,28 +8,42 @@ I = size(choice_dv,1);
 const = b(1);
 
 % FV = IVs*bs;
-b_basic = b(2:7)';
+% b_basic = b(2:7)';
 % b_basic = b(2:5)';
 % b_basic = b(2:4)';
+% b_basic = b(2:5)';
+% b_basic = b(2:4)';
+b_basic = b(2:3)';
 
 week_IV = dummy_agg_SI;
 
-val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(8));
+% val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(8));
 % val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(6));
 % val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(5));
+% val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(6));
+% val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(5));
+val_pdf = 100*normpdf(None0s_X_N(:,3),0,b(4));
 X_N = sparse(None0s_X_N(:,1),None0s_X_N(:,2),val_pdf,17617085,6222);
-IV_N_S = X_N*S.^exp(b(9));
+% IV_N_S = X_N*S.^exp(b(9));
 % IV_N_S = X_N*S.^exp(b(7));
 % IV_N_S = X_N*S.^exp(b(6));
+% IV_N_S = X_N*S.^exp(b(7));
+% IV_N_S = X_N*S.^exp(b(6));
+IV_N_S = X_N*S.^exp(b(5));
 
 pop = pop./1000;
 
 % FV = [IVs(:,1)  trend_hat  week_IV  band_age  topics_count...
 %     band_age.*week_IV  topics_count.*week_IV   band_age.*topics_count...
 %     band_age.*topics_count.*week_IV    IV_N_S]*b_basic;          % with both trend and BP as controls
-FV = [week_IV  week_IV.^2   pop   week_IV.*pop      week_IV.^2.*pop     IV_N_S]*b_basic;          % with both trend and BP as controls
+% FV = [week_IV  week_IV.^2   pop   week_IV.*pop      week_IV.^2.*pop     IV_N_S]*b_basic;          % with both trend and BP as controls
 % FV = [week_IV  week_IV.^2   pop     IV_N_S]*b_basic;
 % FV = [week_IV  pop     IV_N_S]*b_basic;
+% FV = [week_IV  pop   week_IV.*pop      IV_N_S]*b_basic;  
+% FV = [week_IV  pop   IV_N_S]*b_basic;  
+% FV = [week_IV  pop]*b_basic;  
+FV = [pop   IV_N_S]*b_basic;  
+
 
 % week_IV.^2*pop
 

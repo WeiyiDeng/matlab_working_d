@@ -121,9 +121,14 @@ clearvars N_prep_for_matp_jobs_organize combi_similarities matp
 %%
 % load('b_agg_dummy_pop.mat')
 % beta_0 = b
-beta_0 = [-7.7250    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.01    0.01    0.001   0.0341    2.1842   0.7598]
 % beta_0 = [-7.7250    0.0686   0.01    0.01    0.0341    2.1842   0.7598]
 % beta_0 = [-7.7250    0.0686   0.01    0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.01    0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.01    0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01    0.0341    2.1842   0.7598]
+% beta_0 = [-7.7250    0.0686   0.01]
+beta_0 = [-7.7250    0.01    0.0341    2.1842   0.7598]
 
 clearvars b
 
@@ -147,8 +152,29 @@ clearvars b
 % save('exit_flag_paper3_stage1_noGT_noInteract_noQrad.mat','exit_flag') ;
 % save('hessian_paper3_stage1_noGT_noInteract_noQrad.mat','hessian') ;
 
+% save('b_paper3_stage1_noGT_noQrad.mat','b') ;
+% save('standard_error_paper3_stage1_noGT_noQrad.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT_noQrad.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT_noQrad.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT_noQrad.mat','hessian') ;
+
+% save('b_paper3_stage1_noGT_noQrad_noN.mat','b') ;
+% save('standard_error_paper3_stage1_noGT_noQrad_noN.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT_noQrad_noN.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT_noQrad_noN.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT_noQrad_noN.mat','hessian') ;
+
+% save('b_paper3_stage1_noGT_noQrad_noSI.mat','b') ;
+% save('standard_error_paper3_stage1_noGT_noQrad_noSI.mat','standard_error') ;
+% save('t_stat_paper3_stage1_noGT_noQrad_noSI.mat','t_stat') ;
+% save('exit_flag_paper3_stage1_noGT_noQrad_noSI.mat','exit_flag') ;
+% save('hessian_paper3_stage1_noGT_noQrad_noSI.mat','hessian') ;
+
+load('b_paper3_stage1_noGT_noInteract_noQrad.mat')
+load('standard_error_paper3_stage1_noGT_noInteract_noQrad.mat')
+
 display(b)
-% display(standard_error)
+display(standard_error)
 display(t_stat)
 display(grad)
 display(output)
