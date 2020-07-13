@@ -153,10 +153,10 @@ m_innov = m_innov*10;
 % m_innov_percent = quantile(m_innov,[.33 .50 .66])
 % f_innov_percent = quantile(f_innov,0.1:0.1:1)
 % m_innov_percent = quantile(m_innov,0.1:0.1:1)
-% f_innov_percent = quantile(f_innov,[.33 .66 .99])
-% m_innov_percent = quantile(m_innov,[.33 .66 .99])
-f_innov_percent = quantile(f_innov,[.16 .50 .84])
-m_innov_percent = quantile(m_innov,[.16 .50 .84])
+f_innov_percent = quantile(f_innov,[.33 .66 .99])
+m_innov_percent = quantile(m_innov,[.33 .66 .99])
+% f_innov_percent = quantile(f_innov,[.16 .50 .84])
+% m_innov_percent = quantile(m_innov,[.16 .50 .84])
 % f_innov_percent = quantile(f_innov,0.16:0.02:0.84)
 % m_innov_percent = quantile(m_innov,0.16:0.02:0.84)
 
@@ -203,12 +203,20 @@ SI_percent = quantile(v2,0.5);
 ind = 1
 bar = length(f_innov_percent);
 prob = zeros(bar,bar);
+% IIU = zeros(bar,1);
+% IIF = zeros(1,bar);
+% IIUF = zeros(bar,bar);
+IIIUF = zeros(bar,bar);
 for m = 1:bar
     ind_m = m;
     for k = 1:bar
         ind_k = k;
         % FV = [Im_percent(ind)    Ik_percent(ind)     SI_percent(ind)    SI_percent(ind)*m_innov_percent(ind)    SI_percent(ind)*f_innov_percent(ind)    SI_percent(ind)*m_innov_percent(ind)*f_innov_percent(ind)     N_percent(ind)]*b_basic;
         FV = [Im_percent(ind_m)    Ik_percent(ind_k)     SI_percent(ind)    SI_percent(ind)*m_innov_percent(ind_m)    SI_percent(ind)*f_innov_percent(ind_k)    SI_percent(ind)*m_innov_percent(ind_m)*f_innov_percent(ind_k)     N_percent(ind)]*b_basic;
+%         IIU(m) = SI_percent(ind)*m_innov_percent(ind_m)*b_basic(4);
+%         IIF(k) = SI_percent(ind)*f_innov_percent(ind_k)*b_basic(5);
+%         IIUF(m,k) = SI_percent(ind)*m_innov_percent(ind_m)*f_innov_percent(ind_k)*b_basic(6);
+        IIIUF(m,k) = [SI_percent(ind)*m_innov_percent(ind_m)    SI_percent(ind)*f_innov_percent(ind_k)    SI_percent(ind)*m_innov_percent(ind_m)*f_innov_percent(ind_k)]*b_basic(4:6);
 %         FV = [Im_percent(ind_m)    Ik_percent(ind_k)     0    0    0    0     N_percent(ind)]*b_basic;
         exp_util = exp(-(const+FV));         % this is now the utility of the external good
         prob(m,k)=1./(1+exp_util)                % this is still the probability of choosing the product
@@ -218,6 +226,7 @@ surf(prob)
 xlabel('innov F (sender)')
 ylabel('innov M (receiver)')
 zlabel('P')
+disp(IIIUF)
 %%
 % const = b(1);
 

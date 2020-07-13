@@ -271,7 +271,7 @@ sum_paper1_DV_dummy_ASI_APOP = sum_paper1_DV_dummy - m_t_agg(:,3)-m_t_agg(:,4);
 X = [m_t_agg(:,3) m_t_agg(:,4) paper3_DV_lag m_t_agg(:,3).*paper3_DV_lag m_t_agg(:,4).*paper3_DV_lag];
 % X = [m_t_agg(:,3) m_t_agg(:,4) paper3_DV_lag sum_paper1_DV_dummy m_t_agg(:,3).*sum_paper1_DV_dummy m_t_agg(:,4).*sum_paper1_DV_dummy];
 
-X_std = (X-mean(X))./std(X);
+X_std = (X-repmat(mean(X),size(X,1),1))./repmat(std(X),size(X,1),1);
 y = paper3_DV;
 
 corr(X)
@@ -298,43 +298,43 @@ RMSE3 = mean(sum(([ones(size(paper3_DV_lag)) X_std]*modelresults_std-paper3_DV).
 % save('paper3_stage2_modelresults.mat','modelresults');
 % save('paper3_stage2_modelresults_std.mat','modelresults_std');
 
-%% SIMU 300 runs
-APOP_ready_vec = zeros(size(m_t_agg,1),1);
-for r = 1:size(m_t_agg,1)
-    APOP_ready_vec(r) = member_agg_bands_APOP_cells{member_nummer(m_t_agg(r,1))}(m_t_agg(r,2));
-end
-    
-member_id_rec = m_t_agg(1,1);
-m_end_rec = [];
-m_start_rec = 1;
-m_list_rec = [];
-for i = 2:size(m_t_agg,1)
-    prev_m = member_id_rec;
-    member_id_rec = m_t_agg(i,1);
-    if prev_m ~=member_id_rec
-        m_end_rec = [m_end_rec; i-1];
-        m_start_rec = [m_start_rec; i];
-        m_list_rec = [m_list_rec; prev_m];
-    else
-    end
-end
-m_list_rec = [m_list_rec; member_id_rec];    
-m_end_rec = [m_end_rec; i];
-
-min(m_end_rec-m_start_rec)
-
-for t = 1:10
-    APOP_ready_vec_rec = []
-    lag_y_rec = []
-    for i = 1:length(m_list_rec)
-        lag_y_temp = y_pred(m_start_rec(i):m_end_rec(i)-t);
-        APOP_temp = APOP_ready_vec(m_start_rec(i)+t:m_end_rec(i),:);
-        APOP_ready_vec_rec = [APOP_ready_vec_rec; APOP_temp];
-        lag_y_rec = [lag_y_rec; lag_y_temp];
-    end
-    SimuX_rec = [ones(size(lag_y_rec,1),1) zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec lag_y_rec zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec.*lag_y_rec];
-    y_rec = SimuX_rec*modelresults;
-end
+% %% SIMU 300 runs
+% APOP_ready_vec = zeros(size(m_t_agg,1),1);
+% for r = 1:size(m_t_agg,1)
+%     APOP_ready_vec(r) = member_agg_bands_APOP_cells{member_nummer(m_t_agg(r,1))}(m_t_agg(r,2));
+% end
+%     
+% member_id_rec = m_t_agg(1,1);
+% m_end_rec = [];
+% m_start_rec = 1;
+% m_list_rec = [];
+% for i = 2:size(m_t_agg,1)
+%     prev_m = member_id_rec;
+%     member_id_rec = m_t_agg(i,1);
+%     if prev_m ~=member_id_rec
+%         m_end_rec = [m_end_rec; i-1];
+%         m_start_rec = [m_start_rec; i];
+%         m_list_rec = [m_list_rec; prev_m];
+%     else
+%     end
+% end
+% m_list_rec = [m_list_rec; member_id_rec];    
+% m_end_rec = [m_end_rec; i];
+% 
+% min(m_end_rec-m_start_rec)
+% 
+% for t = 1:10
+%     APOP_ready_vec_rec = []
+%     lag_y_rec = []
+%     for i = 1:length(m_list_rec)
+%         lag_y_temp = y_pred(m_start_rec(i):m_end_rec(i)-t);
+%         APOP_temp = APOP_ready_vec(m_start_rec(i)+t:m_end_rec(i),:);
+%         APOP_ready_vec_rec = [APOP_ready_vec_rec; APOP_temp];
+%         lag_y_rec = [lag_y_rec; lag_y_temp];
+%     end
+%     SimuX_rec = [ones(size(lag_y_rec,1),1) zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec lag_y_rec zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec.*lag_y_rec];
+%     y_rec = SimuX_rec*modelresults;
+% end
 
 
 
@@ -410,7 +410,11 @@ for t = 1:10
     y_rec = SimuX_rec*modelresults;
 end
 
-    
+mean(y_rec)
+std(y_rec) 
+
+mean(paper3_DV)
+std(paper3_DV)    
     
     
     

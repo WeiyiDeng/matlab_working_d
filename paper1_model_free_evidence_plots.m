@@ -248,3 +248,35 @@ csvwrite('n1_similarity.csv', n1_similarity)
 csvwrite('n2_similarity.csv', n2_similarity)
 csvwrite('n1_shared_adoptions_within20weeks.csv', n1_shared_adoptions)
 csvwrite('n2_shared_adoptions_within20weeks.csv', n2_shared_adoptions)
+
+%% remove duplicates
+% remove duplicates in friendlist_names_temp2_convert_short.csv
+converts = csvread('friendlist_names_temp2_convert_short.csv',1,0);
+ind1 = find(converts(:,1)==9315 & converts(:,2)==7511)
+converts(ind1,:)
+ind2 = find(converts(:,1)==2153 & converts(:,2)==11538)
+converts(ind2,:)
+ind3 = find(converts(:,1)==5078 & converts(:,2)==11136)
+converts(ind3,:)
+ind4 = find(converts(:,1)==1355 & converts(:,2)==1340)
+converts(ind4,:)
+ind5 = find(converts(:,1)==1257 & converts(:,2)==8382)
+converts(ind5,:)
+converts([ind1(2:end);ind2(2:end);ind3(2:end);ind4(2:end);ind5(2:end)],:) = [];
+
+% remove duplicates in ALL_USERS_FM_143
+A = ALL_USERS_FM_143;
+[C,ia,ib]=unique(A,'rows','stable');
+i=true(size(A,1),1);
+i(ia)=false;
+A(i,:)=[];
+
+B = similarities_143_FM_real;
+B(i,:)=[];
+
+spmat = sparse(A(:,1),A(:,2),B,max(A(:,1)),max(A(:,2)));
+simi_scores = zeros(size(converts,1),1);
+for r = 1:size(converts,1)
+    simi_scores(r) = spmat(converts(r,1),converts(r,2));
+end
+mean(simi_scores)

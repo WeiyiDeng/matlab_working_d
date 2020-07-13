@@ -96,6 +96,13 @@ hist(match_neighbours)
 
 corr(Cosine_similarity_scores, match_neighbours)
 
+ind_test = match_neighbours>quantile(match_neighbours,0.05);
+sth = find(ind_test);
+
+corr(Cosine_similarity_scores(sth), match_neighbours(sth))
+
+
+
 %% listen
 % ans =
 
