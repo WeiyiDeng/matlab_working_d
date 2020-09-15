@@ -53,3 +53,10 @@ corr(m_innov(ia),mbands(ia))
 
 [R,P] = corrcoef([m_innov(ia); f_innov],[mbands(ia); fbands])
 
+count_friends = csvread('count_friends8088.csv',1,0);
+hist(count_friends(:,2),30);
+h = findobj(gca,'Type','patch');
+h.EdgeColor = 'w';
+h.FaceColor = [0 0 0];
+xlabel('number of friends') 
+ylabel('count users')

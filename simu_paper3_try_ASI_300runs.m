@@ -1,7 +1,8 @@
 clc
 clear
 
-rng(181102)
+% rng(181102)
+rng(1)
 
 load('matp_friend_reverse.mat');
 predict_trend = csvread('predict_trend_log4061_lenient.csv',1,0);
@@ -172,7 +173,8 @@ for s = 1:runs
     sum(simu_sample)
     sum(simu_sample_noSI)
 
-    APOP_prep = pop_adjust_1.*simu_sample_noSI;
+%     APOP_prep = pop_adjust_1.*simu_sample_noSI;
+    APOP_prep = pop_adjust_1.*simu_sample;
 
     max(matp_mjt)
     matp_mjt_rm_ind = find(matp_mjt(:,3)==423);
@@ -224,7 +226,8 @@ for s = 1:runs
 
     %%
     % m_t_agg = csvread('agg10_paper3_mat.csv');
-    m_t_agg = csvread('agg10_paper3_mat.csv');
+%     m_t_agg = csvread('agg10_paper3_mat.csv');
+    m_t_agg = csvread('agg10_paper3_mat_simuDV.csv');
     m_t_usage = csvread('dt7_member_ID_sum_listen.csv',1,0);
     load('paper3_stage2_modelresults.mat')
 
@@ -266,19 +269,26 @@ for s = 1:runs
 
     min(m_end_rec-m_start_rec)
 
-    SimuX = [ones(size(paper3_DV_lag)) zeros(size(paper3_DV_lag)) m_t_agg(:,4) paper3_DV_lag zeros(size(paper3_DV_lag)) m_t_agg(:,4).*paper3_DV_lag];
+%     SimuX = [ones(size(paper3_DV_lag)) zeros(size(paper3_DV_lag)) m_t_agg(:,4) paper3_DV_lag zeros(size(paper3_DV_lag)) m_t_agg(:,4).*paper3_DV_lag];
+    SimuX = [ones(size(paper3_DV_lag)) m_t_agg(:,3) m_t_agg(:,4) paper3_DV_lag m_t_agg(:,3).*paper3_DV_lag m_t_agg(:,4).*paper3_DV_lag];
     y_pred = SimuX*modelresults;
+    
+    ASI_vec = m_t_agg(:,3);
 
     for t = 1:10
-        APOP_ready_vec_rec = []
-        lag_y_rec = []
+        APOP_ready_vec_rec = [];
+        ASI_ready_vec_rec = [];
+        lag_y_rec = [];
         for i = 1:length(m_list_rec)
             lag_y_temp = y_pred(m_start_rec(i):m_end_rec(i)-t);
             APOP_temp = APOP_ready_vec(m_start_rec(i)+t:m_end_rec(i),:);
+            ASI_temp = ASI_vec(m_start_rec(i)+t:m_end_rec(i),:);
             APOP_ready_vec_rec = [APOP_ready_vec_rec; APOP_temp];
+            ASI_ready_vec_rec = [ASI_ready_vec_rec; ASI_temp];
             lag_y_rec = [lag_y_rec; lag_y_temp];
         end
-        SimuX_rec = [ones(size(lag_y_rec,1),1) zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec lag_y_rec zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec.*lag_y_rec];
+%         SimuX_rec = [ones(size(lag_y_rec,1),1) zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec lag_y_rec zeros(size(lag_y_rec,1),1) APOP_ready_vec_rec.*lag_y_rec];
+        SimuX_rec = [ones(size(lag_y_rec,1),1) ASI_ready_vec_rec APOP_ready_vec_rec lag_y_rec ASI_ready_vec_rec.*lag_y_rec APOP_ready_vec_rec.*lag_y_rec];
         y_rec = SimuX_rec*modelresults;
     end
     simu_paper3{s} = y_rec;
@@ -286,7 +296,7 @@ end
 
 % save('simu_paper3.mat','simu_paper3');
 
-load('simu_paper3.mat')
+% load('simu_paper3.mat')
 
 simu_paper3_temp = cell2mat(simu_paper3);
 simu_paper3_mat = reshape(simu_paper3_temp,17931,300);
@@ -295,10 +305,10 @@ ww = mean(simu_paper3_mat,1);
 mean(ww)
 std(ww)
 
-mean(paper3_DV)
+% mean(paper3_DV)
 
 % w = mean(simu_paper3_mat,1);
 
-(mean(paper3_DV)-mean(ww))/mean(paper3_DV)
+% (mean(paper3_DV)-mean(ww))/mean(paper3_DV)
 
-std(paper3_DV)
+% std(paper3_DV)
